@@ -1,0 +1,26 @@
+{
+    "env": {
+        "myIncludePath": [
+            "${workspaceFolder}/_libs",
+            "${workspaceFolder}/_libs/encoding",
+            "${workspaceFolder}/_libs/sfmt/inc"
+        ],
+        "myDefines": [
+            "DEBUG",
+            "MY_FEATURE=1"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "common",
+            "includePath": [
+                "${myIncludePath}"
+            ],
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "windows-msvc-x64",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

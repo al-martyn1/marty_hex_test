@@ -1,0 +1,6 @@
+/.build
+/.out
+/.vs
+*.user
+*.log
+/setup_msvc.bat

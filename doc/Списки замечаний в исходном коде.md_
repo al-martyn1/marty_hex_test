@@ -1,0 +1,37 @@
+---
+Title : Списки замечаний в исходном коде
+---
+
+Автосканированные списки задач, примечаний, предупреждений.
+
+
+## Список важных предупреждений
+
+#!doc{no-fail,raise=-2} _md/_found-attentions.md
+
+
+## Список предупреждений
+
+#!doc{no-fail,raise=-2} _md/_found-warnings.md
+
+
+## Список задач
+
+#!doc{no-fail,raise=-2} _md/_found-todos.md
+
+
+## Список недоделанного
+
+#!doc{no-fail,raise=-2} _md/_found-undones.md
+
+
+## Список заметок
+
+#!doc{no-fail,raise=-2} _md/_found-notes.md
+
+
+## Список "см. также"
+
+#!doc{no-fail,raise=-2} _md/_found-see-also.md
+
+

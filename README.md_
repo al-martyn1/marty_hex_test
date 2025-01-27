@@ -1,0 +1,58 @@
+---
+Title: Шаблон Umba-проекта
+---
+
+Для подключения и использования необходимых библиотек их нужно раскомментировать в файлах:
+
+ - `_libs/_clone_libs.bat`
+ - `_libs/_git-job-impl.bat`
+
+
+# Настройка проекта на базе данного шаблона 
+
+## Настройка CMakeLists.txt
+
+### Название проекта
+
+В начале файла находим строку описания проекта (с директивой `project`):
+
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`project(umba-template`-(1)
+
+Заменяем название `umba-template` на название проекта.
+
+
+
+### Настройка библиотек
+
+Импортируем нужные библиотеки:
+
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`# Import libraries here`-(1)
+
+
+Настраиваем списки библиотек для последующего использования:
+
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`# Configure libraries here`-(1)
+
+При настройке целей можно как использовать заранее подготовленные списки библиотек, так и указывать библиотеки непосредственно.
+
+
+### Добавление целей
+
+Настраиваем цель (исполняемый файл) проекта:
+
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`add_executable(umba-template`-(1)
+
+При необходимости дополнительные цели можно добавлять аналогично.
+
+
+## Настройка запуска MSVC
+
+Для открытия проекта в MSVC нужно настроить название "солюшена":
+
+#!insert{noLineNo,noKeepCutTags,filename,no-path} set_sln.bat#`@set SLN`-(1)
+
+Это название должно совпадать с тем, что указано в директиве `project` файла `CMakeLists.txt`.
+
+
+#!insert{doc} .bat/md_/building.md_
+

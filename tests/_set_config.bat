@@ -1,0 +1,1 @@
+@set CONFIG=Debug

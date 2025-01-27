@@ -1,0 +1,1 @@
+@call "%~dp0\_precommit.bat" >"%~dp0\_precommit.log" 2>&1
