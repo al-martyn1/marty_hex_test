@@ -1,14 +1,15 @@
-@rem call :DO_GIT_JOB %1 %~dp0\encoding
-@rem call :DO_GIT_JOB %1 %~dp0\marty_cpp
-@rem call :DO_GIT_JOB %1 %~dp0\marty_decimal
+call :DO_GIT_JOB %1 %~dp0\encoding
+call :DO_GIT_JOB %1 %~dp0\marty_cpp
+call :DO_GIT_JOB %1 %~dp0\marty_decimal
+call :DO_GIT_JOB %1 %~dp0\marty_hex
 @rem call :DO_GIT_JOB %1 %~dp0\marty_pugixml
 @rem call :DO_GIT_JOB %1 %~dp0\pugixml
 @rem call :DO_GIT_JOB %1 %~dp0\marty_tr
 @rem call :DO_GIT_JOB %1 %~dp0\marty_utf
 @rem call :DO_GIT_JOB %1 %~dp0\marty_yaml_toml_json
 @rem call :DO_GIT_JOB %1 %~dp0\nlohmann
-@rem call :DO_GIT_JOB %1 %~dp0\sfmt
-@rem call :DO_GIT_JOB %1 %~dp0\umba
+call :DO_GIT_JOB %1 %~dp0\sfmt
+call :DO_GIT_JOB %1 %~dp0\umba
 @rem call :DO_GIT_JOB %1 %~dp0\umba_tokenizer
 @rem call :DO_GIT_JOB %1 %~dp0\yaml-cpp
 

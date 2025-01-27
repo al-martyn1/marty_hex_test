@@ -1,6 +1,7 @@
 encoding
 marty_cpp
 marty_decimal
+marty_hex
 marty_pugixml
 pugixml
 marty_tr

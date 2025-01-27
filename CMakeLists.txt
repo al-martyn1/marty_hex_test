@@ -21,15 +21,16 @@ include(${CMAKE_CURRENT_LIST_DIR}/.cmake/umba.cmake)
 include_directories(${LIB_ROOT})
 
 # Import libraries here
-# add_subdirectory(${LIB_ROOT}/encoding)
-# add_subdirectory(${LIB_ROOT}/marty_cpp)
+add_subdirectory(${LIB_ROOT}/encoding)
+add_subdirectory(${LIB_ROOT}/marty_cpp)
+add_subdirectory(${LIB_ROOT}/marty_hex)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
 # add_subdirectory(${LIB_ROOT}/nlohmann)    # https://json.nlohmann.me/integration/cmake/#external
 # add_subdirectory(${LIB_ROOT}/pugixml)
-# add_subdirectory(${LIB_ROOT}/sfmt)
-# add_subdirectory(${LIB_ROOT}/umba)
+add_subdirectory(${LIB_ROOT}/sfmt)
+add_subdirectory(${LIB_ROOT}/umba)
 # add_subdirectory(${LIB_ROOT}/yaml-cpp)
 
 # umba_configure_boost("STATIC_LIBS" "MULTITHREADED" "${STATIC_RUNTIME}")
@@ -41,7 +42,7 @@ include_directories(${LIB_ROOT})
 
 
 # Configure libraries here
-# set(COMMON_LIBS encoding::encoding marty_cpp::marty_cpp sfmt::sfmt umba::umba)
+set(COMMON_LIBS encoding::encoding sfmt::sfmt umba::umba marty_cpp::marty_cpp marty_hex::marty_hex)
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 
@@ -61,8 +62,8 @@ endif()
 set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "WERR"
 
 
-set(TARGET umba-template)
-add_executable(${TARGET} "${SRC_ROOT}/umba-template/umba-template.cpp" "${headers}")
+set(TARGET marty-hex-test-001)
+add_executable(${TARGET} "${SRC_ROOT}/marty-hex-test/marty-hex-test-001.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
