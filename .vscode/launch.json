@@ -10,7 +10,7 @@
       "args": [],
       "stopAtEntry": false,
       "environment": [],
-      "externalConsole": false,
+      "externalConsole": true,
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "preLaunchTask": "build",

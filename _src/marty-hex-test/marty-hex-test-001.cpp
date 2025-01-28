@@ -3,6 +3,8 @@
  */
 
 
+#include "marty_hex/marty_hex.h"
+
 // Должна быть первой
 #include "umba/umba.h"
 //---
@@ -59,6 +61,7 @@
 #include "umba/cli_tool_helpers.h"
 #include "umba/time_service.h"
 #include "umba/shellapi.h"
+
 
 //
 // #include "utils.h"
@@ -157,6 +160,15 @@ int unsafeMain(int argc, char* argv[])
     if (!umba::filesys::readFile(inputFilename, inputText))
     {
         LOG_ERR << "failed to read file: '" << inputFilename << "\n";
+    }
+
+    marty::hex::HexParser hexParser;
+    std::vector<marty::hex::HexEntry> hexVec;
+
+    auto res = hexParser.parseTextChunk(hexVec, inputText);
+    if (res!=marty::hex::ParsingResult::ok)
+    {
+        LOG_ERR << "parsing hex failed: " << enum_serialize(res) << "\n";
     }
 
 
