@@ -1,4 +1,4 @@
-@if exist "%~dp0\_setup_tests.bat" @call "%~dp0\_setup_tests.bat"
-@echo OUTROOTPATH=%OUTROOTPATH%
-@echo SLN_EXE=%SLN_EXE%
-%SLN_EXE%
+@if exist "%~dp0\..\.set_sln.bat" @call "%~dp0\..\.set_sln.bat"
+@call %~dp0\..\.bat\.find-exe-in-out.bat %SLN%
+@echo FOUND_EXE: %FOUND_EXE%
+@set TEST_EXE=%FOUND_EXE%
