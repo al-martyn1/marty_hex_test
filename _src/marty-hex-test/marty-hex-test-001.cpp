@@ -165,10 +165,34 @@ int unsafeMain(int argc, char* argv[])
     marty::hex::HexParser hexParser;
     std::vector<marty::hex::HexEntry> hexVec;
 
-    auto res = hexParser.parseTextChunk(hexVec, inputText);
+    // std::size_t errorOffset = 0;
+
+    auto res = hexParser.parseTextChunk(hexVec, inputText, 0, marty::hex::ParsingOptions::allowMultiHex);
     if (res!=marty::hex::ParsingResult::ok)
     {
         LOG_ERR << "parsing hex failed: " << enum_serialize(res) << "\n";
+    }
+
+    marty::hex::updateHexEntriesEffectiveAddress(hexVec);
+
+    for(auto &&r : hexVec)
+    {
+        std::string rstr = r.serialize(); // enum_serialize(r.recordType);
+        std::size_t appendWidth = 0;
+        if (rstr.size()<48)
+            appendWidth = 46-rstr.size();
+
+        std::cout << rstr << std::string(appendWidth, ' ') << " # " << r.toString() << "\n";
+
+
+
+        // std::cout << enum_serialize(r.recordType) << ": ";
+        // if (r.isEof())
+        //     std::cout << "EOF !!!\n";
+        // else if (r.hasAddress())
+        //     std::cout << r.extractAddressFromDataBytes() << "\n";
+        // else
+        //     std::cout << "DATA\n";
     }
 
 
