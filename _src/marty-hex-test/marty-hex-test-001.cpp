@@ -189,16 +189,46 @@ int unsafeMain(int argc, char* argv[])
 
     marty::hex::MemoryFillMap fillMap;
 
-    std::vector<std::uint32_t> addrs{ 3,9,15,34,35,36,36,42,50,67,98,122,145,173,210,239,65531};
-    for(auto a: addrs)
+    std::vector<std::uint32_t> addrs1{ 0,3,9,15,34,35,36,36,42,50,63,67,98,122,145,173,210,239};
+    std::vector<std::uint32_t> addrs2{ 0,3,9,15,34,35,36};
+    std::vector<std::uint32_t> addrs3{ 65531 };
+    std::vector<std::uint32_t> addrs64;
+    for(auto i=0u; i!=64; ++i)
+        addrs64.emplace_back(i);
+
+    for(auto a: addrs1)
         fillMap.setFilled(0x00030000+a);
-    for(auto a: addrs)
+    for(auto a: addrs64)
+        fillMap.setFilled(0x00030040+a);
+    // for(auto a: addrs2)
+    //     fillMap.setFilled(0x00030140+a);
+    // for(auto a: addrs64)
+    //     fillMap.setFilled(0x00030180+a);
+    // for(auto a: addrs1)
+    //     fillMap.setFilled(0x000301C0+a);
+
+    for(auto a: addrs2)
         fillMap.setFilled(0x00040000+a);
-    for(auto a: addrs)
+
+    for(auto a: addrs2)
+        fillMap.setFilled(0x00040080+a);
+
+    for(auto a: addrs2)
         fillMap.setFilled(0x00060000+a);
 
+
+    std::cout << "--------------\n";
+    std::cout << "Fill map\n";
+    std::cout << "--------------\n";
     std::cout << fillMap << "\n";
 
+    std::cout << "--------------\n";
+    std::cout << "Filled ranges\n";
+    std::cout << "--------------\n";
+    auto ranges = fillMap.makeRanges();
+    fillMap.printRanges(std::cout, ranges);
+
+    std::cout << "\n";
 
 
     return 0;
