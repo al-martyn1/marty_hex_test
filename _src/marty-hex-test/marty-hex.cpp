@@ -4,6 +4,7 @@
 
 
 #include "marty_hex/marty_hex.h"
+#include "marty_hex/memory_fill_map.h"
 
 // Должна быть первой
 #include "umba/umba.h"

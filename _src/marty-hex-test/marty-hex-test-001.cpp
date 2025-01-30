@@ -4,6 +4,8 @@
 
 
 #include "marty_hex/marty_hex.h"
+#include "marty_hex/memory_fill_map.h"
+
 
 // Должна быть первой
 #include "umba/umba.h"
@@ -183,17 +185,19 @@ int unsafeMain(int argc, char* argv[])
             appendWidth = 46-rstr.size();
 
         std::cout << rstr << std::string(appendWidth, ' ') << " # " << r.toString() << "\n";
-
-
-
-        // std::cout << enum_serialize(r.recordType) << ": ";
-        // if (r.isEof())
-        //     std::cout << "EOF !!!\n";
-        // else if (r.hasAddress())
-        //     std::cout << r.extractAddressFromDataBytes() << "\n";
-        // else
-        //     std::cout << "DATA\n";
     }
+
+    marty::hex::MemoryFillMap fillMap;
+
+    std::vector<std::uint32_t> addrs{ 3,9,15,34,35,36,36,42,50,67,98,122,145,173,210,239,65531};
+    for(auto a: addrs)
+        fillMap.setFilled(0x00030000+a);
+    for(auto a: addrs)
+        fillMap.setFilled(0x00040000+a);
+    for(auto a: addrs)
+        fillMap.setFilled(0x00060000+a);
+
+    std::cout << fillMap << "\n";
 
 
 
