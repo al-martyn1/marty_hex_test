@@ -1,4 +1,4 @@
-@if exist "%~dp0\..\.set_sln.bat" @call "%~dp0\..\.set_sln.bat"
-@call %~dp0\..\.bat\.find-exe-in-out.bat %SLN%
+@set TEST_NAME=
+call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @echo FOUND_EXE: %FOUND_EXE%
 @set TEST_EXE=%FOUND_EXE%

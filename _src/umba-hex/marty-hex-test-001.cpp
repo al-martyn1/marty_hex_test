@@ -1,5 +1,5 @@
 /*! \file
-    \brief 
+    \brief Тестим marty::hex::MemoryFillMap
  */
 
 
@@ -123,120 +123,6 @@ int unsafeMain(int argc, char* argv[])
 
     UMBA_USED(argc);
     UMBA_USED(argv);
-
-    std::string inputFilename;
-
-    auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
-                                                        , CommandLineOptionCollector()
-                                                        , argc, argv
-                                                        , umba::program_location::getProgramLocation
-                                                            ( argc, argv
-                                                            , false // useUserFolder = false
-                                                            //, "" // overrideExeName
-                                                            )
-                                                        );
-
-    if (umba::isDebuggerPresent())
-    {
-        std::string cwd;
-        std::string rootPath = umba::shellapi::getDebugAppRootFolder(&cwd);
-        std::cout << "App Root Path: " << rootPath << "\n";
-        std::cout << "Working Dir  : " << cwd << "\n";
-
-        inputFilename = rootPath + "tests/hex/01.hex";
-        //inputFilename = rootPath + "tests/hex/05.hex";
-
-    } // if (umba::isDebuggerPresent())
-    else
-    {
-        if (argc>1)
-            inputFilename = argv[1];
-    }
-
-    if (inputFilename.empty())
-    {
-        LOG_ERR << "No input file taken\n";
-        return 1;
-    }
-
-    std::string inputText;
-    if (!umba::filesys::readFile(inputFilename, inputText))
-    {
-        LOG_ERR << "failed to read file: '" << inputFilename << "\n";
-    }
-
-    marty::hex::IntelHexParser hexParser;
-    std::vector<marty::hex::HexEntry> hexVec;
-
-    // std::size_t errorOffset = 0;
-
-    auto res = hexParser.parseTextChunk(hexVec, inputText, 0, marty::hex::ParsingOptions::allowMultiHex);
-    if (res!=marty::hex::ParsingResult::ok)
-    {
-        LOG_ERR << "parsing hex failed: " << enum_serialize(res) << ", line: " << hexParser.filePosInfo.line+1 << "\n";
-        return 1;
-    }
-
-    marty::hex::updateHexEntriesAddressAndMode(hexVec);
-
-    // std::size_t errLineNo=0;
-    // std::size_t errFileId=0;
-    marty::hex::MemoryFillMap memFillMap;
-    marty::hex::HexRecordsCheckReport report;
-    if (marty::hex::checkHexRecords(hexVec, &memFillMap, &report)!=0)
-    {
-        //LOG_ERR << "data bytes overlaps, line: " << errLineNo+1 << "\n";
-        using HexRecordsCheckCode = marty::hex::HexRecordsCheckCode;
-        LOG_ERR << "something wrong in HEX file\n";
-        for(auto &&rep : report)
-        {
-            switch(rep.code)
-            {
-                case HexRecordsCheckCode::none:
-                     break;
-
-                case HexRecordsCheckCode::memoryOverlaps:
-                     LOG_ERR << "data bytes overlaps, line: " << rep.filePosInfo.line+1 << "\n";
-                     break;
-
-                case HexRecordsCheckCode::mixedAddressMode:
-                     LOG_ERR << "previous address mode is not the same: " << rep.filePosInfo.line+1 << "\n";
-                     break;
-            }
-        }
-
-        return 1;
-    }
-
-    marty::hex::normalizeAddressOrder(hexVec);
-
-    // Выводим hex
-
-    std::cout << "Address Mode : " << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, true) << " (" << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, false) << ")\n";
-    std::cout << "Base Address : " << marty::hex::utils::address32ToString(hexParser.hexInfo.baseAddress , hexParser.hexInfo.addressMode) << "\n";
-    std::cout << "Start Address: " << marty::hex::utils::address32ToString(hexParser.hexInfo.startAddress, hexParser.hexInfo.addressMode) << "\n";
-
-    std::cout << "Data blocks:";
-    auto hexRanges = memFillMap.makeRanges();
-    memFillMap.printRanges(std::cout, hexRanges, std::string(4, ' '));
-
-    std::cout << "Data blocks:";
-    std::cout << "--------------\n";
-    std::cout << "Fill map\n";
-    std::cout << memFillMap << "\n\n\n";
-    std::cout << "--------------\n";
-
-
-
-    for(auto &&r : hexVec)
-    {
-        std::string rstr = r.serialize(); // enum_serialize(r.recordType);
-        std::size_t appendWidth = 0;
-        if (rstr.size()<48)
-            appendWidth = 46-rstr.size();
-
-        std::cout << rstr << std::string(appendWidth, ' ') << " # " << r.toString() << "\n";
-    }
 
     marty::hex::MemoryFillMap fillMap;
 
