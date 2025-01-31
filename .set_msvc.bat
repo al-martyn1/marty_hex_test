@@ -1,6 +1,0 @@
-@rem set MSVS_TOOLSET=2017
-@set MSVS_TOOLSET=2019
-@rem set MSVS_TOOLSET=2022
-@rem 
-@rem set MSVS_ARCH=x86
-@set MSVS_ARCH=x64

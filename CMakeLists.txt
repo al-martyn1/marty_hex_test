@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(umba-template VERSION 0.1.0 LANGUAGES C CXX)
+project(umba-hex VERSION 0.1.0 LANGUAGES C CXX)
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -63,7 +63,7 @@ set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "
 
 
 set(TARGET marty-hex-test-001)
-add_executable(${TARGET} "${SRC_ROOT}/marty-hex-test/marty-hex-test-001.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-001.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
