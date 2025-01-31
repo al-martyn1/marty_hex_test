@@ -144,6 +144,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "Working Dir  : " << cwd << "\n";
 
         inputFilename = rootPath + "tests/hex/01.hex";
+        //inputFilename = rootPath + "tests/hex/05.hex";
 
     } // if (umba::isDebuggerPresent())
     else
@@ -164,7 +165,7 @@ int unsafeMain(int argc, char* argv[])
         LOG_ERR << "failed to read file: '" << inputFilename << "\n";
     }
 
-    marty::hex::HexParser hexParser;
+    marty::hex::IntelHexParser hexParser;
     std::vector<marty::hex::HexEntry> hexVec;
 
     // std::size_t errorOffset = 0;
@@ -172,10 +173,60 @@ int unsafeMain(int argc, char* argv[])
     auto res = hexParser.parseTextChunk(hexVec, inputText, 0, marty::hex::ParsingOptions::allowMultiHex);
     if (res!=marty::hex::ParsingResult::ok)
     {
-        LOG_ERR << "parsing hex failed: " << enum_serialize(res) << "\n";
+        LOG_ERR << "parsing hex failed: " << enum_serialize(res) << ", line: " << hexParser.filePosInfo.line+1 << "\n";
+        return 1;
     }
 
-    marty::hex::updateHexEntriesEffectiveAddress(hexVec);
+    marty::hex::updateHexEntriesAddressAndMode(hexVec);
+
+    // std::size_t errLineNo=0;
+    // std::size_t errFileId=0;
+    marty::hex::MemoryFillMap memFillMap;
+    marty::hex::HexRecordsCheckReport report;
+    if (marty::hex::checkHexRecords(hexVec, &memFillMap, &report)!=0)
+    {
+        //LOG_ERR << "data bytes overlaps, line: " << errLineNo+1 << "\n";
+        using HexRecordsCheckCode = marty::hex::HexRecordsCheckCode;
+        LOG_ERR << "something wrong in HEX file\n";
+        for(auto &&rep : report)
+        {
+            switch(rep.code)
+            {
+                case HexRecordsCheckCode::none:
+                     break;
+
+                case HexRecordsCheckCode::memoryOverlaps:
+                     LOG_ERR << "data bytes overlaps, line: " << rep.filePosInfo.line+1 << "\n";
+                     break;
+
+                case HexRecordsCheckCode::mixedAddressMode:
+                     LOG_ERR << "previous address mode is not the same: " << rep.filePosInfo.line+1 << "\n";
+                     break;
+            }
+        }
+
+        return 1;
+    }
+
+    marty::hex::normalizeAddressOrder(hexVec);
+
+    // Выводим hex
+
+    std::cout << "Address Mode : " << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, true) << " (" << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, false) << ")\n";
+    std::cout << "Base Address : " << marty::hex::utils::address32ToString(hexParser.hexInfo.baseAddress , hexParser.hexInfo.addressMode) << "\n";
+    std::cout << "Start Address: " << marty::hex::utils::address32ToString(hexParser.hexInfo.startAddress, hexParser.hexInfo.addressMode) << "\n";
+
+    std::cout << "Data blocks:";
+    auto hexRanges = memFillMap.makeRanges();
+    memFillMap.printRanges(std::cout, hexRanges, std::string(4, ' '));
+
+    std::cout << "Data blocks:";
+    std::cout << "--------------\n";
+    std::cout << "Fill map\n";
+    std::cout << memFillMap << "\n\n\n";
+    std::cout << "--------------\n";
+
+
 
     for(auto &&r : hexVec)
     {
@@ -189,8 +240,8 @@ int unsafeMain(int argc, char* argv[])
 
     marty::hex::MemoryFillMap fillMap;
 
-    std::vector<std::uint32_t> addrs1{ 0,3,9,15,34,35,36,36,42,50,63,67,98,122,145,173,210,239};
-    std::vector<std::uint32_t> addrs2{ 0,3,9,15,34,35,36};
+    std::vector<std::uint32_t> addrs1{ 0,1,2,3,9,15,34,35,36,36,42,50,63,67,98,122,145,173,210,239};
+    std::vector<std::uint32_t> addrs2{ 0,1,2,3,9,15,34,35,36};
     std::vector<std::uint32_t> addrs3{ 65531 };
     std::vector<std::uint32_t> addrs64;
     for(auto i=0u; i!=64; ++i)
