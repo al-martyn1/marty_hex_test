@@ -3,4 +3,4 @@
 /.vs
 *.user
 *.log
-/setup_msvc.bat
+.set_msvc.bat
