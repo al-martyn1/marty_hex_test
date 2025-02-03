@@ -19,18 +19,6 @@
 #include "umba/cmd_line.h"
 //
 
-//
-#include "umba/tokenizer.h"
-//
-#include "umba/tokenizer/tokenizer_log.h"
-#include "umba/tokenizer/tokenizer_log_console.h"
-#include "umba/tokenizer/token_collection.h"
-#include "umba/tokenizer/parser_base.h"
-#include "umba/tokenizer/lang/marmaid_packet_diagram.h"
-//
-#include "umba/filename_set.h"
-#include "umba/escape_string.h"
-
 //#-sort
 #include "umba/simple_formatter.h"
 #include "umba/char_writers.h"
@@ -104,15 +92,6 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
-
-
-
-//#define MARMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
-
-//struct
-
-
 
 
 int unsafeMain(int argc, char* argv[]);
@@ -145,23 +124,6 @@ int unsafeMain(int argc, char* argv[])
     UMBA_USED(argc);
     UMBA_USED(argv);
 
-    using FilenameSetType               = umba:: /* Simple */ FilenameSet<std::size_t /* , std::string */ >;
-    using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
-    using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
-
-    using TokenizerBuilderType          = decltype(umba::tokenizer::makeTokenizerBuilderMarmaidPacketDiagram<char>());
-    using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
-    using TokenizerPayloadType          = umba::tokenizer::payload_type;
-    using TokenizerIteratorType         = typename TokenizerType::iterator_type;
-    using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
-    using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::MarmaidPacketDiagramParser<TokenizerType>;
-
-
-    auto pFilenameSet = std::make_shared<FilenameSetType>();
-    auto pParserLog   = std::make_shared<ParserConsoleErrorLog>(pFilenameSet);
-
-
     std::string inputFilename;
 
     auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
@@ -182,7 +144,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "Working Dir  : " << cwd << "\n";
 
         // inputFilename = rootPath + "tests/hex/01.hex";
-        inputFilename = rootPath + "tests/layouts/01.txt";
+        inputFilename = rootPath + "tests/hex/02.hex";
         // inputFilename = rootPath + "tests/hex/05.hex";
 
     } // if (umba::isDebuggerPresent())
@@ -195,37 +157,87 @@ int unsafeMain(int argc, char* argv[])
     if (inputFilename.empty())
     {
         LOG_ERR << "No input file taken\n";
-        return 2;
+        return 1;
     }
 
     std::string inputText;
     if (!umba::filesys::readFile(inputFilename, inputText))
     {
         LOG_ERR << "failed to read file: '" << inputFilename << "\n";
-        return 3;
     }
 
-    inputText = marty_cpp::normalizeCrLfToLf(inputText);
+    marty::hex::IntelHexParser hexParser;
+    std::vector<marty::hex::HexEntry> hexVec;
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::makeTokenizerBuilderMarmaidPacketDiagram<char>();
-    auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::MarmaidPacketDiagramTokenizerConfigurator()
-                                                                 , pParserLog
-                                                                 , inputText
-                                                                  , pFilenameSet->addFile(inputFilename)
-                                                                 );
-    ParserType parser = ParserType(pTokenCollection, pParserLog);
+    // std::size_t errorOffset = 0;
 
-    if (!parser.parse())
+    auto res = hexParser.parseTextChunk(hexVec, inputText, 0, marty::hex::ParsingOptions::allowMultiHex);
+    if (res!=marty::hex::ParsingResult::ok)
     {
-        LOG_ERR << "there is some errors\n";
-        return 4;
+        LOG_ERR << "parsing hex failed: " << enum_serialize(res) << ", line: " << hexParser.filePosInfo.line+1 << "\n";
+        return 1;
+    }
+
+    marty::hex::updateHexEntriesAddressAndMode(hexVec);
+
+    // std::size_t errLineNo=0;
+    // std::size_t errFileId=0;
+    marty::hex::MemoryFillMap memFillMap;
+    marty::hex::HexRecordsCheckReport report;
+    if (marty::hex::checkHexRecords(hexVec, &memFillMap, &report)!=0)
+    {
+        //LOG_ERR << "data bytes overlaps, line: " << errLineNo+1 << "\n";
+        using HexRecordsCheckCode = marty::hex::HexRecordsCheckCode;
+        LOG_ERR << "something wrong in HEX file\n";
+        for(auto &&rep : report)
+        {
+            switch(rep.code)
+            {
+                case HexRecordsCheckCode::none:
+                     break;
+
+                case HexRecordsCheckCode::memoryOverlaps:
+                     LOG_ERR << "data bytes overlaps, line: " << rep.filePosInfo.line+1 << "\n";
+                     break;
+
+                case HexRecordsCheckCode::mixedAddressMode:
+                     LOG_ERR << "previous address mode is not the same: " << rep.filePosInfo.line+1 << "\n";
+                     break;
+            }
+        }
+
+        return 1;
+    }
+
+    marty::hex::normalizeAddressOrder(hexVec);
+
+    // Выводим hex
+
+    std::cout << "Address Mode : " << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, true) << " (" << marty::hex::utils::addressModeToString(hexParser.hexInfo.addressMode, false) << ")\n";
+    std::cout << "Base Address : " << marty::hex::utils::address32ToString(hexParser.hexInfo.baseAddress , hexParser.hexInfo.addressMode) << "\n";
+    std::cout << "Start Address: " << marty::hex::utils::address32ToString(hexParser.hexInfo.startAddress, hexParser.hexInfo.addressMode) << "\n";
+
+    std::cout << "Data blocks:\n";
+    auto hexRanges = memFillMap.makeRanges();
+    memFillMap.printRanges(std::cout, hexRanges, std::string(4, ' '));
+
+    std::cout << "Fill map\n";
+    std::cout << memFillMap << "\n\n\n";
+    std::cout << "--------------\n";
+
+
+    for(auto &&r : hexVec)
+    {
+        std::string rstr = r.serialize(); // enum_serialize(r.recordType);
+        std::size_t appendWidth = 0;
+        if (rstr.size()<48)
+            appendWidth = 46-rstr.size();
+
+        std::cout << rstr << std::string(appendWidth, ' ') << " # " << r.toString() << "\n";
     }
 
 
     return 0;
 }
-
-
 
 
