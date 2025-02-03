@@ -181,9 +181,11 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "App Root Path: " << rootPath << "\n";
         std::cout << "Working Dir  : " << cwd << "\n";
 
-        // inputFilename = rootPath + "tests/hex/01.hex";
-        inputFilename = rootPath + "tests/layouts/01.txt";
-        // inputFilename = rootPath + "tests/hex/05.hex";
+        // inputFilename = rootPath + "tests/layouts/01.txt";
+        // inputFilename = rootPath + "tests/layouts/02.txt";
+        // inputFilename = rootPath + "tests/layouts/03.txt";
+        inputFilename = rootPath + "tests/layouts/04.txt";
+        // inputFilename = rootPath + "tests/layouts/05.txt";
 
     } // if (umba::isDebuggerPresent())
     else
@@ -201,7 +203,7 @@ int unsafeMain(int argc, char* argv[])
     std::string inputText;
     if (!umba::filesys::readFile(inputFilename, inputText))
     {
-        LOG_ERR << "failed to read file: '" << inputFilename << "\n";
+        LOG_ERR << "failed to read file: '" << inputFilename << "'\n";
         return 3;
     }
 
@@ -222,6 +224,7 @@ int unsafeMain(int argc, char* argv[])
         return 4;
     }
 
+    LOG_MSG << "File processed: '" << inputFilename << "'\n";
 
     return 0;
 }
