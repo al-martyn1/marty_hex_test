@@ -1,6 +1,6 @@
-packet-beta %%!byte
+%packet-beta %%!byte
 %% https://mermaid.js.org/syntax/packet.html#examples
-title UDP Packet
+%title UDP Packet
 
 0-15: "Source Port"
 16-31: "Destination Port"
