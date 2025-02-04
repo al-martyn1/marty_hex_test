@@ -25,8 +25,11 @@
 #include "umba/tokenizer/tokenizer_log.h"
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
-#include "umba/tokenizer/parser_base.h"
-#include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+// #include "umba/tokenizer/parser_base.h"
+// #include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+//
+#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
+
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -149,13 +152,13 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::makeTokenizerBuilderMarmaidPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
     using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::MarmaidPacketDiagramParser<TokenizerType>;
+    using ParserType                    = umba::tokenizer::marmaid::PacketDiagramParser<TokenizerType>;
 
 
     auto pFilenameSet = std::make_shared<FilenameSetType>();
@@ -209,12 +212,12 @@ int unsafeMain(int argc, char* argv[])
 
     inputText = marty_cpp::normalizeCrLfToLf(inputText);
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::makeTokenizerBuilderMarmaidPacketDiagram<char>();
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::MarmaidPacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::marmaid::PacketDiagramTokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
-                                                                  , pFilenameSet->addFile(inputFilename)
+                                                                 , pFilenameSet->addFile(inputFilename)
                                                                  );
     ParserType parser = ParserType(pTokenCollection, pParserLog);
 
