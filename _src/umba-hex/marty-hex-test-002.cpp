@@ -187,8 +187,32 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/01.txt";
         // inputFilename = rootPath + "tests/layouts/02.txt";
         // inputFilename = rootPath + "tests/layouts/03.txt";
-        inputFilename = rootPath + "tests/layouts/04.txt";
+        // inputFilename = rootPath + "tests/layouts/04.txt";
         // inputFilename = rootPath + "tests/layouts/05.txt";
+        // inputFilename = rootPath + "tests/layouts/06.txt";
+        // inputFilename = rootPath + "tests/layouts/07.txt";
+        // inputFilename = rootPath + "tests/layouts/08.txt";
+        inputFilename = rootPath + "tests/layouts/09.txt";
+        // inputFilename = rootPath + "tests/layouts/10.txt";
+        // inputFilename = rootPath + "tests/layouts/11.txt";
+        // inputFilename = rootPath + "tests/layouts/12.txt";
+        // inputFilename = rootPath + "tests/layouts/13.txt";
+        // inputFilename = rootPath + "tests/layouts/14.txt";
+        // inputFilename = rootPath + "tests/layouts/15.txt";
+        // inputFilename = rootPath + "tests/layouts/16.txt";
+        // inputFilename = rootPath + "tests/layouts/17.txt";
+        // inputFilename = rootPath + "tests/layouts/18.txt";
+        // inputFilename = rootPath + "tests/layouts/19.txt";
+        // inputFilename = rootPath + "tests/layouts/20.txt";
+        // inputFilename = rootPath + "tests/layouts/21.txt";
+        // inputFilename = rootPath + "tests/layouts/22.txt";
+        // inputFilename = rootPath + "tests/layouts/23.txt";
+        // inputFilename = rootPath + "tests/layouts/24.txt";
+        // inputFilename = rootPath + "tests/layouts/25.txt";
+        // inputFilename = rootPath + "tests/layouts/26.txt";
+        // inputFilename = rootPath + "tests/layouts/27.txt";
+        // inputFilename = rootPath + "tests/layouts/28.txt";
+        // inputFilename = rootPath + "tests/layouts/29.txt";
 
     } // if (umba::isDebuggerPresent())
     else
