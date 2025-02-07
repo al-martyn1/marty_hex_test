@@ -1,9 +1,14 @@
 %% https://mermaid.js.org/syntax/packet.html#examples
 
-%%!bit-diagram
-packet-beta %%#!byte-diagram
-0-15: "Source Port"  %%#!BE
-16-31: "Destination Port" %%#LE
+%%#! native le 32 bits
+%%#! display-width 32
+
+packet-beta %%#! byte-diagram
+
+
+
+0-15: "Source Port"  %%#! BE
+16-31: "Destination Port" %%# LE
 32-63: "Sequence Number"
 64-95: "Acknowledgment Number"
 96-99: "Data Offset"
