@@ -198,11 +198,11 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/12.txt";
         // inputFilename = rootPath + "tests/layouts/13.txt";
         // inputFilename = rootPath + "tests/layouts/14.txt";
-        inputFilename = rootPath + "tests/layouts/15.txt";
+        // inputFilename = rootPath + "tests/layouts/15.txt";
         // inputFilename = rootPath + "tests/layouts/16.txt";
         // inputFilename = rootPath + "tests/layouts/17.txt";
         // inputFilename = rootPath + "tests/layouts/18.txt";
-        // inputFilename = rootPath + "tests/layouts/19.txt";
+        inputFilename = rootPath + "tests/layouts/19.txt";
         // inputFilename = rootPath + "tests/layouts/20.txt";
         // inputFilename = rootPath + "tests/layouts/21.txt";
         // inputFilename = rootPath + "tests/layouts/22.txt";
@@ -254,8 +254,8 @@ int unsafeMain(int argc, char* argv[])
     LOG_MSG << "File processed: '" << inputFilename << "'\n";
 
 
-    umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, parser.diagram );
-
+    //umba::tokenizer::marmaid::cpp::simplePrintCppPacketDiagram( std::cout, parser.getDiagram() );
+    umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, parser.getDiagram() );
 
     return 0;
 }

@@ -1,0 +1,12 @@
+%% https://mermaid.js.org/syntax/packet.html#examples
+
+%% #! native le 32 bits
+%% #! display-width 32
+
+packet-beta %%#! byte-diagram
+
+%%#!
+
+char[16]  : "Device Name"                  %% 0-15
+16-31     : "Serial Number"
+
