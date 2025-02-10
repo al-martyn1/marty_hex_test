@@ -15,8 +15,8 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 %TEST_EXE% "%~dp0\layouts\11.txt" > %TEST_NAME%-11.log 2>&1
 %TEST_EXE% "%~dp0\layouts\12.txt" > %TEST_NAME%-12.log 2>&1
 %TEST_EXE% "%~dp0\layouts\13.txt" > %TEST_NAME%-13.log 2>&1
-@rem %TEST_EXE% "%~dp0\layouts\14.txt" > %TEST_NAME%-14.log 2>&1
-@rem %TEST_EXE% "%~dp0\layouts\15.txt" > %TEST_NAME%-15.log 2>&1
+%TEST_EXE% "%~dp0\layouts\14.txt" > %TEST_NAME%-14.log 2>&1
+%TEST_EXE% "%~dp0\layouts\15.txt" > %TEST_NAME%-15.log 2>&1
 @rem %TEST_EXE% "%~dp0\layouts\16.txt" > %TEST_NAME%-16.log 2>&1
 @rem %TEST_EXE% "%~dp0\layouts\17.txt" > %TEST_NAME%-17.log 2>&1
 @rem %TEST_EXE% "%~dp0\layouts\18.txt" > %TEST_NAME%-18.log 2>&1

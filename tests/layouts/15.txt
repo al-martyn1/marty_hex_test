@@ -1,17 +1,16 @@
 %% https://mermaid.js.org/syntax/packet.html#examples
 
+0-15: "Source Port"  %%#! BE
+16-31: "Destination Port" %%#! LE
+32-63: "Sequence Number" %%#! CRC 0-15 poly 0x1234 be
+64-95: "Acknowledgment Number" %%#! le
+96-99: "Data Offset"
+
 %%#! native le 32 bits
 %%#! display-width 32
 
 packet-beta %%#! byte-diagram
 
-%%#!
-
-0-15: "Source Port"  %%#! BE
-16-31: "Destination Port" %%#! LE
-32-63: "Sequence Number" %%#! CRC 0-15 poly 0x1234 be
-64-95: "Acknowledgment Number" %%#! le CRC 3
-96-99: "Data Offset"
 100-105: "Reserved"
 106: "URG"
 107: "ACK"

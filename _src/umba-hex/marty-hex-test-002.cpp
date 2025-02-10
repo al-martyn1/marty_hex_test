@@ -185,7 +185,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "Working Dir  : " << cwd << "\n";
 
         // inputFilename = rootPath + "tests/layouts/01.txt";
-        inputFilename = rootPath + "tests/layouts/02.txt";
+        // inputFilename = rootPath + "tests/layouts/02.txt";
         // inputFilename = rootPath + "tests/layouts/03.txt";
         // inputFilename = rootPath + "tests/layouts/04.txt";
         // inputFilename = rootPath + "tests/layouts/05.txt";
@@ -198,7 +198,7 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/12.txt";
         // inputFilename = rootPath + "tests/layouts/13.txt";
         // inputFilename = rootPath + "tests/layouts/14.txt";
-        // inputFilename = rootPath + "tests/layouts/15.txt";
+        inputFilename = rootPath + "tests/layouts/15.txt";
         // inputFilename = rootPath + "tests/layouts/16.txt";
         // inputFilename = rootPath + "tests/layouts/17.txt";
         // inputFilename = rootPath + "tests/layouts/18.txt";
