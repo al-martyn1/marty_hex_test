@@ -1,0 +1,17 @@
+%% https://mermaid.js.org/syntax/packet.html#examples
+
+%% #! native le 32 bits
+%% #! display-width 32
+
+packet-beta %%#! byte-diagram
+
+%%#! org 0x08000000 : "Harware Info"
+
+0-15      : "Device Name"                  %% 0-15
+uint8     : "Hardware Revision Major"      %% 16
+
+%%#! org + 64 : "Software Info"
+%%#! org auto
+uint16    : "Firmware Version Major"
+uint16    : "Firmware Version Minor"
+

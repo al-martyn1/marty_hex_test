@@ -202,9 +202,9 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/16.txt";
         // inputFilename = rootPath + "tests/layouts/17.txt";
         // inputFilename = rootPath + "tests/layouts/18.txt";
-        inputFilename = rootPath + "tests/layouts/19.txt";
+        // inputFilename = rootPath + "tests/layouts/19.txt";
         // inputFilename = rootPath + "tests/layouts/20.txt";
-        // inputFilename = rootPath + "tests/layouts/21.txt";
+        inputFilename = rootPath + "tests/layouts/21.txt";
         // inputFilename = rootPath + "tests/layouts/22.txt";
         // inputFilename = rootPath + "tests/layouts/23.txt";
         // inputFilename = rootPath + "tests/layouts/24.txt";
