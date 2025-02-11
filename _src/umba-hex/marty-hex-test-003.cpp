@@ -124,7 +124,7 @@ UMBA_APP_MAIN()
 
 
 inline
-void testSingle(std::uint64_t val, std::uint64_t size, Endianness endianness, bool forceFit=true)
+void testSingle(std::uint64_t val, std::uint64_t size, umba::tokenizer::marmaid::Endianness endianness, bool forceFit=true)
 {
     using namespace umba::tokenizer::marmaid::utils;
 
@@ -138,7 +138,7 @@ void testSingle(std::uint64_t val, std::uint64_t size, Endianness endianness, bo
     auto bvStr = makeByteVectorDump(bv);
     
 
-    std::cout << "Value     : " << makeHexString(size) << "\n";
+    std::cout << "Value     : " << makeHexString(val, size) << "\n";
     std::cout << "Size      : " << size << "\n";
     std::cout << "Endianness: " << endiannessToString(endianness) << "\n";
     std::cout << "Result    : " << bvStr << "\n";
@@ -147,8 +147,10 @@ void testSingle(std::uint64_t val, std::uint64_t size, Endianness endianness, bo
 }
 
 inline
-void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_list<Endianness> endiannessList , bool forceFit=true)
+void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_list<umba::tokenizer::marmaid::Endianness> endiannessList , bool forceFit=true)
 {
+    using namespace umba::tokenizer::marmaid;
+    using namespace umba::tokenizer::marmaid::utils;
     for(auto e : endiannessList)
     {
         if ((e==Endianness::leMiddleEndian || e==Endianness::beMiddleEndian) && size!=4 && size!=8)
@@ -158,7 +160,7 @@ void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_
 }
 
 inline
-void testEndiannessListSizeList( std::uint64_t val, std::initializer_list<std::uint64_t> sizeList, std::initializer_list<Endianness> endiannessList , bool forceFit=true)
+void testEndiannessListSizeList( std::uint64_t val, std::initializer_list<std::uint64_t> sizeList, std::initializer_list<umba::tokenizer::marmaid::Endianness> endiannessList , bool forceFit=true)
 {
     for(auto s : sizeList)
     {
@@ -175,12 +177,16 @@ int unsafeMain(int argc, char* argv[])
     UMBA_USED(argc);
     UMBA_USED(argv);
 
+    using namespace umba::tokenizer::marmaid;
     using namespace umba::tokenizer::marmaid::utils;
 
+    // Нумерация от старшего к младшему
+    // std::uint64_t val = 0x1122334455667788ull;
 
-    std::uint64_t val = 0x1122334455667788ull;
+    // Нумерация от младшего к старшему
+    std::uint64_t val = 0x8877665544332211ull;
 
-    testEndiannessListSizeList( val, {1,2,3,4,5,6,7,8}, {Endianness::littleEndian, Endianness::bigEndian, Endianness::leMiddleEndian, Endianness::beMiddleEndian}, true /* forceFit */ );
+    testEndiannessListSizeList( val, {2,3,4,5,6,7,8}, {Endianness::littleEndian, Endianness::bigEndian, Endianness::leMiddleEndian, Endianness::beMiddleEndian}, true /* forceFit */ );
 
 
     return 0;
