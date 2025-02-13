@@ -1,0 +1,1 @@
+if exist "%~dp0\*.log" del /S "%~dp0\*.log"

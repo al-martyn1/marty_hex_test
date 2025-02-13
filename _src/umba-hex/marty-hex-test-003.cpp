@@ -188,7 +188,7 @@ int unsafeMain(int argc, char* argv[])
 
     testEndiannessListSizeList( val, {2,3,4,5,6,7,8}, {Endianness::littleEndian, Endianness::bigEndian, Endianness::leMiddleEndian, Endianness::beMiddleEndian}, true /* forceFit */ );
 
-    std::int64_t val = 0xFF77665544332211ll;
+    //std::int64_t val = 0xFF77665544332211ll;
 
 
 
