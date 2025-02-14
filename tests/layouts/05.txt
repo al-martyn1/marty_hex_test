@@ -2,8 +2,8 @@
 %%!byte-diagram
 %%#!bit-diagram
 %%packet-beta
-0-15: "Source Port"  %%!BE
-16-31: "Destination Port" %%LE
+0-15: "Source Port"  %% !BE
+16-31: "Destination Port" %% LE
 32-63: "Sequence Number"
 64-95: "Acknowledgment Number"
 96-99: "Data Offset"

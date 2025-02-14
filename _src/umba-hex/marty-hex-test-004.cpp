@@ -1,5 +1,5 @@
 /*! \file
-    \brief Выводим мин-максы для разных интегральных типов - https://en.cppreference.com/w/cpp/types/climits
+    \brief Выводим мин-максы для разных интегральных типов - https://en.cppreference.com/w/cpp/types/climits. Также тестим различные утилитные функции.
  */
 
 
@@ -140,7 +140,85 @@ void testSingleSize(std::uint64_t size)
     std::cout << "\n\n";
 }
 
+inline
+void testDumpString(const std::string &strDump)
+{
+    using namespace umba::tokenizer::marmaid::utils;
 
+    byte_vector_t bytes;
+    int res = isStringDumpString(strDump, &bytes);
+    std::cout << ((res==0) ? "+ " : "- ") << strDump << "\n";
+    if (res==0)
+        std::cout << "  " << makeByteVectorDump(bytes) << "\n";
+    else if (res<0)
+        std::cout << "  " << "Invalid char found" << "\n";
+    else 
+        std::cout << "  " << "Wrong number of digits" << "\n";
+
+    std::cout << "\n";
+}
+
+inline
+void testSimpleSplitNameAndIndex(const std::string &fullName)
+{
+    //! Отделяет индекс от имени поля. Простая реализация, без использования парсера. 0 - ошибка, 1 - есть индекс, -1 - индекса нет
+    using namespace umba::tokenizer::marmaid::utils;
+
+    std::string name;
+    std::uint64_t idx;
+
+    int res = simpleSplitNameAndIndex(fullName, &name, &idx);
+
+    std::cout << ((res!=0) ? "+ " : "- ") << "\"" << fullName << "\"\n";
+    if (res==0)
+        std::cout << "  " << "Error\n";
+    else if (res<0)
+        std::cout << "  " << "Name: \"" << name << "\" without index\n";
+    else 
+        std::cout << "  " << "Name: \"" << name << "\" with index " << idx << "\n";
+}
+
+inline 
+void testUnorderedMemoryIterator(const std::string &strDump, std::uint64_t baseAddr, std::uint64_t printLen)
+{
+    using namespace umba::tokenizer::marmaid::utils;
+
+    byte_vector_t bytes;
+    int res = isStringDumpString(strDump, &bytes);
+    if (res!=0)
+    {
+       std::cout << "testUnorderedMemoryIterator: invalid input dump";
+       return;
+    }
+
+    unordered_memory_t mem;
+
+    UnorderedMemoryIterator b = UnorderedMemoryIterator(&mem, baseAddr);
+    UnorderedMemoryIterator e = UnorderedMemoryIterator(&mem, baseAddr+printLen);
+
+    UnorderedMemoryIterator it = b;
+    for(auto byte: bytes)
+    {
+        *it++ = byte;
+    }
+
+    for(it=b; it!=e; ++it)
+    {
+        std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
+        try
+        {
+            auto byte    = std::uint8_t(*it);
+            auto byteStr = makeHexString(byte, 1);
+	            std::cout << byteStr << "\n";
+        }
+        catch(...)
+        {
+            std::cout << "XX\n";
+        }
+    }
+
+    std::cout << "\n";
+}
 
 
 int unsafeMain(int argc, char* argv[])
@@ -157,6 +235,7 @@ int unsafeMain(int argc, char* argv[])
     std::cout << std::left;
 #   define COUT(x) std::cout << std::setw(w) << #x << " = " << std::setw(0) << x << " (0x" << makeHexString(std::uint64_t(x), 8) << ")" << "\n"
 
+    std::cout << "Limits:\n";
 
     COUT( CHAR_BIT       );
     COUT( MB_LEN_MAX     );
@@ -189,9 +268,39 @@ int unsafeMain(int argc, char* argv[])
 
 
     std::cout << "\n\n";
+    std::cout << "Test value fits to size:\n\n";
 
     for(auto i=0u; i!=8; ++i)
         testSingleSize(i+1);
+
+
+    std::cout << "\n\n";
+    std::cout << "Test dump parsing:\n\n";
+
+    testDumpString("1030000090180020D9350008E1350008E3350008A4");
+    testDumpString("1030000090180020D9350008E1350008E3350008A");
+    testDumpString("1030000090180020Q9350008E1350008E3350008A4");
+    testDumpString("10 3 0 00 00 90  18 00 20 D9 350008E1350008E3350008A4");
+
+
+    std::cout << "\n\n";
+    std::cout << "Test split name and index:\n\n";
+
+    testSimpleSplitNameAndIndex(" Device Name [ 12 ] ");
+    testSimpleSplitNameAndIndex(" Device Name 12 ] ");
+    testSimpleSplitNameAndIndex(" Device Name [ 12");
+    testSimpleSplitNameAndIndex(" Device Name");
+    testSimpleSplitNameAndIndex(" Device Name [ -12 ] ");
+
+
+    std::cout << "\n\n";
+    std::cout << "Test UnorderedMemoryIterator:\n\n";
+
+    // 1030000090180020D9350008E1350008E3350008A4
+    testUnorderedMemoryIterator("13D93598A4", 0x20, 5);
+    testUnorderedMemoryIterator("13D93598A4", 0x20, 3);
+    testUnorderedMemoryIterator("13D93598A4", 0x20, 7);
+
 
 
 /*

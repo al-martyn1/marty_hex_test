@@ -7,12 +7,12 @@ packet-beta %%#! byte-diagram
 
 %%#!
 
-char[16]  : "Device Name"                  %% 0-15
+char[16]  : "Device Name"              %%#! ascii-z   %% 0-15
 uint8     : "Hardware Revision Major"      %% 16
-uint8     : "Hardware Revision Minor"      %% 17
+uint8     : "Hardware Revision Minor"  %% #! LE    %% 17
 uint16    : "Manufactured Year"            %% 18-19
 uint8     : "Manufactured Month"           %% 20
 uint8     : "Manufactured Day"             %% 21
 uint16    : "Batch"                        %% 23
-25-31     : "Serial Number"
+25-31     : "Serial Number"            %% #! LE
 

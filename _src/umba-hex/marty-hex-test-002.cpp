@@ -184,8 +184,8 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "App Root Path: " << rootPath << "\n";
         std::cout << "Working Dir  : " << cwd << "\n";
 
-        // inputFilename = rootPath + "tests/layouts/01.txt";
-        inputFilename = rootPath + "tests/layouts/02.txt";
+        inputFilename = rootPath + "tests/layouts/01.txt";
+        // inputFilename = rootPath + "tests/layouts/02.txt";
         // inputFilename = rootPath + "tests/layouts/03.txt";
         // inputFilename = rootPath + "tests/layouts/04.txt";
         // inputFilename = rootPath + "tests/layouts/05.txt";
@@ -251,11 +251,42 @@ int unsafeMain(int argc, char* argv[])
         return 4;
     }
 
-    LOG_MSG << "File processed: '" << inputFilename << "'\n";
+    LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
+
+    LOG_MSG << "C/C++ structs:\n\n";
 
 
     //umba::tokenizer::marmaid::cpp::simplePrintCppPacketDiagram( std::cout, parser.getDiagram() );
-    umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, parser.getDiagram() );
+    auto diagram = parser.getDiagram();
+    umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, diagram );
+
+    LOG_MSG << "\n\n";
+ 
+    LOG_MSG << "Diagram:\n\n";
+    
+    // Пока поэлементно выводим, а массивы на одной строке
+    for(auto item : diagram.data)
+    {
+        if (!item.isDataEntry())
+            continue;
+
+        if (item.isArray())
+        {
+            for(auto i=0u; i!=item.getArraySize(); ++i)
+            {
+                auto str = umba::tokenizer::marmaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
+                std::cout << str;
+            }
+            std::cout << "\n";
+        }
+        else
+        {
+            auto str = umba::tokenizer::marmaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
+            std::cout << str << "\n";
+        }
+        
+    }
+
 
     return 0;
 }
