@@ -268,7 +268,7 @@ int unsafeMain(int argc, char* argv[])
     for(auto item : diagram.data)
     {
         if (!item.isDataEntry())
-            continue;
+           continue;
 
         if (item.isArray())
         {
