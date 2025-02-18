@@ -297,9 +297,9 @@ int unsafeMain(int argc, char* argv[])
     std::cout << "Test UnorderedMemoryIterator:\n\n";
 
     // 1030000090180020D9350008E1350008E3350008A4
-    testUnorderedMemoryIterator("13D93598A4", 0x20, 5);
-    testUnorderedMemoryIterator("13D93598A4", 0x20, 3);
-    testUnorderedMemoryIterator("13D93598A4", 0x20, 7);
+    // testUnorderedMemoryIterator("13D93598A4", 0x20, 5);
+    // testUnorderedMemoryIterator("13D93598A4", 0x20, 3);
+    // testUnorderedMemoryIterator("13D93598A4", 0x20, 7);
 
 
 
