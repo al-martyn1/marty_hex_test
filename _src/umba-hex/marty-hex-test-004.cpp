@@ -178,48 +178,6 @@ void testSimpleSplitNameAndIndex(const std::string &fullName)
         std::cout << "  " << "Name: \"" << name << "\" with index " << idx << "\n";
 }
 
-inline 
-void testUnorderedMemoryIterator(const std::string &strDump, std::uint64_t baseAddr, std::uint64_t printLen)
-{
-    using namespace umba::tokenizer::marmaid::utils;
-
-    byte_vector_t bytes;
-    int res = isStringDumpString(strDump, &bytes);
-    if (res!=0)
-    {
-       std::cout << "testUnorderedMemoryIterator: invalid input dump";
-       return;
-    }
-
-    unordered_memory_t mem;
-
-    UnorderedMemoryIterator b = UnorderedMemoryIterator(&mem, baseAddr);
-    UnorderedMemoryIterator e = UnorderedMemoryIterator(&mem, baseAddr+printLen);
-
-    UnorderedMemoryIterator it = b;
-    for(auto byte: bytes)
-    {
-        *it++ = byte;
-    }
-
-    for(it=b; it!=e; ++it)
-    {
-        std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
-        try
-        {
-            auto byte    = std::uint8_t(*it);
-            auto byteStr = makeHexString(byte, 1);
-	            std::cout << byteStr << "\n";
-        }
-        catch(...)
-        {
-            std::cout << "XX\n";
-        }
-    }
-
-    std::cout << "\n";
-}
-
 
 int unsafeMain(int argc, char* argv[])
 {
@@ -295,11 +253,6 @@ int unsafeMain(int argc, char* argv[])
 
     std::cout << "\n\n";
     std::cout << "Test UnorderedMemoryIterator:\n\n";
-
-    // 1030000090180020D9350008E1350008E3350008A4
-    // testUnorderedMemoryIterator("13D93598A4", 0x20, 5);
-    // testUnorderedMemoryIterator("13D93598A4", 0x20, 3);
-    // testUnorderedMemoryIterator("13D93598A4", 0x20, 7);
 
 
 
