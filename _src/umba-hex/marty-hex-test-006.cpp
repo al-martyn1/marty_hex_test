@@ -164,7 +164,8 @@ void testMemoryIterator(const std::string &strDump, std::uint64_t baseAddr, std:
             auto byteStr = makeHexString(byte, 1);
 	            std::cout << byteStr << "\n";
         }
-        catch(...)
+        //catch(...)
+        catch(const unassigned_memory_access &)
         {
             std::cout << "XX\n";
         }
@@ -177,10 +178,11 @@ void testMemoryIterator(const std::string &strDump, std::uint64_t baseAddr, std:
 
 int unsafeMain(int argc, char* argv[])
 {
-
     using namespace marty::mem;
     using namespace marty::mem::utils;
     using namespace marty::mem::bits;
+    using namespace umba::tokenizer::marmaid;
+    using namespace umba::tokenizer::marmaid::utils;
 
     UMBA_USED(argc);
     UMBA_USED(argv);
@@ -190,8 +192,29 @@ int unsafeMain(int argc, char* argv[])
     testMemoryIterator("13D93598A4", 0x20, 3);
     testMemoryIterator("13D93598A4", 0x20, 7);
 
+    Memory mem;
 
+    mem.write(makeByteVectorFromDumpString("13D93350"  ), 0x020);
+    mem.write(makeByteVectorFromDumpString("020D9350"  ), 0x028);
+    mem.write(makeByteVectorFromDumpString("08E33508A4"), 0x040);
 
+    for(auto b : mem)
+    {
+        //std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
+        try
+        {
+            auto byte = b; // std::uint8_t(*it);
+            auto byteStr = makeHexString(byte, 1);
+	            std::cout << byteStr << "\n";
+        }
+        catch(const unassigned_memory_access &)
+        {
+            std::cout << "--\n"; // "XX\n";
+        }
+    }
+
+    std::cout << "\n";
+    
     return 0;
 }
 
