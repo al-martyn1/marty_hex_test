@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тестируем marty::mem::Memory
+    \brief Тестируем marty::mem::VirtualAddressMemoryIterator
  */
 
 
@@ -7,6 +7,7 @@
 #include "marty_hex/memory_fill_map.h"
 //
 #include "marty_mem/marty_mem.h"
+#include "marty_mem/virtual_address_memory_iterator.h"
 
 
 // Должна быть первой
@@ -188,22 +189,24 @@ int unsafeMain(int argc, char* argv[])
     UMBA_USED(argv);
 
     // 1030000090180020D9350008E1350008E3350008A4
-    testMemoryIterator("13D93598A4", 0x20, 5);
-    testMemoryIterator("13D93598A4", 0x20, 3);
-    testMemoryIterator("13D93598A4", 0x20, 7);
 
     Memory mem;
 
-    mem.write(makeByteVectorFromDumpString("13D93350"  ), 0x020);
-    mem.write(makeByteVectorFromDumpString("020D9350"  ), 0x028);
-    mem.write(makeByteVectorFromDumpString("08E33508A4"), 0x040);
+    mem.write(makeByteVectorFromDumpString("13 D9 33 50"   ), 0x020);
+    mem.write(makeByteVectorFromDumpString("02 0D 93 50"   ), 0x028);
+    mem.write(makeByteVectorFromDumpString("08 E3 35 08 A4"), 0x040);
 
-    for(auto b : mem)
+
+    std::cout << "Use LinearVirtualAddressMemoryIterator\n";
+
+    auto laIt  = makeLinearVirtualAddressMemoryIterator<byte_t>(&mem, uint64_t(0x020), true /* throwOnHitMiss */);
+    auto laEnd = laIt+marty::mem::ptrdiff_t(0x026);
+    for(; laIt!=laEnd; ++laIt)
     {
-        //std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
+        std::cout << std::string(laIt) << ": ";
         try
         {
-            auto byte = b; // std::uint8_t(*it);
+            auto byte = *laIt; // std::uint8_t(*it);
             auto byteStr = makeHexString(byte, 1);
 	        std::cout << byteStr << "\n";
         }
@@ -212,6 +215,64 @@ int unsafeMain(int argc, char* argv[])
             std::cout << "--\n"; // "XX\n";
         }
     }
+
+    {
+        std::cout << "\n\n";
+        std::cout << "Segment 0x0002\n";
+        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x02, 0, true /* throwOnHitMiss */);
+        auto laEnd = laIt+marty::mem::ptrdiff_t(0x0F);
+        for(; laIt!=laEnd; ++laIt)
+        {
+            std::cout << std::string(laIt) << ": ";
+            try
+            {
+                auto byte = *laIt; // std::uint8_t(*it);
+                auto byteStr = makeHexString(byte, 1);
+    	        std::cout << byteStr << "\n";
+            }
+            catch(const unassigned_memory_access &)
+            {
+                std::cout << "--\n"; // "XX\n";
+            }
+        }
+    }
+
+    {
+        std::cout << "\n\n";
+        std::cout << "Segment 0x0004\n";
+        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x04, 0, true /* throwOnHitMiss */);
+        auto laEnd = laIt+marty::mem::ptrdiff_t(0x06);
+        for(; laIt!=laEnd; ++laIt)
+        {
+            std::cout << std::string(laIt) << ": ";
+            try
+            {
+                auto byte = *laIt; // std::uint8_t(*it);
+                auto byteStr = makeHexString(byte, 1);
+    	        std::cout << byteStr << "\n";
+            }
+            catch(const unassigned_memory_access &)
+            {
+                std::cout << "--\n"; // "XX\n";
+            }
+        }
+    }
+
+
+    // for(auto b : mem)
+    // {
+    //     //std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
+    //     try
+    //     {
+    //         auto byte = b; // std::uint8_t(*it);
+    //         auto byteStr = makeHexString(byte, 1);
+	   //          std::cout << byteStr << "\n";
+    //     }
+    //     catch(const unassigned_memory_access &)
+    //     {
+    //         std::cout << "--\n"; // "XX\n";
+    //     }
+    // }
 
     std::cout << "\n";
     
