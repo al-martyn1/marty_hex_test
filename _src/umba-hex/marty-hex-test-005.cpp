@@ -1,5 +1,5 @@
 /*! \file
-    \brief Выводим мин-максы для разных интегральных типов - https://en.cppreference.com/w/cpp/types/climits. Также тестим различные утилитные функции.
+    \brief Выводим swap для байт
  */
 
 

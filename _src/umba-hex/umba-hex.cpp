@@ -3,6 +3,28 @@
  */
 
 
+/*
+
+Не очень понятно, как такое получилось, надо поковырять
+
+Input file: 'C:\work\github\umba-tools\marty_hex_test\tests\\hex\PAYLOADS_Common_Cam_Common.hex'
+Address Mode : LBA (Linear Base Address)
+Base Address : 08000000
+Start Address: 0800013F
+Address records:
+    Base  : 08000000
+    Entry : 080024C4
+    Base  : 080024C4
+    Entry : 080088F8
+Data blocks:
+    08000000-080024C3
+    08003000-080088F7
+
+
+И -1 - плохой инвалидный адрес, надо бы отдельный флаг сделать
+*/
+
+
 #include "marty_hex/marty_hex.h"
 #include "marty_hex/memory_fill_map.h"
 

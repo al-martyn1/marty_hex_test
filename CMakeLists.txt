@@ -112,3 +112,10 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 
+set(TARGET marty-hex-test-008)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-008.cpp" "${headers}")
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+
