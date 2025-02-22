@@ -1,5 +1,5 @@
 /*! \file
-    \brief Выводим swap для байт
+    \brief Тестим byteSwap и генерацию маски по количеству бит
  */
 
 
@@ -168,9 +168,9 @@ int unsafeMain(int argc, char* argv[])
 
     std::cout << "\n\n";
 
-    for(auto i=0; i!=64; ++i)
+    for(auto i=0; i<=64; ++i)
     {
-        std::cout << i << ": " << makeHexString(makeMask(i)) << "\n";
+        std::cout << "Mask for " << std::setw(2) << i << std::setw(0) << " bits: " << makeHexString(makeMask(i)) << "\n";
     }
 
     return 0;

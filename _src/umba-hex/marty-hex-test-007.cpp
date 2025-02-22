@@ -197,29 +197,32 @@ int unsafeMain(int argc, char* argv[])
     mem.write(makeByteVectorFromDumpString("08 E3 35 08 A4"), 0x040);
 
 
-    std::cout << "Use LinearVirtualAddressMemoryIterator\n";
-
-    auto laIt  = makeLinearVirtualAddressMemoryIterator<byte_t>(&mem, uint64_t(0x020), true /* throwOnHitMiss */);
-    auto laEnd = laIt+marty::mem::ptrdiff_t(0x026);
-    for(; laIt!=laEnd; ++laIt)
     {
-        std::cout << std::string(laIt) << ": ";
-        try
+        std::cout << "Use LinearVirtualAddressMemoryIterator\n\n";
+
+        auto laIt  = makeLinearVirtualAddressMemoryIterator<byte_t>(&mem, uint64_t(0x020), MemoryOptionFlags::errorOnAddressWrap | MemoryOptionFlags::errorOnHitMiss);
+        auto laEnd = laIt+marty::mem::ptrdiff_t(0x026);
+        for(; laIt!=laEnd; ++laIt)
         {
-            auto byte = *laIt; // std::uint8_t(*it);
-            auto byteStr = makeHexString(byte, 1);
-	        std::cout << byteStr << "\n";
-        }
-        catch(const unassigned_memory_access &)
-        {
-            std::cout << "--\n"; // "XX\n";
+            std::cout << std::string(laIt) << ": ";
+            try
+            {
+                auto byte = *laIt; // std::uint8_t(*it);
+                auto byteStr = makeHexString(byte, 1);
+    	        std::cout << byteStr << "\n";
+            }
+            catch(const unassigned_memory_access &)
+            {
+                std::cout << "--\n"; // "XX\n";
+            }
         }
     }
 
+    std::cout << "\n\nUse SegmentedVirtualAddressMemoryIterator\n";
     {
-        std::cout << "\n\n";
+        std::cout << "\n";
         std::cout << "Segment 0x0002\n";
-        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x02, 0, true /* throwOnHitMiss */);
+        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x02, 0, MemoryOptionFlags::errorOnAddressWrap | MemoryOptionFlags::errorOnHitMiss);
         auto laEnd = laIt+marty::mem::ptrdiff_t(0x0F);
         for(; laIt!=laEnd; ++laIt)
         {
@@ -238,9 +241,9 @@ int unsafeMain(int argc, char* argv[])
     }
 
     {
-        std::cout << "\n\n";
+        std::cout << "\n";
         std::cout << "Segment 0x0004\n";
-        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x04, 0, true /* throwOnHitMiss */);
+        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x04, 0, MemoryOptionFlags::errorOnAddressWrap | MemoryOptionFlags::errorOnHitMiss);
         auto laEnd = laIt+marty::mem::ptrdiff_t(0x06);
         for(; laIt!=laEnd; ++laIt)
         {
@@ -256,6 +259,19 @@ int unsafeMain(int argc, char* argv[])
                 std::cout << "--\n"; // "XX\n";
             }
         }
+    }
+
+    {
+        std::cout << "\n";
+        std::cout << "Segment 0x0004\n";
+        std::cout << "Try to test address/offset wrap\n";
+        std::cout << "Create begin 0x0000 offset iterator\n";
+        auto laIt  = makeSegmentedVirtualAddressMemoryIterator<byte_t>(&mem, 0x04, 0, MemoryOptionFlags::errorOnAddressWrap | MemoryOptionFlags::errorOnHitMiss);
+        std::cout << "Create end 0xFFFF offset iterator by adding 0xFFFF to begin iterator\n";
+        auto laEnd = laIt+marty::mem::ptrdiff_t(0xFFFF);
+        std::cout << "Try to increment end iterator\n";
+        ++laEnd;
+        std::cout << "Increment end iterator- Done\n";
     }
 
 
