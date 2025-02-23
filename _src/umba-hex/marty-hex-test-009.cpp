@@ -252,7 +252,8 @@ int unsafeMain(int argc, char* argv[])
         return 3;
     }
 
-    inputText = marty_cpp::normalizeCrLfToLf(inputText);
+    inputText  = marty_cpp::normalizeCrLfToLf(inputText);
+    valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
@@ -280,6 +281,22 @@ int unsafeMain(int argc, char* argv[])
 
     LOG_MSG << "\n\n";
  
+
+    auto valueLines = marty_cpp::simple_string_split(valuesText, '\n');
+    for(auto valueLine : valueLines)
+    {
+        valueLine = umba::string::trim_copy(valueLine);
+        if (valueLine.empty() || valueLine.front()==';' || valueLine.front()=='#')
+            continue;
+        auto p = marty_cpp::simple_string_split(valueLine, ':');
+        if (p.size()!=2 || p.front().empty() || p.back().empty())
+        {
+            LOG_ERR << "wrong setting value line\n";
+            return 5;
+        }
+
+    }
+
     #if 0
     LOG_MSG << "Diagram:\n\n";
     

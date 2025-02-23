@@ -5,7 +5,7 @@
 
 packet-beta %%#! byte-diagram
 
-%%#! org 0x1000:0xFFF0 : "Harware Info"
+%%#! org 0x1000:0xFFD0 : "Harware Info"
 
 %% char[16]  : "Device Name"                  %% 0-15
 0-15      : "Device Name"                  %% 0-15
