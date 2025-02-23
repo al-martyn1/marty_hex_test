@@ -166,6 +166,7 @@ int unsafeMain(int argc, char* argv[])
 
 
     std::string inputFilename;
+    std::string valuesFilename;
 
     auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
                                                         , CommandLineOptionCollector()
@@ -213,18 +214,35 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/27.txt";
         // inputFilename = rootPath + "tests/layouts/28.txt";
         // inputFilename = rootPath + "tests/layouts/29.txt";
+        valuesFilename = rootPath + "tests/layouts/22_values.txt";
 
     } // if (umba::isDebuggerPresent())
     else
     {
         if (argc>1)
             inputFilename = argv[1];
+        if (argc>2)
+            valuesFilename = argv[2];
     }
 
     if (inputFilename.empty())
     {
         LOG_ERR << "No input file taken\n";
         return 2;
+    }
+
+    if (valuesFilename.empty())
+    {
+        LOG_ERR << "No input file taken\n";
+        return 2;
+    }
+    
+
+    std::string valuesText;
+    if (!umba::filesys::readFile(valuesFilename, valuesText))
+    {
+        LOG_ERR << "failed to read file: '" << valuesFilename << "'\n";
+        return 3;
     }
 
     std::string inputText;
@@ -288,6 +306,9 @@ int unsafeMain(int argc, char* argv[])
         
     }
     #endif
+
+
+
 
     return 0;
 }

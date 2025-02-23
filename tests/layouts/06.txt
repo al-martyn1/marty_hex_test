@@ -1,6 +1,6 @@
 %% https://mermaid.js.org/syntax/packet.html#examples
-%%!byte-diagram
-%%#!bit-diagram
+%% !byte-diagram
+%% #!bit-diagram
 %%packet-beta
 0-15: "Source Port"  %%!BE
 16-31: "Destination Port" %%LE

@@ -1,11 +1,11 @@
 %% https://mermaid.js.org/syntax/packet.html#examples
 
-%%#! native le data 32 bits
+%%#! native le data 32 bits segment 16 bits segment-shift 4 bits offset 16 bits
 %% #! display-width 32
 
 packet-beta %%#! byte-diagram
 
-%%#! org 0x08000000 : "Harware Info"
+%%#! org 0x1000:0xFFF0 : "Harware Info"
 
 %% char[16]  : "Device Name"                  %% 0-15
 0-15      : "Device Name"                  %% 0-15
@@ -17,7 +17,8 @@ uint8     : "Manufactured Day"             %% 21
 uint16    : "Batch"                        %% 23
 24-31     : "Serial Number"
 
-%%#! org + 64 : "Software Info"
+%% #! org + 64 : "Software Info"
+%%#! org auto : "Software Info"
 
 uint16    : "Firmware Version Major"
 uint16    : "Firmware Version Minor"
