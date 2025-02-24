@@ -418,7 +418,7 @@ int unsafeMain(int argc, char* argv[])
 
                 // MemoryIteratorType createMemoryIterator(const PacketDiagramItemType &item, marty::mem::Memory *pMem = 0) const
                 fieldMemoryIt  = diagram.createMemoryIterator(entryItem, &mem, true /* errorOnWrappedAccess */ );
-                fieldMemoryIt += std::uint64_t(entryTypeSize*varArrayIndex);
+                fieldMemoryIt += std::int64_t(entryTypeSize*varArrayIndex);
                 
             }
             else // задаём поле, индекс массива не указан. Если размер типа - 1, и у нас задана строка или дамп - то нормас
@@ -473,7 +473,7 @@ int unsafeMain(int argc, char* argv[])
 
             for(auto b : bv)
             {
-                auto byte = std::uint8_t(*fieldMemoryIt); // b; // std::uint8_t(*it);
+                auto byte = b; // std::uint8_t(*fieldMemoryIt); // b; // std::uint8_t(*it);
                 auto byteStr = marty::mem::utils::makeHexString(byte, 1);
 
                 LOG_MSG << std::string(fieldMemoryIt) << ": " << byteStr << "\n";
