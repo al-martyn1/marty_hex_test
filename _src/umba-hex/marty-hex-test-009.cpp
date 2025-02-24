@@ -41,6 +41,11 @@
 
 #include "umba/debug_helpers.h"
 
+//
+#include "marty_mem/marty_mem.h"
+#include "marty_mem/virtual_address_memory_iterator.h"
+//
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -279,23 +284,248 @@ int unsafeMain(int argc, char* argv[])
     auto diagram = parser.getDiagram();
     umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, diagram );
 
+    using DiagramType = decltype(diagram);
+
+
     LOG_MSG << "\n\n";
+
+
+    marty::mem::MemoryTraits memTraits;
+
+    if (diagram.endianness==umba::tokenizer::marmaid::Endianness::littleEndian)
+       memTraits.endianness = marty::mem::Endianness::littleEndian;
+    else
+       memTraits.endianness = marty::mem::Endianness::bigEndian;
+
+
+    auto mem = marty::mem::Memory(memTraits);
+
+// struct MemoryTraits
+// {
+//     Endianness           endianness         = marty::mem::Endianness::littleEndian; // bigEndian
+//     MemoryOptionFlags    memoryOptionFlags  = MemoryOptionFlags::defaultFf;
+//  
+// }; // struct MemoryTraits
+
  
 
     auto valueLines = marty_cpp::simple_string_split(valuesText, '\n');
     for(auto valueLine : valueLines)
     {
         valueLine = umba::string::trim_copy(valueLine);
+
         if (valueLine.empty() || valueLine.front()==';' || valueLine.front()=='#')
             continue;
-        auto p = marty_cpp::simple_string_split(valueLine, ':');
-        if (p.size()!=2 || p.front().empty() || p.back().empty())
+
+        //  
+        // std::string cmd, varValue;
+        // if (!umba::string::split_to_pair(cmdValueLine, cmd, varValue, '='))
+        // {
+        //     LOG_ERR << "wrong setting value line\n";
+        //     return 5;
+        // }
+
+        std::string varFullName, value;
+        if (!umba::string::split_to_pair(valueLine, varFullName, value, ':'))
         {
             LOG_ERR << "wrong setting value line\n";
             return 5;
         }
 
+        varFullName = umba::string::trim_copy(varFullName);
+        value = umba::string::trim_copy(value);
+
+        std::string varName;
+        std::uint64_t varArrayIndex = 0;
+        bool doSetArrayItem = false;
+        UMBA_USED(doSetArrayItem);
+
+        // if (umba::string::is_quoted(varFullName, '\'', '\''))
+        //     umba::string::unquote(varFullName, '\'', '\'');
+        // else if (umba::string::is_quoted(varFullName, '\"', '\"'))
+        //     umba::string::unquote(varFullName, '\"', '\"');
+        umba::string::unquote(varFullName);
+
+
+        //! Отделяет индекс от имени поля. Простая реализация, без использования парсера. 0 - ошибка, 1 - есть индекс, -1 - индекса нет
+        int parseVarNameRes = umba::tokenizer::marmaid::utils::simpleSplitNameAndIndex(varFullName , &varName, &varArrayIndex);
+        if (parseVarNameRes==0)
+        {
+            LOG_ERR << "error in entry name ('" << varFullName << "')\n";
+            return 6;
+        }
+
+        if (parseVarNameRes>0)
+            doSetArrayItem = true;
+
+        std::size_t entryIdx = diagram.findEntryByName(varName);
+        if (entryIdx==std::size_t(-1))
+        {
+            LOG_ERR << "entry not foud: '" << varFullName << "'\n";
+            return 7;
+        }
+
+        const auto &entryItem = diagram.data[entryIdx];
+        if (!entryItem.isDataEntry())
+        {
+            LOG_ERR << "entry not a data entry: '" << varFullName << "'\n";
+            return 8;
+        }
+
+        // Endianness
+        auto entryEndianness = diagram.getItemEndianness(entryItem);
+        std::uint64_t entryTypeSize = entryItem.getTypeSize();
+
+        auto valueQuotType = umba::string::unquote(value);
+        // SimpleQuotesType unquote(StringType &s)
+
+        try
+        {
+            using namespace umba::tokenizer::marmaid::utils;
+
+            byte_vector_t bv;
+            typename DiagramType::MemoryIteratorType fieldMemoryIt;
+
+            if (doSetArrayItem)
+            {
+                if (!entryItem.isArray())
+                {
+                    LOG_ERR << "Try to set indexed variable, but data entry is not an array: '" << varFullName << "'\n";
+                    return 9;
+                }
+    
+                if (varArrayIndex>=entryItem.getArraySize())
+                {
+                    LOG_ERR << "Taken index is out of range: '" << varFullName << "'\n";
+                    return 10;
+                }
+    
+                if (valueQuotType==umba::string::SimpleQuotesType::notQuoted)
+                {
+                    bv = makeByteVectorFromIntStr(value, entryTypeSize, entryEndianness, entryItem.isSigned() /* , std::uint64_t *pParsedVal=0 */ );
+                }
+                else if (valueQuotType==umba::string::SimpleQuotesType::aposQuoted)
+                {
+                    bv = makeByteVectorFromCharLiteral(value, entryTypeSize, entryEndianness /* , std::uint64_t *pParsedVal=0 */ );
+                }
+                else // valueQuotType==umba::string::SimpleQuotesType::dblQuoted
+                {
+                    LOG_ERR << "Can't assign string to an array item: '" << varFullName << "'\n";
+                    return 11;
+                }
+
+                // TODO: !!! Получить итератор на элемент массива 
+
+                // MemoryIteratorType createMemoryIterator(const PacketDiagramItemType &item, marty::mem::Memory *pMem = 0) const
+                fieldMemoryIt  = diagram.createMemoryIterator(entryItem, &mem, true /* errorOnWrappedAccess */ );
+                fieldMemoryIt += std::uint64_t(entryTypeSize*varArrayIndex);
+                
+            }
+            else // задаём поле, индекс массива не указан. Если размер типа - 1, и у нас задана строка или дамп - то нормас
+            {
+                if (entryItem.isArray()) // поле объявлено как массив
+                {
+                    if (entryTypeSize!=1)
+                    {
+                        LOG_ERR << "Can't assign arrays of elements with size greater than 1: '" << varFullName << "'\n";
+                        return 12;
+                    }
+                   
+                    if (valueQuotType==umba::string::SimpleQuotesType::dblQuoted)
+                    {
+                        bv = makeByteVectorStringFromStringLiteral(value, entryItem.getArraySize(), entryItem.isAsciiZet());
+                    }
+                    else if (valueQuotType==umba::string::SimpleQuotesType::notQuoted)
+                    {
+                        bv = makeByteVectorStringFromDumpString(value, entryItem.getArraySize(), entryItem.isAsciiZet());
+                    }
+                    else
+                    {
+                        LOG_ERR << "Can't assign char literal to an string/array: '" << varFullName << "'\n";
+                        return 13;
+                    }
+
+                }
+                else // обычное поле
+                {
+                    if (valueQuotType==umba::string::SimpleQuotesType::notQuoted)
+                    {
+                        bv = makeByteVectorFromIntStr(value, entryTypeSize, entryEndianness, entryItem.isSigned() /* , std::uint64_t *pParsedVal=0 */ );
+                    }
+                    else if (valueQuotType==umba::string::SimpleQuotesType::aposQuoted)
+                    {
+                        bv = makeByteVectorFromCharLiteral(value, entryTypeSize, entryEndianness /* , std::uint64_t *pParsedVal=0 */ );
+                    }
+                    else // valueQuotType==umba::string::SimpleQuotesType::dblQuoted
+                    {
+                        LOG_ERR << "Can't assign string to simple field: '" << varFullName << "'\n";
+                        return 14;
+                    }
+                }
+
+                fieldMemoryIt  = diagram.createMemoryIterator(entryItem, &mem, true /* errorOnWrappedAccess */ );
+            }
+
+            // assign bv to memory here
+
+            LOG_MSG << "---\n";
+            LOG_MSG << "Set '" << varFullName << "' to " << value << "\n";
+
+            for(auto b : bv)
+            {
+                auto byte = std::uint8_t(*fieldMemoryIt); // b; // std::uint8_t(*it);
+                auto byteStr = marty::mem::utils::makeHexString(byte, 1);
+
+                LOG_MSG << std::string(fieldMemoryIt) << ": " << byteStr << "\n";
+
+                *fieldMemoryIt++ = b;
+            }
+
+        }
+        catch(const std::exception &e)
+        {
+            LOG_ERR << "Something goes wrong while setting field '" << varFullName << "'" << e.what() << "\n";
+            return 10;
+        }
+
+
+        // isArray()
+        //isAsciiZet()
+        //getArraySize()
+
+
+
+    } // end of commands 
+
+
+    // std::cout << 
+    LOG_MSG << "\n\n-----\nResult memory dump:\n";
+
+    // for(auto b : mem)
+    for(auto it=mem.begin(); it!=mem.end(); ++it)
+    {
+        //std::cout << makeHexString(std::uint64_t(it), 8) << ": ";
+        LOG_MSG << std::string(it) << ": ";
+        try
+        {
+            auto byte = std::uint8_t(*it); // b; // std::uint8_t(*it);
+            auto byteStr = marty::mem::utils::makeHexString(byte, 1);
+	        LOG_MSG << byteStr << "\n";
+        }
+        catch(const marty::mem::unassigned_memory_access &)
+        {
+            LOG_MSG << "--\n"; // "XX\n";
+        }
     }
+
+
+
+// umba::tokenizer::marmaid::utils::
+    // byte_vector_t makeByteVectorFromIntStr(const std::string &valStr, std::uint64_t size, Endianness endianness, bool bSigned, std::uint64_t *pParsedVal=0)
+    // byte_vector_t makeByteVectorFromCharLiteral(const std::string &valStr, std::uint64_t size, Endianness endianness, std::uint64_t *pParsedVal=0)
+    // byte_vector_t makeByteVectorFromStringLiteral(const std::string &valStr, std::uint64_t size, bool asciiZ=false)
+    // byte_vector_t makeByteVectorFromDumpString(const std::string &strDump)
+
 
     #if 0
     LOG_MSG << "Diagram:\n\n";

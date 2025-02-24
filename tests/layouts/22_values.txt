@@ -1,1 +1,32 @@
-Device Name: "ES4007"
+# 42 4D
+"SignatureLE" : 'BM'
+"SignatureBE" : 'BM'
+
+# 41 53 34 30 30 37 00 00 00 00 00 00 00 00 00 00
+Device Name:"AS4007"
+
+# 45 53 34 30 30 37
+'Device Name[0]':'E'
+
+Hardware Revision Major : 1
+Hardware Revision Minor : 3
+Manufactured Year : 2025
+Manufactured Month: 2
+Manufactured Day  : 18
+Batch: 1001
+"Serial Number" : 81 BE CA FE DE AD BE AF
+
+"Firmware Version Major" : 3
+"Firmware Version Minor" : 15
+"Firmware Version Build" : 1365
+
+
+# uint16    : "Build Year"
+# uint8     : "Build Month"
+# uint8     : "Build Day"
+# uint8     : "Build Hour"
+# uint8     : "Build Minute"
+# uint8     : "Build Second"
+# char[16]  : "Version Info String"    %%#! ascii-z %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
+# char[16]  : "Built Date Time String" %%#! ascii-z %% Must contain date and time the same as in integer fields above
+
