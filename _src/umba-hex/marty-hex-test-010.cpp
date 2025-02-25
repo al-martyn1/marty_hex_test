@@ -383,6 +383,8 @@ int unsafeMain(int argc, char* argv[])
     {
         LOG_MSG << "---\n";
 
+        LOG_MSG << "Section: " << p.first << " - " << p.second << "\n";
+
         auto it=diagram.createConstMemoryIterator(p.first , &mem, true);
         auto e =diagram.createConstMemoryIterator(p.second, &mem, true);
 
@@ -392,7 +394,7 @@ int unsafeMain(int argc, char* argv[])
             
             LOG_MSG << addrStr << ": ";
 
-            if (addrStr=="1000:0000")
+            if (addrStr=="1000:0000" || addrStr=="1000:FFFF")
             {
                 addrStr.clear();
             }
