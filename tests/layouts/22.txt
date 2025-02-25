@@ -5,7 +5,7 @@
 
 packet-beta %%#! byte-diagram
 
-%%#! org 0x1000:0xFFA0 : "Harware Info"
+%%#! org 0x1000:0xFFAC : "Harware Info"
 
 %% char[16]  : "Device Name"                  %% 0-15
 0-15      : "Device Name"                  %%#! ascii-z %% 0-15
@@ -19,8 +19,8 @@ uint16    : "Batch"                        %% 23
 uint16    : "SignatureLE"                  %%#! le
 uint16    : "SignatureBE"                  %%#! be
 
-%% #! org + 64 : "Software Info"
-%%#! org auto : "Software Info"
+%%#! org +40 : "Software Info"
+%% #! org auto : "Software Info"
 
 uint16    : "Firmware Version Major"
 uint16    : "Firmware Version Minor"
@@ -30,7 +30,7 @@ uint8     : "Build Month"
 uint8     : "Build Day"
 uint8     : "Build Hour"
 uint8     : "Build Minute"
-uint8     : "Build Second"
+%% uint8     : "Build Second"
 char[16]  : "Version Info String"    %%#! ascii-z %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
 char[16]  : "Built Date Time String" %%#! ascii-z %% Must contain date and time the same as in integer fields above
 

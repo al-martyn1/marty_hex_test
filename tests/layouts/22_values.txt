@@ -27,6 +27,7 @@ Batch: 1001
 # uint8     : "Build Hour"
 # uint8     : "Build Minute"
 # uint8     : "Build Second"
-# char[16]  : "Version Info String"    %%#! ascii-z %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
-# char[16]  : "Built Date Time String" %%#! ascii-z %% Must contain date and time the same as in integer fields above
+
+"Version Info String"    : "debug"
+"Built Date Time String" : "Feb 12, 2025"
 
