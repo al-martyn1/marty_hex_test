@@ -1,6 +1,7 @@
 @set TEST_NAME=marty-hex-test-002
 call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @echo FOUND_EXE: %FOUND_EXE%
+@if "%FOUND_EXE%"=="" @goto NOT_FOUND
 @set TEST_EXE=%FOUND_EXE%
 %TEST_EXE% "%~dp0\layouts\01.txt" > %TEST_NAME%-01.log 2>&1
 %TEST_EXE% "%~dp0\layouts\02.txt" > %TEST_NAME%-02.log 2>&1
@@ -41,3 +42,9 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @rem %TEST_EXE% "%~dp0\layouts\37.txt" > %TEST_NAME%-37.log 2>&1
 @rem %TEST_EXE% "%~dp0\layouts\38.txt" > %TEST_NAME%-38.log 2>&1
 @rem %TEST_EXE% "%~dp0\layouts\39.txt" > %TEST_NAME%-39.log 2>&1
+
+
+
+exit /B 0
+:NOT_FOUND
+@echo Test executable not found
