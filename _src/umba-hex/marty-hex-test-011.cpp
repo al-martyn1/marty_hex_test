@@ -242,6 +242,50 @@ int unsafeMain(int argc, char* argv[])
     }
 
     std::cout << "---------\n";
+    std::cout << "Strings rtrimmed:\n";
+    auto viewsVecTrimmed = umba::tokenizer::marmaid::utils::rtrim_copy(viewsVecNoLf);
+    for(auto sv: viewsVecTrimmed)
+    {
+        std::cout << "[" << sv << "]\n";
+    }
+
+    std::cout << "---------\n";
+    std::cout << "Front matter stripped:\n";
+    std::vector<std::string> frontMatter;
+    if (umba::tokenizer::marmaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter))
+    {
+        std::cout << "Front matter:\n";
+        for(auto sv: frontMatter)
+        {
+            std::cout << "[" << sv << "]\n";
+        }
+        std::cout << "---\n";
+        std::cout << "Text:\n";
+    }
+    for(auto sv: viewsVecTrimmed)
+    {
+        std::cout << "[" << sv << "]\n";
+    }
+
+    std::cout << "---------\n";
+    std::cout << "Style stripped:\n";
+    std::vector<std::string> style;
+    if (umba::tokenizer::marmaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style))
+    {
+        std::cout << "Style:\n";
+        for(auto sv: style)
+        {
+            std::cout << "[" << sv << "]\n";
+        }
+        std::cout << "---\n";
+        std::cout << "Text:\n";
+    }
+    for(auto sv: viewsVecTrimmed)
+    {
+        std::cout << "[" << sv << "]\n";
+    }
+
+    std::cout << "---------\n";
 
 
     return 0;
