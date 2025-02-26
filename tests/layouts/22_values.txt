@@ -8,13 +8,13 @@ Device Name:"AS4007"
 # 45 53 34 30 30 37
 'Device Name[0]':'E'
 
-Hardware Revision Major : 1
-Hardware Revision Minor : 3
-Manufactured Year : 2025
+Hardware Revision Major : 1   
+Hardware Revision Minor : 3    
+Manufactured Year : 2025      
 Manufactured Month: 2
 Manufactured Day  : 18
 Batch: 1001
-"Serial Number" : 81 BE CA FE DE AD BE AF
+"Serial Number" : 81 BE CA FE DE AD BE AF     
 
 "Firmware Version Major" : 3
 "Firmware Version Minor" : 15

@@ -1,3 +1,31 @@
+---
+Title: Test example
+---
+
+<style>
+#mermaid-22{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}
+#mermaid-22 .error-icon{fill:#552222;}
+#mermaid-22 .error-text{fill:#552222;stroke:#552222;}
+#mermaid-22 .edge-thickness-normal{stroke-width:1px;}
+#mermaid-22 .edge-thickness-thick{stroke-width:3.5px;}
+#mermaid-22 .edge-pattern-solid{stroke-dasharray:0;}
+#mermaid-22 .edge-thickness-invisible{stroke-width:0;fill:none;}
+#mermaid-22 .edge-pattern-dashed{stroke-dasharray:3;}
+#mermaid-22 .edge-pattern-dotted{stroke-dasharray:2;}
+#mermaid-22 .marker{fill:#333333;stroke:#333333;}
+#mermaid-22 .marker.cross{stroke:#333333;}
+#mermaid-22 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}
+#mermaid-22 p{margin:0;}
+#mermaid-22 .packetByte{font-size:10px;}
+#mermaid-22 .packetByte.start{fill:black;}
+#mermaid-22 .packetByte.end{fill:black;}
+#mermaid-22 .packetLabel{fill:black;font-size:12px;}
+#mermaid-22 .packetTitle{fill:black;font-size:14px;}
+#mermaid-22 .packetBlock{stroke:black;stroke-width:1;fill:#efefef;}
+#mermaid-22 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}
+</style>
+
+
 %% https://mermaid.js.org/syntax/packet.html#examples
 
 %%#! native le data 32 bits segment 16 bits segment-shift 4 bits offset 16 bits
@@ -5,7 +33,7 @@
 
 packet-beta %%#! byte-diagram
 
-%%#! org 0x1000:0xFFAC : "Harware Info"
+%%#! org 0x1000:0xFFAC : "Harware Info"           
 
 %% char[16]  : "Device Name"                  %% 0-15
 0-15      : "Device Name"                  %%#! ascii-z %% 0-15
@@ -16,7 +44,7 @@ uint8     : "Manufactured Month"           %% 20
 uint8     : "Manufactured Day"             %% 21
 uint16    : "Batch"                        %% 23
 24-31     : "Serial Number"
-uint16    : "SignatureLE"                  %%#! le
+uint16    : "SignatureLE"                  %%#! le        
 uint16    : "SignatureBE"                  %%#! be
 
 %%#! org +40 : "Software Info"

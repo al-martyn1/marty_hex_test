@@ -1,8 +1,9 @@
 @set TEST_NAME=marty-hex-test-008
 call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @echo FOUND_EXE: %FOUND_EXE%
+@set FOUND_EXE=%FOUND_EXE:"=%
 @if "%FOUND_EXE%"=="" @goto NOT_FOUND
-@set TEST_EXE=%FOUND_EXE%
+@set TEST_EXE="%FOUND_EXE%"
 
 @rem https://microsin.net/adminstuff/windows/for-in-bat-files.html
 
