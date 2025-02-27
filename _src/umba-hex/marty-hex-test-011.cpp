@@ -265,10 +265,8 @@ int unsafeMain(int argc, char* argv[])
         if (umba::tokenizer::marmaid::utils::simpleParseYamlFrontMatter(frontMatter, tags))
         {
             std::cout << "Front matter as tags:\n";
-            for(auto kv: tags)
-            {
+            for(auto &&kv: tags)
                 std::cout << kv.first << " : " << kv.second << "\n";
-            }
             std::cout << "---\n";
         }
 
@@ -299,7 +297,6 @@ int unsafeMain(int argc, char* argv[])
     }
 
     std::cout << "\n\n\n---------\n";
-
 
     return 0;
 }
