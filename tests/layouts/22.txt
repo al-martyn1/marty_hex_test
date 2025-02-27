@@ -1,5 +1,7 @@
 ---
 Title: Test example
+Options: ascii-z, little-endian
+
 ---
 
 <style>
@@ -28,6 +30,7 @@ Title: Test example
 
 %% https://mermaid.js.org/syntax/packet.html#examples
 
+%% linear 16 bits? Linear address size?
 %%#! native le data 32 bits segment 16 bits segment-shift 4 bits offset 16 bits
 %% #! display-width 32
 
