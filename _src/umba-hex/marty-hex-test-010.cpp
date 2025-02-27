@@ -258,6 +258,7 @@ int unsafeMain(int argc, char* argv[])
     }
 
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
+    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , 0 /* *pFmTags */ );
     valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();

@@ -1,5 +1,7 @@
 ---
-Title: Test example
+Title: Test 
+ example
+Options: a b c
 ---
 
 <style>

@@ -226,14 +226,14 @@ int unsafeMain(int argc, char* argv[])
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
 
     auto viewsVec = umba::tokenizer::marmaid::utils::makeTextStringViewsHelper(inputText);
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
     std::cout << "Strings with linefeeds:\n";
     for(auto sv: viewsVec)
     {
         std::cout << sv;
     }
 
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
     std::cout << "Strings without linefeeds:\n";
     auto viewsVecNoLf = umba::tokenizer::marmaid::utils::stripLinefeedsFromStringViewsVector(viewsVec);
     for(auto sv: viewsVecNoLf)
@@ -241,7 +241,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "[" << sv << "]\n";
     }
 
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
     std::cout << "Strings rtrimmed:\n";
     auto viewsVecTrimmed = umba::tokenizer::marmaid::utils::rtrim_copy(viewsVecNoLf);
     for(auto sv: viewsVecTrimmed)
@@ -249,7 +249,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "[" << sv << "]\n";
     }
 
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
     std::cout << "Front matter stripped:\n";
     std::vector<std::string> frontMatter;
     if (umba::tokenizer::marmaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter))
@@ -260,14 +260,27 @@ int unsafeMain(int argc, char* argv[])
             std::cout << "[" << sv << "]\n";
         }
         std::cout << "---\n";
+
+        std::unordered_map<std::string, std::string> tags;
+        if (umba::tokenizer::marmaid::utils::simpleParseYamlFrontMatter(frontMatter, tags))
+        {
+            std::cout << "Front matter as tags:\n";
+            for(auto kv: tags)
+            {
+                std::cout << kv.first << " : " << kv.second << "\n";
+            }
+            std::cout << "---\n";
+        }
+
         std::cout << "Text:\n";
     }
+
     for(auto sv: viewsVecTrimmed)
     {
         std::cout << "[" << sv << "]\n";
     }
 
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
     std::cout << "Style stripped:\n";
     std::vector<std::string> style;
     if (umba::tokenizer::marmaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style))
@@ -285,7 +298,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "[" << sv << "]\n";
     }
 
-    std::cout << "---------\n";
+    std::cout << "\n\n\n---------\n";
 
 
     return 0;
