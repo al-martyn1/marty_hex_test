@@ -235,7 +235,8 @@ int unsafeMain(int argc, char* argv[])
     }
 
     inputText = marty_cpp::normalizeCrLfToLf(inputText);
-    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , 0 /* *pFmTags */ );
+    std::unordered_map<std::string, std::string> frontMatterTags;
+    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
@@ -245,6 +246,7 @@ int unsafeMain(int argc, char* argv[])
                                                                  , pFilenameSet->addFile(inputFilename)
                                                                  );
     ParserType parser = ParserType(pTokenCollection, pParserLog);
+    parser.setDiagramTitle(frontMatterTags["title"]);
 
     if (!parser.parse())
     {
