@@ -7,6 +7,6 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 %TEST_EXE% > %TEST_NAME%-01.log 2>&1
 
 
-exit /B 0
+@exit /B 0
 :NOT_FOUND
 @echo Test executable not found
