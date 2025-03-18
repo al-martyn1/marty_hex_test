@@ -260,6 +260,16 @@ int unsafeMain(int argc, char* argv[])
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
     valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
+
+    auto viewsVec = umba::tokenizer::marmaid::utils::makeTextStringViewsHelper(inputText);
+    auto viewsVecNoLf = umba::tokenizer::marmaid::utils::stripLinefeedsFromStringViewsVector(viewsVec);
+    auto viewsVecTrimmed = umba::tokenizer::marmaid::utils::rtrim_copy(viewsVecNoLf);
+    std::vector<std::string> frontMatter;
+    umba::tokenizer::marmaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter);
+    std::vector<std::string> style;
+    umba::tokenizer::marmaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style);
+
+
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
                                                                  , umba::tokenizer::marmaid::PacketDiagramTokenizerConfigurator()

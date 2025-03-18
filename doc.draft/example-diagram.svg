@@ -1,4 +1,6 @@
-<svg id="mermaid-22" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1026 423" style="max-width: 1026px;" role="graphics-document document" aria-roledescription="packet">
+<svg id="mermaid-22" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1026 423" 
+     style="max-width: 1026px;" role="graphics-document document" aria-roledescription="packet"
+     >
 <style>
 #mermaid-22{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}
 #mermaid-22 .error-icon{fill:#552222;}
@@ -29,7 +31,7 @@
 <text x="508" y="13" class="packetByte end" dominant-baseline="auto" text-anchor="end">15</text>
 
 <rect x="513" y="15" width="507" height="32" class="packetBlock"></rect>
-<text x="766.5" y="31" class="packetLabel" dominant-baseline="middle" text-anchor="middle">Destination Port</text>
+<text x="766.5" y="31" class="packetLabel" dominant-baseline="middle" text-anchor="middle">Destination Port | Destination Port | Destination Port | Destination Port</text>
 <text x="513" y="13" class="packetByte start" dominant-baseline="auto" text-anchor="start">16</text>
 <text x="1020" y="13" class="packetByte end" dominant-baseline="auto" text-anchor="end">31</text>
 </g>

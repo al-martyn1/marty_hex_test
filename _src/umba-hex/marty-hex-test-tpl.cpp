@@ -105,12 +105,12 @@ UMBA_APP_MAIN()
     }
     catch(const std::exception& e)
     {
-        std::cout << "Error: " << e.what() << "\n";
+        LOG_ERR << e.what() << "\n";
         return 1;
     }
     catch(...)
     {
-        std::cout << "Unknown error\n";
+        LOG_ERR << "unknown error\n";
         return 2;
     }
 

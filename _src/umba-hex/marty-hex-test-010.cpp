@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тестим чтение диаграм, и заполнение их данными - код вынесен в отдельную функцию
+    \brief Тестим чтение диаграм, и заполнение их данными - код установки данных выделен в отдельную функцию memorySetVariable, добавлено вырезание YAML/style отдельной функцией prepareTextForDiagramParsing
  */
 
 
@@ -412,39 +412,6 @@ int unsafeMain(int argc, char* argv[])
             }
         }
     }
-
-
-
-
-    #if 0
-    LOG_MSG << "Diagram:\n\n";
-    
-    // Пока поэлементно выводим, а массивы на одной строке
-    for(auto item : diagram.data)
-    {
-        if (!item.isDataEntry())
-           continue;
-
-        if (item.isArray())
-        {
-            for(auto i=0u; i!=item.getArraySize(); ++i)
-            {
-                auto str = umba::tokenizer::marmaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
-                std::cout << str;
-            }
-            std::cout << "\n";
-        }
-        else
-        {
-            auto str = umba::tokenizer::marmaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
-            std::cout << str << "\n";
-        }
-        
-    }
-    #endif
-
-
-
 
     return 0;
 }
