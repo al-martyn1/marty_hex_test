@@ -23,7 +23,9 @@ packet-beta
 112-127: "Window"
 128-143: "Checksum"
 144-159: "Urgent Pointer"
-160-175: "(Options and Padding)" %% 191
-176-255: "Data (variable length)" %% 255 247
+%% 160-175: "(Options and Padding)" %% 191
+%% 176-255: "Data (variable length)" %% 255 247
+160-189: "(Options and Padding)" %% 191
+190-255: "Data (variable length)" %% 255 247
 ```
 
