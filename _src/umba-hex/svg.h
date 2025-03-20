@@ -36,20 +36,7 @@ using byte_vector_t = umba::tokenizer::mermaid::utils::byte_vector_t;
 inline
 byte_vector_t makeNumbersVector(std::uint8_t from, std::uint8_t to)
 {
-    byte_vector_t bv;
-
-    if (from>to)
-    {
-        for(; from>=to; --from)
-            bv.push_back(from);
-    }
-    else
-    {
-        for(; from<=to; ++from)
-            bv.push_back(from);
-    }
-
-    return bv;
+    return umba::tokenizer::mermaid::utils::makeByteVector(from, to);
 }
 
 //----------------------------------------------------------------------------
