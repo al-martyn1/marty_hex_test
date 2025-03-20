@@ -26,6 +26,7 @@ git clone --recurse-submodules %PREFIX%/marty_cpp.git               %~dp0\marty_
 git clone --recurse-submodules %PREFIX%/marty_decimal.git           %~dp0\marty_decimal
 git clone --recurse-submodules %PREFIX%/marty_hex.git               %~dp0\marty_hex
 git clone --recurse-submodules %PREFIX%/marty_mem.git               %~dp0\marty_mem
+git clone --recurse-submodules %PREFIX%/marty_svg.git               %~dp0\marty_svg
 @rem git clone --recurse-submodules %PREFIX%/marty_pugixml.git           %~dp0\marty_pugixml
 @rem git clone --recurse-submodules %PREFIX%/extern_pugixml.git          %~dp0\pugixml
 @rem git clone --recurse-submodules %PREFIX%/marty_tr.git                %~dp0\marty_tr

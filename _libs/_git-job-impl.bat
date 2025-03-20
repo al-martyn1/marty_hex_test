@@ -3,6 +3,7 @@ call :DO_GIT_JOB %1 %~dp0\marty_cpp
 call :DO_GIT_JOB %1 %~dp0\marty_decimal
 call :DO_GIT_JOB %1 %~dp0\marty_hex
 call :DO_GIT_JOB %1 %~dp0\marty_mem
+call :DO_GIT_JOB %1 %~dp0\marty_svg
 @rem call :DO_GIT_JOB %1 %~dp0\marty_pugixml
 @rem call :DO_GIT_JOB %1 %~dp0\pugixml
 @rem call :DO_GIT_JOB %1 %~dp0\marty_tr
