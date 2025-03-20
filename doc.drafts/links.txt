@@ -1,3 +1,4 @@
 GitHub - Working with non-code files (render 3D files) - https://docs.github.com/en/repositories/working-with-files/using-files/working-with-non-code-files#3d-file-viewer
 Поддерживаемые языки разметки - https://docs.github.com/en/repositories/working-with-files/using-files/working-with-non-code-files#rendering-differences-in-prose-documents
 Диаграммы - https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams
+Mermaid packet diagram - https://mermaid.js.org/syntax/packet.html

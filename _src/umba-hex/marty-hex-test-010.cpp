@@ -26,10 +26,10 @@
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
 // #include "umba/tokenizer/parser_base.h"
-// #include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+// #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -112,11 +112,11 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
 
 
 
-//#define MARMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
+//#define MERMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
 
 //struct
 
@@ -157,13 +157,13 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
     using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::marmaid::PacketDiagramParser<TokenizerType>;
+    using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
 
 
     auto pFilenameSet = std::make_shared<FilenameSetType>();
@@ -258,12 +258,12 @@ int unsafeMain(int argc, char* argv[])
     }
 
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
-    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , 0 /* *pFmTags */ );
+    umba::tokenizer::mermaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , 0 /* *pFmTags */ );
     valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::marmaid::PacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::mermaid::PacketDiagramTokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)
@@ -281,9 +281,9 @@ int unsafeMain(int argc, char* argv[])
     LOG_MSG << "C/C++ structs:\n\n";
 
 
-    //umba::tokenizer::marmaid::cpp::simplePrintCppPacketDiagram( std::cout, parser.getDiagram() );
+    //umba::tokenizer::mermaid::cpp::simplePrintCppPacketDiagram( std::cout, parser.getDiagram() );
     auto diagram = parser.getDiagram();
-    umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, diagram );
+    umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
 
     using DiagramType = decltype(diagram);
 
@@ -293,7 +293,7 @@ int unsafeMain(int argc, char* argv[])
 
     marty::mem::MemoryTraits memTraits;
 
-    if (diagram.endianness==umba::tokenizer::marmaid::Endianness::littleEndian)
+    if (diagram.endianness==umba::tokenizer::mermaid::Endianness::littleEndian)
        memTraits.endianness = marty::mem::Endianness::littleEndian;
     else
        memTraits.endianness = marty::mem::Endianness::bigEndian;
@@ -328,7 +328,7 @@ int unsafeMain(int argc, char* argv[])
         try
         {
             LOG_MSG << "---\n";
-            umba::tokenizer::marmaid::utils::memorySetVariable(diagram, mem, varFullName, value
+            umba::tokenizer::mermaid::utils::memorySetVariable(diagram, mem, varFullName, value
                                                               , [&](const std::string &str)
                                                                 {
                                                                     LOG_MSG << str << "\n";

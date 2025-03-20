@@ -67,7 +67,7 @@
 #include "umba/shellapi.h"
 
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser_types.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser_types.h"
 
 //
 // #include "utils.h"
@@ -123,7 +123,7 @@ UMBA_APP_MAIN()
 inline 
 void testSingleSize(std::uint64_t size)
 {
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
 
     std::cout << "Size: " << size << "";
     auto immp = getMinMaxValuesSigned(size);
@@ -143,7 +143,7 @@ void testSingleSize(std::uint64_t size)
 inline
 void testDumpString(const std::string &strDump)
 {
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
 
     byte_vector_t bytes;
     int res = isStringDumpString(strDump, &bytes);
@@ -162,7 +162,7 @@ inline
 void testSimpleSplitNameAndIndex(const std::string &fullName)
 {
     //! Отделяет индекс от имени поля. Простая реализация, без использования парсера. 0 - ошибка, 1 - есть индекс, -1 - индекса нет
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
 
     std::string name;
     std::uint64_t idx;
@@ -187,7 +187,7 @@ int unsafeMain(int argc, char* argv[])
 
     // https://en.cppreference.com/w/cpp/types/climits
 
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
 
     constexpr int w = 14;
     std::cout << std::left;

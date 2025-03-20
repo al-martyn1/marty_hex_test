@@ -67,7 +67,7 @@
 #include "umba/shellapi.h"
 
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser_types.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser_types.h"
 
 //
 // #include "utils.h"
@@ -124,9 +124,9 @@ UMBA_APP_MAIN()
 
 
 inline
-void testSingle(std::uint64_t val, std::uint64_t size, umba::tokenizer::marmaid::Endianness endianness, bool forceFit=true)
+void testSingle(std::uint64_t val, std::uint64_t size, umba::tokenizer::mermaid::Endianness endianness, bool forceFit=true)
 {
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
 
     if (size>8)
         size = 8;
@@ -147,10 +147,10 @@ void testSingle(std::uint64_t val, std::uint64_t size, umba::tokenizer::marmaid:
 }
 
 inline
-void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_list<umba::tokenizer::marmaid::Endianness> endiannessList , bool forceFit=true)
+void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_list<umba::tokenizer::mermaid::Endianness> endiannessList , bool forceFit=true)
 {
-    using namespace umba::tokenizer::marmaid;
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid;
+    using namespace umba::tokenizer::mermaid::utils;
     for(auto e : endiannessList)
     {
         if ((e==Endianness::leMiddleEndian || e==Endianness::beMiddleEndian) && size!=4 && size!=8)
@@ -160,7 +160,7 @@ void testEndiannessList(std::uint64_t val, std::uint64_t size, std::initializer_
 }
 
 inline
-void testEndiannessListSizeList( std::uint64_t val, std::initializer_list<std::uint64_t> sizeList, std::initializer_list<umba::tokenizer::marmaid::Endianness> endiannessList , bool forceFit=true)
+void testEndiannessListSizeList( std::uint64_t val, std::initializer_list<std::uint64_t> sizeList, std::initializer_list<umba::tokenizer::mermaid::Endianness> endiannessList , bool forceFit=true)
 {
     for(auto s : sizeList)
     {
@@ -177,8 +177,8 @@ int unsafeMain(int argc, char* argv[])
     UMBA_USED(argc);
     UMBA_USED(argv);
 
-    using namespace umba::tokenizer::marmaid;
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid;
+    using namespace umba::tokenizer::mermaid::utils;
 
     // Нумерация от старшего к младшему
     // std::uint64_t val = 0x1122334455667788ull;

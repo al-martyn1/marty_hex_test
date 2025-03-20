@@ -70,7 +70,7 @@
 #include "umba/shellapi.h"
 
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser_types.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser_types.h"
 
 //
 // #include "utils.h"
@@ -132,7 +132,7 @@ UMBA_APP_MAIN()
 inline 
 void testMemoryIterator(const std::string &strDump, std::uint64_t baseAddr, std::uint64_t printLen)
 {
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid::utils;
     using namespace marty::mem;
 
     byte_vector_t bytes;
@@ -182,8 +182,8 @@ int unsafeMain(int argc, char* argv[])
     using namespace marty::mem;
     using namespace marty::mem::utils;
     using namespace marty::mem::bits;
-    using namespace umba::tokenizer::marmaid;
-    using namespace umba::tokenizer::marmaid::utils;
+    using namespace umba::tokenizer::mermaid;
+    using namespace umba::tokenizer::mermaid::utils;
 
     UMBA_USED(argc);
     UMBA_USED(argv);

@@ -26,10 +26,10 @@
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
 // #include "umba/tokenizer/parser_base.h"
-// #include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+// #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -112,11 +112,11 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
 
 
 
-//#define MARMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
+//#define MERMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
 
 //struct
 
@@ -225,7 +225,7 @@ int unsafeMain(int argc, char* argv[])
 
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
 
-    auto viewsVec = umba::tokenizer::marmaid::utils::makeTextStringViewsHelper(inputText);
+    auto viewsVec = umba::tokenizer::mermaid::utils::makeTextStringViewsHelper(inputText);
     std::cout << "\n\n\n---------\n";
     std::cout << "Strings with linefeeds:\n";
     for(auto sv: viewsVec)
@@ -235,7 +235,7 @@ int unsafeMain(int argc, char* argv[])
 
     std::cout << "\n\n\n---------\n";
     std::cout << "Strings without linefeeds:\n";
-    auto viewsVecNoLf = umba::tokenizer::marmaid::utils::stripLinefeedsFromStringViewsVector(viewsVec);
+    auto viewsVecNoLf = umba::tokenizer::mermaid::utils::stripLinefeedsFromStringViewsVector(viewsVec);
     for(auto sv: viewsVecNoLf)
     {
         std::cout << "[" << sv << "]\n";
@@ -243,7 +243,7 @@ int unsafeMain(int argc, char* argv[])
 
     std::cout << "\n\n\n---------\n";
     std::cout << "Strings rtrimmed:\n";
-    auto viewsVecTrimmed = umba::tokenizer::marmaid::utils::rtrim_copy(viewsVecNoLf);
+    auto viewsVecTrimmed = umba::tokenizer::mermaid::utils::rtrim_copy(viewsVecNoLf);
     for(auto sv: viewsVecTrimmed)
     {
         std::cout << "[" << sv << "]\n";
@@ -252,7 +252,7 @@ int unsafeMain(int argc, char* argv[])
     std::cout << "\n\n\n---------\n";
     std::cout << "Front matter stripped:\n";
     std::vector<std::string> frontMatter;
-    if (umba::tokenizer::marmaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter))
+    if (umba::tokenizer::mermaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter))
     {
         std::cout << "Front matter:\n";
         for(auto sv: frontMatter)
@@ -262,7 +262,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "---\n";
 
         std::unordered_map<std::string, std::string> tags;
-        if (umba::tokenizer::marmaid::utils::simpleParseYamlFrontMatter(frontMatter, tags))
+        if (umba::tokenizer::mermaid::utils::simpleParseYamlFrontMatter(frontMatter, tags))
         {
             std::cout << "Front matter as tags:\n";
             for(auto &&kv: tags)
@@ -281,7 +281,7 @@ int unsafeMain(int argc, char* argv[])
     std::cout << "\n\n\n---------\n";
     std::cout << "Style stripped:\n";
     std::vector<std::string> style;
-    if (umba::tokenizer::marmaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style))
+    if (umba::tokenizer::mermaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style))
     {
         std::cout << "Style:\n";
         for(auto sv: style)

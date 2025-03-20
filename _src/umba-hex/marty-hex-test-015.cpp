@@ -26,10 +26,10 @@
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
 // #include "umba/tokenizer/parser_base.h"
-// #include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+// #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -117,11 +117,11 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
 
 
 
-//#define MARMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
+//#define MERMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
 
 //struct
 
@@ -163,13 +163,13 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
     using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::marmaid::PacketDiagramParser<TokenizerType>;
+    using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
 
 
     auto pFilenameSet = std::make_shared<FilenameSetType>();
@@ -268,12 +268,12 @@ int unsafeMain(int argc, char* argv[])
     std::vector<std::string> styleStr;
 
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
-    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, &styleStr, &tags);
+    umba::tokenizer::mermaid::utils::prepareTextForDiagramParsing(inputText, &styleStr, &tags);
     // valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::marmaid::PacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::mermaid::PacketDiagramTokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)
@@ -293,7 +293,7 @@ int unsafeMain(int argc, char* argv[])
 
 
     auto diagram = parser.getDiagram();
-    //umba::tokenizer::marmaid::cpp::printCppPacketDiagram( std::cout, diagram );
+    //umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
 
     using DiagramType           = decltype(diagram);
     using PacketDiagramItemType = typename DiagramType::PacketDiagramItemType;
@@ -306,7 +306,7 @@ int unsafeMain(int argc, char* argv[])
     // Endianness           endianness         = marty::mem::Endianness::littleEndian; // bigEndian
     // MemoryOptionFlags    memoryOptionFlags  = MemoryOptionFlags::defaultFf;
 
-    if (diagram.endianness==umba::tokenizer::marmaid::Endianness::littleEndian)
+    if (diagram.endianness==umba::tokenizer::mermaid::Endianness::littleEndian)
        memTraits.endianness = marty::mem::Endianness::littleEndian;
     else
        memTraits.endianness = marty::mem::Endianness::bigEndian;
@@ -314,6 +314,9 @@ int unsafeMain(int argc, char* argv[])
     auto mem = marty::mem::Memory(memTraits);
 
     std::uint64_t numberedBytes8 = 0x0706050403020100ull;
+
+
+    // Заполняем mem маркерными байтами
 
     for(const auto &item: diagram.data)
     {
@@ -326,7 +329,7 @@ int unsafeMain(int argc, char* argv[])
         std::uint64_t valueMask = marty::mem::bits::makeByteSizeMask(int(entryTypeSize));
         std::uint64_t value     = std::uint64_t(numberedBytes8&valueMask);
 
-        auto entryBv = umba::tokenizer::marmaid::utils::makeByteVector(value, entryTypeSize, entryEndianness);
+        auto entryBv = umba::tokenizer::mermaid::utils::makeByteVector(value, entryTypeSize, entryEndianness);
 
         // mem.write(IntType val, uint64_t addr, MemoryAccessRights requestedMode=MemoryAccessRights::write)
         // memorySetVariable
@@ -356,16 +359,9 @@ int unsafeMain(int argc, char* argv[])
                     ++memIt;
                 }
             }
-
-            // auto addr  = std::uint64_t(memIt);
-            // std::uint64_t sz = item.getArraySize();
-            // for(std::uint64_t i=0ull; i!=sz; ++i)
-            // {
-            //     auto addrIdx = addr+entryTypeSize*i;
-            //     mem.write(value, addrIdx);
-            // }
         }
-        else
+
+        else // (!item.isArray())
         {
             auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
             std::size_t byteIdx = std::size_t(-1);
@@ -387,66 +383,9 @@ int unsafeMain(int argc, char* argv[])
                 ++memIt;
             }
 
-
-            // auto addr  = std::uint64_t(memIt);
-            // mem.write(value, addr);
         }
     }
 
-
-    #if 0
-    auto valueLines = marty_cpp::simple_string_split(valuesText, '\n');
-    for(auto valueLine : valueLines)
-    {
-        valueLine = umba::string::trim_copy(valueLine);
-
-        if (valueLine.empty() || valueLine.front()==';' || valueLine.front()=='#')
-            continue;
-
-        std::string varFullName, value;
-        if (!umba::string::split_to_pair(valueLine, varFullName, value, ':'))
-        {
-            LOG_ERR << "wrong setting value line\n";
-            return 5;
-        }
-
-        try
-        {
-            LOG_MSG << "---\n";
-            umba::tokenizer::marmaid::utils::memorySetVariable(diagram, mem, varFullName, value
-                                                              , [&](const std::string &str)
-                                                                {
-                                                                    LOG_MSG << str << "\n";
-                                                                }
-                                                              );
-        }
-        catch(const std::exception &e)
-        {
-            LOG_ERR << e.what() << "\n";
-            return 6;
-        }
-
-    } // end of commands 
-    #endif
-
-    #if 0
-    LOG_MSG << "\n\n-----\nSections (Full):\n";
-    auto sectionPairs = diagram.findAllSections(true /* fullSections */ );
-    for(auto p : sectionPairs)
-    {
-        LOG_MSG << p.first << " - " << p.second << "\n";
-    }
-
-    LOG_MSG << "\n\n-----\nSections (No fill):\n";
-    sectionPairs = diagram.findAllSections(false /* !fullSections */ );
-    for(auto p : sectionPairs)
-    {
-        LOG_MSG << p.first << " - " << p.second << "\n";
-    }
-    #endif
-
-    ByteDiagramViewData diagramViewData;
-    diagramViewData.title = diagram.title;
 
     // bool optShowSigleByteNumbers = false;
 
@@ -460,18 +399,50 @@ int unsafeMain(int argc, char* argv[])
        Также мы хотим, отображать это не по типам, а по именам полей.
        Также заводим set<std::string>, но туда добавляем после превращения в ID.
 
+       Это для задания типа для ренджей
        range-as-chars
        range-as-bytes
 
-     */
+       Это для задания оптом блоков для ренджей/массивов
+       uint-bytes-as-block
+       int-bytes-as-block
+       char-bytes-as-block
 
-// #define MARMAID_PACKET_DIAGRAM_TOKEN_TYPE_CHAR                 (MARMAID_TOKEN_SET_TYPES|MARMAID_PRIM_TYPE_FLAG_INTEGRAL|0x001u|MARMAID_PRIM_TYPE_FLAG_CHAR)
-// #define MARMAID_PACKET_DIAGRAM_TOKEN_TYPE_INT8                 (MARMAID_TOKEN_SET_TYPES|MARMAID_PRIM_TYPE_FLAG_INTEGRAL|0x001u)
-// #define MARMAID_PACKET_DIAGRAM_TOKEN_TYPE_UINT8                (MARMAID_TOKEN_SET_TYPES|MARMAID_PRIM_TYPE_FLAG_INTEGRAL|0x001u|MARMAID_PRIM_TYPE_FLAG_UNSIGNED)
-    
+       Для задания индивидуально есть опция block
+
+     */
 
     // static std::string makeFieldId(const std::string &t)
 
+    auto updateEntryAddress = [&]( ByteDiagramViewSectionData &sectionData
+                                   , ByteDiagramViewEntry       &viewEntry
+                                   , ByteDiagramViewEntryData   &entryData
+                                   , auto                       memIt
+                                   )
+    {
+        if (sectionData.addressStr.empty())
+        {
+            sectionData.linearAddress = std::uint64_t(memIt);
+            sectionData.addressStr    = std::string(memIt);
+        }
+
+        if (viewEntry.addressStr.empty())
+        {
+            viewEntry.linearAddress   = std::uint64_t(memIt);
+            viewEntry.addressStr      = std::string(memIt);
+        }
+
+        if (entryData.addressStr.empty())
+        {
+            entryData.linearAddress   = std::uint64_t(memIt);
+            entryData.addressStr      = std::string(memIt);
+        }
+    };
+
+    // Тут мы готовим данные для рисования
+
+    ByteDiagramViewData diagramViewData;
+    diagramViewData.title = diagram.title;
 
     auto sectionPairs = diagram.findAllSections(true /* fullSections */ );
     for(auto p : sectionPairs)
@@ -495,7 +466,17 @@ int unsafeMain(int argc, char* argv[])
                 ByteDiagramViewEntry viewEntry;
                 viewEntry.name = item.text;
 
-                if (item.isArray())
+                if (item.isBlock())
+                {
+                    auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
+                    auto sz    = item.getTypeFieldSize();
+                    ByteDiagramViewEntryData entryData;
+                    entryData.bytes = umba::tokenizer::mermaid::utils::makeByteVector(sz);
+                    viewEntry.data.emplace_back(entryData);
+                    updateEntryAddress(sectionData, viewEntry, entryData, memIt);
+                }
+
+                else if (item.isArray())
                 {
                     viewEntry.bArray = true;
                     auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
@@ -507,24 +488,7 @@ int unsafeMain(int argc, char* argv[])
                         std::uint64_t byteIdx = 0;
                         for(; byteIdx!=entryTypeSize; ++byteIdx)
                         {
-                            if (sectionData.addressStr.empty())
-                            {
-                                sectionData.linearAddress = std::uint64_t(memIt);
-                                sectionData.addressStr    = std::string(memIt);
-                            }
-
-                            if (viewEntry.addressStr.empty())
-                            {
-                                viewEntry.linearAddress   = std::uint64_t(memIt);
-                                viewEntry.addressStr      = std::string(memIt);
-                            }
-
-                            if (entryData.addressStr.empty())
-                            {
-                                entryData.linearAddress   = std::uint64_t(memIt);
-                                entryData.addressStr      = std::string(memIt);
-                            }
-                            
+                            updateEntryAddress(sectionData, viewEntry, entryData, memIt);
                             entryData.bytes.push_back(*memIt);
                             ++memIt;
                         }
@@ -532,6 +496,7 @@ int unsafeMain(int argc, char* argv[])
                         viewEntry.data.emplace_back(entryData);
                     }
                 }
+
                 else
                 {
                     auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
@@ -539,24 +504,7 @@ int unsafeMain(int argc, char* argv[])
                     std::uint64_t byteIdx = 0;
                     for(; byteIdx!=entryTypeSize; ++byteIdx)
                     {
-                        if (sectionData.addressStr.empty())
-                        {
-                            sectionData.linearAddress = std::uint64_t(memIt);
-                            sectionData.addressStr    = std::string(memIt);
-                        }
-
-                        if (viewEntry.addressStr.empty())
-                        {
-                            viewEntry.linearAddress   = std::uint64_t(memIt);
-                            viewEntry.addressStr      = std::string(memIt);
-                        }
-
-                        if (entryData.addressStr.empty())
-                        {
-                            entryData.linearAddress   = std::uint64_t(memIt);
-                            entryData.addressStr      = std::string(memIt);
-                        }
-
+                        updateEntryAddress(sectionData, viewEntry, entryData, memIt);
                         entryData.bytes.push_back(*memIt);
                         ++memIt;
                     }
@@ -583,8 +531,9 @@ int unsafeMain(int argc, char* argv[])
     const int displayWidth        = diagram.getDisplayWidth();
     const int labelMaxWidth       = 96;
     const int byteStartPosX       = 0; // 128;
-    const int byteWidth           = 1024 / displayWidth;
     const int byteLineHeight      = 24;
+    const int byteHeight          = 20;
+    const int byteWidth           = 1024 / displayWidth;
     const int textLineHeight      = 18;
     const int numLabelsLineHeight = 18;
     const int lineGap             = 8;
@@ -619,12 +568,12 @@ int unsafeMain(int argc, char* argv[])
                 , "mdppPacketDiaBlock"
                 , "mdppPacketDiaBlock"
                 , "mdppPacketDiaByteNumberLabel"
-                , byteWidth, byteLineHeight // byte width, line height
+                , byteWidth, byteHeight // byte width, line height
                 , r, indent   // r, indent (in byte for its label)
                 , first, last // range
-                , diagram.testDisplayOption(umba::tokenizer::marmaid::PacketDiagramDisplayOptions::byteNumbers)
-                , diagram.testDisplayOption(umba::tokenizer::marmaid::PacketDiagramDisplayOptions::singleByteNumbers)
-                , diagram.testDisplayOption(umba::tokenizer::marmaid::PacketDiagramDisplayOptions::splitWordsToBytes)
+                , diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptions::byteNumbers)
+                , diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptions::singleByteNumbers)
+                , diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptions::splitWordsToBytes)
                 );
     };
 

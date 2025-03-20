@@ -5,7 +5,7 @@
 
 /*
 
-Destination Port - 16 символов. На бит диаграмме marmaid packet diagram (MPD)занимает немного места внутри прямоугольника пакета.
+Destination Port - 16 символов. На бит диаграмме mermaid packet diagram (MPD)занимает немного места внутри прямоугольника пакета.
 MPD в ширину 32 бита. "Destination Port" 4 раза влезает в половину ширины.
 
 Hardware Revision Minor - 23 символа
@@ -79,10 +79,10 @@ Consistent Overhead Byte Stuffing (COBS) - https://blog.mbedded.ninja/programmin
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
 // #include "umba/tokenizer/parser_base.h"
-// #include "umba/tokenizer/lang/marmaid_packet_diagram.h"
+// #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -165,11 +165,11 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/marmaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
 
 
 
-//#define MARMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
+//#define MERMAID_TYPE_UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST UMBA_TOKENIZER_TOKEN_KEYWORD_SET1_FIRST
 
 //struct
 
@@ -213,13 +213,13 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
     using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::marmaid::PacketDiagramParser<TokenizerType>;
+    using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
 
 
     auto pFilenameSet = std::make_shared<FilenameSetType>();
@@ -297,11 +297,11 @@ int unsafeMain(int argc, char* argv[])
 
     inputText = marty_cpp::normalizeCrLfToLf(inputText);
     std::unordered_map<std::string, std::string> frontMatterTags;
-    umba::tokenizer::marmaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
+    umba::tokenizer::mermaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::marmaid::makeTokenizerBuilderPacketDiagram<char>();
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::marmaid::PacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::mermaid::PacketDiagramTokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)

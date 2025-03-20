@@ -32,8 +32,8 @@ Options: a b c ascii-z, little-endian
 
 %% linear 16 bits? Linear address size?
 %%#! native le data 32 bits segment 16 bits segment-shift 4 bits offset 16 bits
-%%#! display-width 16
-%%#! display-options none byte-numbers no-split-words-to-bytes
+%%#! display-width 64
+%%#! display-options none byte-numbers split-words-to-bytes
 %% single-byte-numbers 
 %% single-byte-numbers no-single-byte-numbers single-byte-block-numbers no-single-byte-block-numbers byte-numbers no-byte-numbers split-words-to-bytes no-split-words-to-bytes
 
@@ -45,7 +45,7 @@ packet-beta %%#! byte-diagram
 %%#! org 0x1000:0xFF40  : "Harware Info"           
 
 %% char[16]  : "Device Name"                  %% 0-15
-0-13      : "Device Name"                  %%#! ascii-z %% 0-13
+0-13      : "Device Name"                  %%#! ascii-z block %% 0-13
 uint64    : "uint64"
 uint8     : "Hardware Revision Major"      %%
 uint8     : "Hardware Revision Minor"      %%
@@ -53,9 +53,9 @@ uint16    : "Manufactured Year"            %%
 uint8     : "Manufactured Month"           %%
 uint8     : "Manufactured Day"             %%
 uint16    : "Batch"                        %%
-%% 24-31     : "Serial Number"
-30-37     : "Serial Number"
-%% 26-33     : "Serial Number"
+%% 24-31     : "Serial Number"                %%#! block
+30-37     : "Serial Number"                %%#! block
+%% 26-33     : "Serial Number"                %%#! block
 uint16    : "SignatureLE"                  %%#! le        
 uint16    : "SignatureBE"                  %%#! be
 
@@ -72,8 +72,8 @@ uint8     : "Build Day"
 uint8     : "Build Hour"
 uint8     : "Build Minute"
 %% uint8     : "Build Second"
-char[16]  : "Version Info String"    %%#! ascii-z %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
-char[16]  : "Built Date Time String" %%#! ascii-z %% Must contain date and time the same as in integer fields above
+char[16]  : "Version Info String"    %%#! ascii-z block %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
+char[16]  : "Built Date Time String" %%#! ascii-z block %% Must contain date and time the same as in integer fields above
 char      : "signleChar1"
 uint64    : "LeTest" %%#! le
 char      : "signleChar2"
@@ -84,4 +84,4 @@ char      : "signleChar4"
 uint64[4] : "Test Array[4] of uint64"
 char      : "signleChar5"
 uint32[8] : "Test Array[8] of uint32"
-char[7]   : "fill"
+char[7]   : "fill"                       %%#! block
