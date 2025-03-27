@@ -95,7 +95,7 @@ Consistent Overhead Byte Stuffing (COBS) - https://blog.mbedded.ninja/programmin
 #include "umba/debug_helpers.h"
 
 // 
-#include "svg.h"
+#include "mermaid_svg.h"
 //
 
 #include <iostream>
@@ -326,25 +326,27 @@ int unsafeMain(int argc, char* argv[])
     byte_vector_t bv4 = makeNumbersVector(0, 3);
     byte_vector_t bv8 = makeNumbersVector(0, 7);
  
-    drawWord( oss, bv4, 50, 250
-            , "mdppPacketDiaBlock"
-            , "mdppPacketDiaBlock"
-            , "mdppPacketDiaByteNumberLabel"
-            , 32, 26 // byte width, line height
-            , 8, 4   // r, indent
-            , 0, 3   // range
-            );
+    mermaid::svg::drawWord( oss, bv4, 50, 250
+                          , "mdppPacketDiaBlock"
+                          , "mdppPacketDiaBlock"
+                          , "mdppPacketDiaByteNumberLabel"
+                          , 32, 26 // byte width, line height
+                          , 8, 4   // r, indent
+                          , false
+                          , 0, 3   // range
+                          );
 
-    drawWord( oss, bv8, 50, 300
-            , "mdppPacketDiaBlock"
-            , "mdppPacketDiaBlock"
-            , "mdppPacketDiaByteNumberLabel"
-            , 32, 26 // byte width, line height
-            , 8, 4   // r, indent
-            , 4, 7   // range
-            );
+    mermaid::svg::drawWord( oss, bv8, 50, 300
+                          , "mdppPacketDiaBlock"
+                          , "mdppPacketDiaBlock"
+                          , "mdppPacketDiaByteNumberLabel"
+                          , 32, 26 // byte width, line height
+                          , 8, 4   // r, indent
+                          , false
+                          , 4, 7   // range
+                          );
 
-    writeSvg(std::cout, 1026, 423, style, oss.str());
+    mermaid::svg::writeSvg(std::cout, 1026, 423, style, oss.str());
 
  
     return 0;

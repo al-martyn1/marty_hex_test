@@ -14,11 +14,17 @@ const char *style = "\
 .marker.cross{stroke:#333333;}\n\
 svg{font-family:\"Bitstream Vera Sans Mono\",\"Cascadia Code\",\"Computer Modern Mono/Typewriter\",\"Computer Modern Mono\",\"Courier New\",Cousine,Consolas,Courier,\"Fira Code\";}\n\
 p{margin:0;}\n\
+/*paint-order=\"fill\"*/\n\
+.mdppArrayBoundsLine{stroke:black;stroke-width:1;fill:#efefef;stroke-linejoin:miter;fill-opacity: 0}\n\
 .mdppPacketDiaByte{font-size:10px;}\n\
 .mdppPacketDiaByte.start{fill:black;}\n\
 .mdppPacketDiaByte.end{fill:black;}\n\
 .mdppPacketDiaByteNumberLabel{fill:black;font-size:12px;}\n\
-.mdppPacketDiaLabel   {fill:black;font-size:12px;font-family:\"trebuchet ms\",verdana,arial,sans-serif;}\n\
+.mdppPacketDiaByteNumberLabelSmall{fill:black;font-size:9px;}\n\
+.mdppPacketDiaIndexLabel{fill:black;font-size:10px;}\n\
+.mdppPacketDiaIndexLabelSmall{fill:black;font-size:8px;}\n\
+.mdppPacketDiaLabel     {fill:black;font-size:14px;font-family:\"trebuchet ms\",verdana,arial,sans-serif;}\n\
+.mdppPacketDiaLabelSmall{fill:black;font-size:12px;font-family:\"trebuchet ms\",verdana,arial,sans-serif;}\n\
 .mdppPacketDiaOrgLabel{fill:black;font-size:16px;font-family:\"trebuchet ms\",verdana,arial,sans-serif;}\n\
 .mdppPacketDiaTitle   {fill:black;font-size:18px;font-family:\"trebuchet ms\",verdana,arial,sans-serif;}\n\
 .mdppPacketDiaBlock{stroke:black;stroke-width:1;fill:#efefef;stroke-linejoin:miter;}\n\

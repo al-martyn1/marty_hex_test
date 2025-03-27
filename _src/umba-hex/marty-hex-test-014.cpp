@@ -47,7 +47,7 @@
 //
 
 // 
-#include "svg.h"
+#include "mermaid_svg.h"
 //
 
 #include <iostream>
@@ -445,14 +445,14 @@ int unsafeMain(int argc, char* argv[])
     }
     #endif
 
-    ByteDiagramViewData diagramViewData;
+    mermaid::svg::ByteDiagramViewData diagramViewData;
     diagramViewData.title = diagram.title;
 
 
     auto sectionPairs = diagram.findAllSections(true /* fullSections */ );
     for(auto p : sectionPairs)
     {
-        ByteDiagramViewSectionData sectionData;
+        mermaid::svg::ByteDiagramViewSectionData sectionData;
 
         std::size_t idx    = p.first;
         std::size_t idxEnd = p.second; // +1;
@@ -468,7 +468,7 @@ int unsafeMain(int argc, char* argv[])
             {
                 std::uint64_t entryTypeSize = item.getTypeSize();
 
-                ByteDiagramViewEntry viewEntry;
+                mermaid::svg::ByteDiagramViewEntry viewEntry;
                 viewEntry.name = item.text;
 
                 if (item.isArray())
@@ -479,7 +479,7 @@ int unsafeMain(int argc, char* argv[])
                     for(std::uint64_t i=0ull; i!=arraySz; ++i)
                     {
                         //byte_vector_t bv;
-                        ByteDiagramViewEntryData entryData;
+                        mermaid::svg::ByteDiagramViewEntryData entryData;
                         std::uint64_t byteIdx = 0;
                         for(; byteIdx!=entryTypeSize; ++byteIdx)
                         {
@@ -511,7 +511,7 @@ int unsafeMain(int argc, char* argv[])
                 else
                 {
                     auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
-                    ByteDiagramViewEntryData entryData;
+                    mermaid::svg::ByteDiagramViewEntryData entryData;
                     std::uint64_t byteIdx = 0;
                     for(; byteIdx!=entryTypeSize; ++byteIdx)
                     {
@@ -591,19 +591,21 @@ int unsafeMain(int argc, char* argv[])
         checkMaxXY();
     };
 
-    auto drawByteEntryFirstLast = [&](const ByteDiagramViewEntryData &entryData, std::size_t first, std::size_t last)// -> bool
+    auto drawByteEntryFirstLast = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData, std::size_t first, std::size_t last)// -> bool
     {
-        drawWord( oss, entryData.bytes, left+byteStartPosX+curLineBytePos*byteWidth, posY
-                , "mdppPacketDiaBlock"
-                , "mdppPacketDiaBlock"
-                , "mdppPacketDiaByteNumberLabel"
-                , byteWidth, byteLineHeight // byte width, line height
-                , r, indent   // r, indent (in byte for its label)
-                , first, last // range
-                );
+        mermaid::svg::drawWord( oss, entryData.bytes, left+byteStartPosX+curLineBytePos*byteWidth, posY
+                              , "mdppPacketDiaBlock"
+                              , "mdppPacketDiaBlock"
+                              , "mdppPacketDiaByteNumberLabel"
+                              , byteWidth, byteLineHeight // byte width, line height
+                              , r, indent   // r, indent (in byte for its label)
+                              , entryData.bFlatByteArray
+                              , first, last // range
+                              , diagram.displayOptionFlags
+                              );
     };
 
-    auto drawByteEntry = [&](const ByteDiagramViewEntryData &entryData)// -> bool
+    auto drawByteEntry = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData)// -> bool
     {
         if (curLineBytePos>=displayWidth)
             incPosY();
@@ -659,7 +661,7 @@ int unsafeMain(int argc, char* argv[])
 
     if (!diagramViewData.title.empty())
     {
-        // drawText( oss, left+posX, posY, diagramViewData.title, "mdppPacketDiaTitle");
+        // mermaid::svg::drawText( oss, left+posX, posY, diagramViewData.title, "mdppPacketDiaTitle");
         // posY += 24;
         checkMaxXY();
     }
@@ -700,7 +702,7 @@ int unsafeMain(int argc, char* argv[])
 
             if (!secStr.empty())
             {
-                drawText( oss, left /* +posX */ , posY, secStr, "mdppPacketDiaOrgLabel", "hanging" /* "middle" */, "start" /* hAlign */);
+                mermaid::svg::drawText( oss, left /* +posX */ , posY, secStr, "mdppPacketDiaOrgLabel", "hanging" /* "middle" */, "start" /* hAlign */);
                 posY += textLineHeight;
                 posY += lineGap;
                 checkMaxXY();
@@ -725,7 +727,7 @@ int unsafeMain(int argc, char* argv[])
     // const int byteWidth           = 1024 / displayWidth;
     // const int byteLineHeight      = 24;
             
-            //drawText( oss, left+posX, posY+lineHeight/2, entry.name, "mdppPacketDiaLabel", "middle");
+            //mermaid::svg::drawText( oss, left+posX, posY+lineHeight/2, entry.name, "mdppPacketDiaLabel", "middle");
 
             if (!entry.bArray)
             {
@@ -782,7 +784,7 @@ int unsafeMain(int argc, char* argv[])
 
 // .mdppPacketDiaLabel{fill:black;font-size:12px;}\n\
 
-// drawWord( oss, bv4, 50, 250
+// mermaid::svg::drawWord( oss, bv4, 50, 250
 //         , "mdppPacketDiaBlock"
 //         , "mdppPacketDiaBlock"
 //         , "mdppPacketDiaByteNumberLabel"
@@ -793,7 +795,7 @@ int unsafeMain(int argc, char* argv[])
 
 
 // template<typename StreamType>
-// void drawText( StreamType &oss
+// void mermaid::svg::drawText( StreamType &oss
 //              , int  posX, int posY
 //              , const std::string &text
 //              , const std::string &textClass
@@ -802,7 +804,7 @@ int unsafeMain(int argc, char* argv[])
 //              )
 
 
-    writeSvg(std::cout, maxPosX, maxPosY, style, oss.str());
+    mermaid::svg::writeSvg(std::cout, maxPosX, maxPosY, style, oss.str());
 
 
 

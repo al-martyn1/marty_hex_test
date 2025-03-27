@@ -1,5 +1,5 @@
 /*! \file
-    \brief Рисуем диаграмму и добавляем опции
+    \brief Выносим подготовку к рисованию диаграммы в либу
  */
 
 
@@ -302,119 +302,11 @@ int unsafeMain(int argc, char* argv[])
     LOG_MSG << "\n\n";
 
 
-    marty::mem::MemoryTraits memTraits;
-    // Endianness           endianness         = marty::mem::Endianness::littleEndian; // bigEndian
-    // MemoryOptionFlags    memoryOptionFlags  = MemoryOptionFlags::defaultFf;
-
-    if (diagram.endianness==umba::tokenizer::mermaid::Endianness::littleEndian)
-       memTraits.endianness = marty::mem::Endianness::littleEndian;
-    else
-       memTraits.endianness = marty::mem::Endianness::bigEndian;
-
-    auto mem = marty::mem::Memory(memTraits);
-
-    std::uint64_t numberedBytes8 = 0x0706050403020100ull;
+    auto mem = marty::mem::Memory(diagram.createMemTraits());
+    diagram.fillMemWithByteOrderMarkers(mem);
 
 
-    // Заполняем mem маркерными байтами
-
-    for(const auto &item: diagram.data)
-    {
-        if (!item.isDataEntry())
-             continue;
-
-        auto entryEndianness = diagram.getItemEndianness(item);
-        std::uint64_t entryTypeSize = item.getTypeSize();
-
-        std::uint64_t valueMask = marty::mem::bits::makeByteSizeMask(int(entryTypeSize));
-        std::uint64_t value     = std::uint64_t(numberedBytes8&valueMask);
-
-        auto entryBv = umba::tokenizer::mermaid::utils::makeByteVector(value, entryTypeSize, entryEndianness);
-
-        // mem.write(IntType val, uint64_t addr, MemoryAccessRights requestedMode=MemoryAccessRights::write)
-        // memorySetVariable
-
-        if (item.isArray())
-        {
-            auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
-            std::uint64_t arraySz = item.getArraySize();
-            for(std::uint64_t i=0ull; i!=arraySz; ++i)
-            {
-                std::size_t byteIdx = std::size_t(-1);
-                for(auto byte : entryBv)
-                {
-                    ++byteIdx;
-
-                    try
-                    {
-                        *memIt = byte;
-                    }
-                    catch(const marty::mem::address_wrap &e)
-                    {
-                        std::string msg = e.what();
-                        msg += ": field name: '" + item.text + "', index: " + std::to_string(i) + " (byte index: " + std::to_string(byteIdx) + ")";
-                        throw marty::mem::address_wrap(msg);
-                    }
-
-                    ++memIt;
-                }
-            }
-        }
-
-        else // (!item.isArray())
-        {
-            auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
-            std::size_t byteIdx = std::size_t(-1);
-            for(auto byte : entryBv)
-            {
-                ++byteIdx;
-
-                try
-                {
-                    *memIt = byte;
-                }
-                catch(const marty::mem::address_wrap &e)
-                {
-                    std::string msg = e.what();
-                    msg += ": field name: '" + item.text + "' (byte index: " + std::to_string(byteIdx) + ")";
-                    throw marty::mem::address_wrap(msg);
-                }
-
-                ++memIt;
-            }
-
-        }
-    }
-
-
-    // bool optShowSigleByteNumbers = false;
-
-    /* Мы хотим что? 
-
-       Мы хотим, чтобы некоторые типы данных (только однобайтовые)
-       отображались не в виде отдельных байт, а в виде единого блока.
-
-       Заводим set<unsigned> для проверки.
-
-       Также мы хотим, отображать это не по типам, а по именам полей.
-       Также заводим set<std::string>, но туда добавляем после превращения в ID.
-
-       Это для задания типа для ренджей
-       range-as-chars
-       range-as-bytes
-
-       Это для задания оптом блоков для ренджей/массивов
-       uint-bytes-as-block
-       int-bytes-as-block
-       char-bytes-as-block
-
-       Для задания индивидуально есть опция block
-
-     */
-
-    // static std::string makeFieldId(const std::string &t)
-
-    auto updateEntryAddress = [&]( mermaid::svg::ByteDiagramViewSectionData &sectionData
+    auto updateEntryAddress = [&]( mermaid::svg::ByteDiagramViewSectionData  &sectionData
                                  , mermaid::svg::ByteDiagramViewEntry       &viewEntry
                                  , mermaid::svg::ByteDiagramViewEntryData   &entryData
                                  , auto                                                         memIt
@@ -439,6 +331,7 @@ int unsafeMain(int argc, char* argv[])
         }
     };
 
+
     // Тут мы готовим данные для рисования
 
     mermaid::svg::ByteDiagramViewData diagramViewData;
@@ -448,6 +341,7 @@ int unsafeMain(int argc, char* argv[])
     for(auto p : sectionPairs)
     {
         mermaid::svg::ByteDiagramViewSectionData sectionData;
+        std::uint64_t   idxCur = 0; // От начала текущего ORG
 
         std::size_t idx    = p.first;
         std::size_t idxEnd = p.second; // +1;
@@ -473,8 +367,13 @@ int unsafeMain(int argc, char* argv[])
                     mermaid::svg::ByteDiagramViewEntryData entryData;
                     entryData.bytes = umba::tokenizer::mermaid::utils::makeByteVector(sz);
                     entryData.bFlatByteArray = true;
+                    entryData.idxFirst       = idxCur;
+                    entryData.arrayFirst = true;
+                    entryData.arrayLast  = true;
                     viewEntry.data.emplace_back(entryData);
                     updateEntryAddress(sectionData, viewEntry, entryData, memIt);
+
+                    idxCur += std::size_t(item.getFieldSize());
                 }
 
                 else if (item.isArray())
@@ -494,11 +393,15 @@ int unsafeMain(int argc, char* argv[])
                             ++memIt;
                         }
 
+                        entryData.idxFirst   = idxCur;
+                        entryData.arrayFirst = (i==0 ? true : false);
+                        entryData.arrayLast  = (i==(arraySz-1) ? true : false);
                         viewEntry.data.emplace_back(entryData);
+                        idxCur += std::size_t(item.getTypeSize());
                     }
                 }
 
-                else
+                else // не блок из байт и не массив
                 {
                     auto memIt = diagram.createMemoryIterator(item, &mem, true /* !errorOnWrappedAccess */ );
                     mermaid::svg::ByteDiagramViewEntryData entryData;
@@ -510,7 +413,9 @@ int unsafeMain(int argc, char* argv[])
                         ++memIt;
                     }
 
+                    entryData.idxFirst       = idxCur;
                     viewEntry.data.emplace_back(entryData);
+                    idxCur += std::size_t(item.getFieldSize());
                 }
 
                 sectionData.entries.emplace_back(viewEntry);
@@ -521,64 +426,113 @@ int unsafeMain(int argc, char* argv[])
     }
 
 
-    std::stringstream oss;
+    // Константы/параметры отрисовки
 
-    // int posX = 0;
-    int posY = 0; // 16; // Делаем отступ по вертикали, чтобы title влезал - но если title сверху, и 0 - если снизу
-    int maxPosX = 1024;
+    const bool showTitle  = diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptionFlags::showTitle);
+    const bool titleOnTop = diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptionFlags::titleOnTop);
+
+    const int titleLineHeight  = 28;
+    int posY = 0; // (!diagram.title.empty() && showTitle && titleOnTop) ? titleLineHeight : 0; // 16; // Делаем отступ по вертикали, чтобы title влезал - но если title сверху, и 0 - если снизу
+            
+    int sizeX   = 1024;
+    int maxPosX = sizeX-1;
     int maxPosY = 0;
     int curLineBytePos = 0; // displayWidth
 
-    const int displayWidth        = diagram.getDisplayWidth();
-    const int labelMaxWidth       = 96;
-    const int byteStartPosX       = 0; // 128;
-    const int byteLineHeight      = 24;
-    const int byteHeight          = 20;
-    const int byteWidth           = 1024 / displayWidth;
-    const int textLineHeight      = 18;
-    const int numLabelsLineHeight = 18;
-    const int lineGap             = 8;
-    const int secGap              = 16;
-    const int r                   = 6;
-    const int indent              = 4;
-    const int left                = 0; // 8;
+    const int displayWidth          = diagram.getDisplayWidth();
+    const int labelMaxWidth         = 96;
+    const int byteStartPosX         = 0; // 128;
+    const int byteLineHeight        = 24;
+    const int byteHeight            = 20;
+    const int byteWidth             = sizeX / displayWidth;
+    const int fieldLabelAvgSymbolWidth = 6;
+    const int footnoteLeft          = 15;
+    const int footnoteTextLeft      = footnoteLeft + 4*fieldLabelAvgSymbolWidth + fieldLabelAvgSymbolWidth/2;
+    //const int textLineHeight      = 18;
+    const int fieldLabelLineHeight  = 16;
+    const int indexLabelLineHeight  = 12;
+    //const int numLabelsLineHeight   = 18;
+    const int lineGap               = 8;
+    const int secGap                = 16;
+    const int r                     = 6;
+    const int indent                = 4;
+    const int left                  = 0; // 8;
+    const bool bSmallFonts          = displayWidth>32;
+    const bool showFieldIndex       = (diagram.displayOptionFlags&umba::tokenizer::mermaid::PacketDiagramDisplayOptionFlags::showFieldIndex)!=0;
+    const bool showFieldLabels      = (diagram.displayOptionFlags&umba::tokenizer::mermaid::PacketDiagramDisplayOptionFlags::showFieldLabels)!=0;
+
 
     auto checkMaxXY = [&]( /* std::size_t nBytes */ )
     {
-        maxPosY  = std::max(maxPosY, posY + byteLineHeight      +
-                                            textLineHeight      + 
-                                            numLabelsLineHeight + 1
-                           );
+        auto forTestPosY = posY + byteLineHeight + 4;
+        if (showFieldIndex)
+        {
+            forTestPosY += indexLabelLineHeight;
+        }
+        if (showFieldLabels)
+        {
+            forTestPosY += fieldLabelLineHeight;
+        }
+
+        maxPosY  = std::max(maxPosY, forTestPosY);
 
         maxPosY += (maxPosY&1) ? 1 : 0;
+    };
+
+    auto plainIncPosY =[&]()
+    {
+        posY += byteLineHeight     ;
+        if (showFieldIndex)
+           posY += indexLabelLineHeight;
+        if (showFieldLabels)
+           posY += fieldLabelLineHeight;
     };
 
     auto incPosY = [&]()
     {
         curLineBytePos = 0;
-        posY += byteLineHeight     ;
+        plainIncPosY();
         // posY += textLineHeight     ;
         // posY += numLabelsLineHeight;
         posY += lineGap;
         checkMaxXY();
     };
 
-    auto drawByteEntryFirstLast = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData, std::size_t first, std::size_t last)// -> bool
+    auto drawByteEntryFirstLast = [&]( auto &oss
+                                     , const mermaid::svg::ByteDiagramViewEntryData &entryData
+                                     , std::size_t first, std::size_t last
+                                     , int *pCalculatedPosLeft  = 0
+                                     , int *pCalculatedPosRight = 0
+                                     )// -> bool
     {
-        mermaid::svg::drawWord( oss, entryData.bytes, left+byteStartPosX+curLineBytePos*byteWidth, posY
+        mermaid::svg::drawWord( oss, entryData, entryData.idxFirst, left+byteStartPosX+curLineBytePos*byteWidth, posY
                               , "mdppPacketDiaBlock"
                               , "mdppPacketDiaBlock"
-                              , "mdppPacketDiaByteNumberLabel"
+                              , "mdppArrayBoundsLine"
+                              , bSmallFonts ? "mdppPacketDiaByteNumberLabelSmall" : "mdppPacketDiaByteNumberLabel"
+                              , bSmallFonts ? "mdppPacketDiaIndexLabelSmall"      : "mdppPacketDiaIndexLabel"
+                              //, bSmallFonts ? "mdppPacketDiaLabelSmall"           : "mdppPacketDiaLabel"
+                              //, label
                               , byteWidth, byteHeight // byte width, line height
+                              //, indexLabelLineHeight
                               , r, indent   // r, indent (in byte for its label)
                               , entryData.bFlatByteArray
+                              , bSmallFonts
                               , first, last // range
                               , diagram.displayOptionFlags
+                              , pCalculatedPosLeft, pCalculatedPosRight
                               );
     };
 
-    auto drawByteEntry = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData)// -> bool
+
+    std::vector<mermaid::svg::ByteDiagramFieldLabelDrawInfo> fieldLabelsDrawInfo;
+
+    auto drawByteEntry = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData, const std::string &label, std::size_t idx, std::size_t arraySize)// -> bool
     {
+        UMBA_USED(label);
+        UMBA_USED(idx);
+        UMBA_USED(arraySize);
+
         if (curLineBytePos>=displayWidth)
             incPosY();
 
@@ -593,53 +547,69 @@ int unsafeMain(int argc, char* argv[])
             if (numBytesToDraw==0)
             {
                 incPosY();
+                checkMaxXY();
                 continue;
             }
 
+            int calculatedPosLeft  = 0;
+            int calculatedPosRight = 0;
             std::size_t drawEnd = begin+numBytesToDraw;
-            drawByteEntryFirstLast(entryData, begin, drawEnd-1);
+            std::stringstream ss;
+            drawByteEntryFirstLast(ss, entryData, begin, drawEnd-1, &calculatedPosLeft, &calculatedPosRight);
+
+            mermaid::svg::ByteDiagramFieldLabelDrawInfo fldi;
+            fldi.simpleSvg  = false;
+            fldi.arraySize  = arraySize;
+            fldi.indexFirst = idx;
+            fldi.indexLast  = idx;
+            fldi.posLeft    = calculatedPosLeft ;
+            fldi.posRight   = calculatedPosRight;
+            fldi.posY       = posY;
+            fldi.fieldName  = label;
+            fldi.svgText    = ss.str();
+            fieldLabelsDrawInfo.emplace_back(fldi);
+
             begin = drawEnd;
             curLineBytePos += int(numBytesToDraw);
         }
 
         if (curLineBytePos>=displayWidth)
+        {
             incPosY();
+        }
 
         checkMaxXY();
     };
 
     checkMaxXY();
 
-    if (!diagramViewData.title.empty())
+
+    std::string svgAllText;
+
+    if (!diagram.title.empty() && showTitle && titleOnTop)
     {
-        // mermaid::svg::drawText( oss, left+posX, posY, diagramViewData.title, "mdppPacketDiaTitle");
-        // posY += 24;
+        std::stringstream oss;
+        mermaid::svg::drawText( oss, sizeX/2, posY, diagram.title, "mdppPacketDiaTitle", "hanging", "middle");
+        posY += titleLineHeight;
         checkMaxXY();
+        svgAllText = oss.str();
     }
 
-    /* При выбранном размере шрифта на один байт по ширине приходится примерно 4 символа.
-
-     */
 
     std::size_t secCnt = std::size_t(-1);
     for(const auto &sectionInfo : diagramViewData.sections)
     {
+        //bool vertPosSectionIncremented = false;
         ++secCnt;
-
-        curLineBytePos = int(sectionInfo.linearAddress%std::uint64_t(displayWidth));
-
-        if (secCnt)
-        {
-            posY += byteLineHeight     ;
-            posY += lineGap;
-            posY += secGap;
-            
-            checkMaxXY();
-        }
 
         //if (diagramViewData.sections.size()>1)
         {
             auto secStr = sectionInfo.addressStr;
+            if (diagram.testDisplayOption(umba::tokenizer::mermaid::PacketDiagramDisplayOptionFlags::hexPrefixSection))
+                secStr = umba::tokenizer::mermaid::utils::addNumberPrefix(secStr, "0x");
+
+            auto savedCurLineBytePos = curLineBytePos;
+
             if (!sectionInfo.name.empty())
             {
                 if (!secStr.empty())
@@ -650,29 +620,64 @@ int unsafeMain(int argc, char* argv[])
 
             if (!secStr.empty())
             {
+                // if (posX!=0) // не было перехода на новую строку байт
+                if (curLineBytePos!=0) // не было перехода на новую строку байт
+                {
+                    //vertPosSectionIncremented = true;
+                    incPosY();
+                    checkMaxXY();
+                }
+
+                std::stringstream oss;
                 mermaid::svg::drawText( oss, left /* +posX */ , posY, secStr, "mdppPacketDiaOrgLabel", "hanging" /* "middle" */, "start" /* hAlign */);
-                posY += textLineHeight;
-                posY += lineGap;
+                mermaid::svg::ByteDiagramFieldLabelDrawInfo  fldi;
+                fldi.simpleSvg  = true;
+                fldi.svgText    = oss.str();
+                fieldLabelsDrawInfo.emplace_back(fldi);
                 checkMaxXY();
             }
+
+            curLineBytePos = savedCurLineBytePos;
         }
+
+        // plainIncPosY();
+        // posY += lineGap;
+        if (curLineBytePos==0) // не было перехода на новую строку байт
+        {
+            incPosY();
+            checkMaxXY();
+        }
+        curLineBytePos = int(sectionInfo.linearAddress%std::uint64_t(displayWidth));
+
+        //if (secCnt)
+        {
+        //    plainIncPosY();
+        }
+
+        if (curLineBytePos!=0)
+        {
+            plainIncPosY();
+        }
+
 
         for(const auto &entry: sectionInfo.entries)
         {
             auto entryName = entry.name;
-            if (entry.bArray)
-                entryName += "[" + std::to_string(entry.data.size()) + "]";
+            // if (entry.bArray)
+            //     entryName += "[" + std::to_string(entry.data.size()) + "]";
 
             if (!entry.bArray)
             {
                 UMBA_ASSERT(entry.data.size()==1);
-                drawByteEntry(entry.data[0]);
+                drawByteEntry(entry.data[0], entryName, 0, std::size_t(-1));
             }
             else // array
             {
+                std::size_t idx = std::size_t(-1);
                 for(const auto &data: entry.data)
                 {
-                    drawByteEntry(data);
+                    ++idx;
+                    drawByteEntry(data, entryName, idx, entry.data.size());
                 }
             }
 
@@ -680,12 +685,183 @@ int unsafeMain(int argc, char* argv[])
         }
     }
 
+    // Склеиваем fieldLabelDrawInfo
+    {
+        std::vector<mermaid::svg::ByteDiagramFieldLabelDrawInfo> tmp;
 
-    mermaid::svg::writeSvg(std::cout, maxPosX, maxPosY, style, oss.str());
+        for(const auto &fldi : fieldLabelsDrawInfo)
+        {
+            if (tmp.empty())
+            {
+                tmp.emplace_back(fldi);
+            }
+            else if (fldi.simpleSvg!=tmp.back().simpleSvg)
+            {
+                tmp.emplace_back(fldi);
+            }
+            else if (fldi.fieldName!=tmp.back().fieldName)
+            {
+                tmp.emplace_back(fldi);
+            }
+            else if (fldi.posY!=tmp.back().posY)
+            {
+                tmp.emplace_back(fldi);
+            }
+            else
+            {
+                // У нас одна строка, и одно поле
+                // надо мержить
+                auto &prev = tmp.back();
+
+                UMBA_ASSERT(prev.arraySize==fldi.arraySize);
+
+                // prev.indexFirst // не меняем
+                prev.indexLast = fldi.indexLast; // Обновляем индекс последнего элемента
+                // prev.posLeft // не меняем
+                prev.posRight  = fldi.posRight ; // Обновляем правую позицию
+                // prev.posY // не трогаем
+                // prev.fieldName // не трогаем
+                prev.svgText += fldi.svgText;
+
+            }
+        }
+
+        swap(tmp, fieldLabelsDrawInfo);
+
+    }
+
+    std::vector< std::pair<std::string,std::string> > footnotes;
+    std::string footnotesSvg;
+
+    if (showFieldLabels)
+    {
+        int nFootnote = 0;
+        //std::stringstream ftss;
+
+
+        for(auto &fldi : fieldLabelsDrawInfo)
+        {
+            UMBA_USED(fldi);
+
+            std::stringstream ss;
+            auto labelPosY = fldi.posY-6; // +2; // +4; // -0; // 8;
+            if (showFieldIndex)
+            {
+                labelPosY -= indexLabelLineHeight; // рисуем выше меток индекса
+                labelPosY += 4;
+            }
+
+            const auto centerX    = (fldi.posLeft+fldi.posRight)/2;
+            std::string labelText = fldi.fieldName;
+
+            if (fldi.arraySize!=std::size_t(-1)) // array?
+            {
+                labelText += "[" + std::to_string(fldi.indexFirst) + "-" + std::to_string(fldi.indexLast) + "]";
+            }
+
+            // 19 символов - это 442-328+1=115 
+            // 6.05 пикселей на символ в среднем
+            const auto fieldWidth = fldi.posRight-fldi.posLeft-6;
+            auto allowedNumChars = std::size_t(fieldWidth/(fieldLabelAvgSymbolWidth-0u));
+            if (allowedNumChars<labelText.size())
+            {
+                std::string newText =  /* std::string("*") +  */ std::to_string(++nFootnote);
+                footnotes.emplace_back(std::make_pair(newText, labelText));
+
+                labelText = std::string("*") + newText;
+
+            }
+
+            mermaid::svg::drawText( ss, centerX, labelPosY
+                                  , labelText
+                                  , bSmallFonts ? "mdppPacketDiaLabelSmall" : "mdppPacketDiaLabel"
+                                  , "auto", "middle"
+                                  );
+
+            fldi.svgText = ss.str() + fldi.svgText;
+            
+        }
+
+    }
+
+    if (showFieldLabels && !footnotes.empty())
+    {
+        if (curLineBytePos!=0) // не было перехода на новую строку байт
+        {
+            incPosY();
+            checkMaxXY();
+        }
+
+        std::stringstream oss;
+
+        posY += fieldLabelLineHeight/2;
+
+        const auto footnotesStartY = posY;
+        const auto deltaX = sizeX/3;
+        auto footnoteX = 0;
+        const auto footnotesSize = footnotes.size(); // -1u
+        const std::size_t colHeight = footnotesSize/3u + ((footnotesSize%3u)==0 ? 0u : 1u);
+        std::size_t printedInCol = 0;
+        posY -= fieldLabelLineHeight;
+        auto ftMaxPosY = posY;
+        for(std::size_t i=0u; i!=footnotes.size(); ++i, ++printedInCol)
+        {
+            if (printedInCol >= colHeight)
+            {
+                posY = footnotesStartY;
+                footnoteX += deltaX;
+                printedInCol = 0;
+            }
+            else
+            {
+                posY += fieldLabelLineHeight;
+            }
+
+            checkMaxXY();
+            ftMaxPosY = std::max(ftMaxPosY, posY);
+
+            mermaid::svg::drawText( oss, footnoteX+footnoteLeft, posY, footnotes[i].first
+                                  , "mdppPacketDiaLabel" // bSmallFonts ? "mdppPacketDiaLabelSmall" : "mdppPacketDiaLabel"
+                                  , "auto", "start"
+                                  );
+            mermaid::svg::drawText( oss, footnoteX+footnoteTextLeft, posY, "- "+footnotes[i].second
+                                  , "mdppPacketDiaLabel" // bSmallFonts ? "mdppPacketDiaLabelSmall" : "mdppPacketDiaLabel"
+                                  , "auto", "start"
+                                  );
+
+        }
+
+        footnotesSvg = oss.str();
+        posY = ftMaxPosY;
+
+    }
+
+
+    for(const auto &fldi : fieldLabelsDrawInfo)
+    {
+        svgAllText += "<g>\n";
+        svgAllText += fldi.svgText;
+        svgAllText += "</g>\n";
+    }
+
+    svgAllText += "<g>\n";
+    svgAllText += footnotesSvg;
+    svgAllText += "</g>\n";
+
+    if (!diagram.title.empty() && showTitle && !titleOnTop)
+    {
+        std::stringstream oss;
+        posY += titleLineHeight;
+        mermaid::svg::drawText( oss, sizeX/2, posY, diagram.title, "mdppPacketDiaTitle", "hanging", "middle");
+        posY += titleLineHeight;
+        checkMaxXY();
+        svgAllText += oss.str();
+    }
+
+
+    mermaid::svg::writeSvg(std::cout, maxPosX+1, maxPosY, style, svgAllText);
 
     return 0;
 }
-
-
 
 
