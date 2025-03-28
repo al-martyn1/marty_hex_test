@@ -558,12 +558,15 @@ int unsafeMain(int argc, char* argv[])
             {
                 UMBA_ASSERT(entry.data.size()==1);
                 posX = byteStartPosX;
-                mermaid::svg::drawWord( oss, entry.data[0].bytes, posX, posY
+                mermaid::svg::drawWord( oss, entry.data[0], entry.data[0].idxFirst, posX, posY
                                       , "mdppPacketDiaBlock"
                                       , "mdppPacketDiaBlock"
+                                      , "mdppArrayBoundsLine"
                                       , "mdppPacketDiaByteNumberLabel"
+                                      , "mdppPacketDiaIndexLabel"
                                       , byteWidth, lineHeight // byte width, line height
                                       , r, indent   // r, indent
+                                      , false
                                       , false
                                       , 0, entry.data[0].bytes.size()-1   // range
                                       , diagram.displayOptionFlags
@@ -577,12 +580,15 @@ int unsafeMain(int argc, char* argv[])
                 posX = byteStartPosX;
                 for(const auto &data: entry.data)
                 {
-                    mermaid::svg::drawWord( oss, data.bytes, posX, posY
+                    mermaid::svg::drawWord( oss, data, data.idxFirst, posX, posY
                                           , "mdppPacketDiaBlock"
                                           , "mdppPacketDiaBlock"
+                                          , "mdppArrayBoundsLine"
                                           , "mdppPacketDiaByteNumberLabel"
+                                          , "mdppPacketDiaIndexLabel"
                                           , byteWidth, lineHeight // byte width, line height
                                           , r, indent   // r, indent
+                                          , false
                                           , false
                                           , 0, data.bytes.size()-1   // range
                                           , diagram.displayOptionFlags

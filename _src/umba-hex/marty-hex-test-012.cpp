@@ -318,33 +318,43 @@ int unsafeMain(int argc, char* argv[])
 
     std::stringstream oss;
 
-    drawRect(oss, 50,  50, 200, 26, "mdppPacketDiaBlock", false, false, 8);
-    drawRect(oss, 50, 100, 200, 26, "mdppPacketDiaBlock", false, true , 8);
-    drawRect(oss, 50, 150, 200, 26, "mdppPacketDiaBlock", true , false, 8);
-    drawRect(oss, 50, 200, 200, 26, "mdppPacketDiaBlock", true , true , 8);
+    marty::svg::drawRect(oss, 50,  50, 200, 26, "mdppPacketDiaBlock", false, false, 8);
+    marty::svg::drawRect(oss, 50, 100, 200, 26, "mdppPacketDiaBlock", false, true , 8);
+    marty::svg::drawRect(oss, 50, 150, 200, 26, "mdppPacketDiaBlock", true , false, 8);
+    marty::svg::drawRect(oss, 50, 200, 200, 26, "mdppPacketDiaBlock", true , true , 8);
 
-    byte_vector_t bv4 = makeNumbersVector(0, 3);
-    byte_vector_t bv8 = makeNumbersVector(0, 7);
+    mermaid::svg::ByteDiagramViewEntryData  ebv4;
+    mermaid::svg::ByteDiagramViewEntryData  ebv8;
+    ebv4.bytes = mermaid::svg::makeNumbersVector(0, 3);
+    ebv8.bytes = mermaid::svg::makeNumbersVector(0, 7);
+    //mermaid::svg::byte_vector_t bv4 = mermaid::svg::makeNumbersVector(0, 3);
+    //mermaid::svg::byte_vector_t bv8 = mermaid::svg::makeNumbersVector(0, 7);
  
-    mermaid::svg::drawWord( oss, bv4, 50, 250
+    mermaid::svg::drawWord( oss, ebv4, ebv4.idxFirst, 50, 250
                           , "mdppPacketDiaBlock"
                           , "mdppPacketDiaBlock"
+                          , "mdppArrayBoundsLine"
                           , "mdppPacketDiaByteNumberLabel"
+                          , "mdppPacketDiaIndexLabel"
                           , 32, 26 // byte width, line height
                           , 8, 4   // r, indent
-                          , false
+                          , false // entryData.bFlatByteArray
+                          , false // bSmallFonts
                           , 0, 3   // range
                           );
 
-    mermaid::svg::drawWord( oss, bv8, 50, 300
-                          , "mdppPacketDiaBlock"
-                          , "mdppPacketDiaBlock"
-                          , "mdppPacketDiaByteNumberLabel"
-                          , 32, 26 // byte width, line height
-                          , 8, 4   // r, indent
-                          , false
-                          , 4, 7   // range
-                          );
+    mermaid::svg::drawWord(oss, ebv8, ebv8.idxFirst, 50, 250
+        , "mdppPacketDiaBlock"
+        , "mdppPacketDiaBlock"
+        , "mdppArrayBoundsLine"
+        , "mdppPacketDiaByteNumberLabel"
+        , "mdppPacketDiaIndexLabel"
+        , 32, 26 // byte width, line height
+        , 8, 4   // r, indent
+        , false // entryData.bFlatByteArray
+        , false // bSmallFonts
+        , 0, 3   // range
+    );
 
     mermaid::svg::writeSvg(std::cout, 1026, 423, style, oss.str());
 

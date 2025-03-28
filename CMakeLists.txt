@@ -58,6 +58,33 @@ file(GLOB_RECURSE resources "${SRC_ROOT}/*.rc")
 umba_make_sources_tree("${SRC_ROOT}" "${sources}" "${headers}" "${resources}")
 
 
+# Docs
+
+file(GLOB_RECURSE md_docs  "${CMAKE_CURRENT_LIST_DIR}/doc*/*.md" "${CMAKE_CURRENT_LIST_DIR}/_src/*.md" "${CMAKE_CURRENT_LIST_DIR}/src/*.md" "${CMAKE_CURRENT_LIST_DIR}/doc*/*.txt")
+file(GLOB         md2_docs "${CMAKE_CURRENT_LIST_DIR}/*.md")
+set(all_docs ${md_docs} ${md2_docs})
+list(FILTER all_docs EXCLUDE REGEX ".*CMakeLists\.txt$")
+list(FILTER all_docs EXCLUDE REGEX ".*_generators/.*")
+list(FILTER all_docs EXCLUDE REGEX ".*examples/.*")
+list(FILTER all_docs EXCLUDE REGEX ".*md_/.*$")
+list(FILTER all_docs EXCLUDE REGEX ".*_md/.*$")
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Docs" FILES ${all_docs})
+
+# Doc sources
+
+file(GLOB_RECURSE md_src1  "${CMAKE_CURRENT_LIST_DIR}/doc*/*.md_" "${CMAKE_CURRENT_LIST_DIR}/doc*/*._md" "${CMAKE_CURRENT_LIST_DIR}/_src/*.md_" "${CMAKE_CURRENT_LIST_DIR}/_src/*._md" "${CMAKE_CURRENT_LIST_DIR}/src/*.md_" "${CMAKE_CURRENT_LIST_DIR}/src/*._md")
+file(GLOB         md_src2 "${CMAKE_CURRENT_LIST_DIR}/*.md_" "${CMAKE_CURRENT_LIST_DIR}/*._md")
+set(all_docs_src ${md_src1} ${md_src2})
+
+
+list(FILTER all_docs_src EXCLUDE REGEX ".*_generators/.*")
+list(FILTER all_docs_src EXCLUDE REGEX ".*examples/.*")
+list(FILTER all_docs_src EXCLUDE REGEX ".*md_/.*")
+list(FILTER all_docs_src EXCLUDE REGEX ".*_md/.*")
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Docs.src" FILES ${all_docs_src})
+
+
+
 set(PLATFORM_LIBS)
 if(WIN32) # Всё нормально, это про таргет
     list(APPEND PLATFORM_LIBS ws2_32 iphlpapi shell32)
@@ -158,7 +185,7 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-016)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-016.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-016.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 

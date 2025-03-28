@@ -565,13 +565,16 @@ int unsafeMain(int argc, char* argv[])
 
     auto drawByteEntryFirstLast = [&](const mermaid::svg::ByteDiagramViewEntryData &entryData, std::size_t first, std::size_t last)// -> bool
     {
-        mermaid::svg::drawWord( oss, entryData.bytes, left+byteStartPosX+curLineBytePos*byteWidth, posY
+        mermaid::svg::drawWord( oss, entryData, entryData.idxFirst, left+byteStartPosX+curLineBytePos*byteWidth, posY
                               , "mdppPacketDiaBlock"
                               , "mdppPacketDiaBlock"
+                              , "mdppArrayBoundsLine"
                               , "mdppPacketDiaByteNumberLabel"
+                              , "mdppPacketDiaIndexLabel"
                               , byteWidth, byteHeight // byte width, line height
                               , r, indent   // r, indent (in byte for its label)
                               , entryData.bFlatByteArray
+                              , false // bSmallFonts
                               , first, last // range
                               , diagram.displayOptionFlags
                               );
