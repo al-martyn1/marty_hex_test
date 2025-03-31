@@ -261,13 +261,13 @@ int unsafeMain(int argc, char* argv[])
     valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
 
-    auto viewsVec = umba::tokenizer::mermaid::utils::makeTextStringViewsHelper(inputText);
-    auto viewsVecNoLf = umba::tokenizer::mermaid::utils::stripLinefeedsFromStringViewsVector(viewsVec);
-    auto viewsVecTrimmed = umba::tokenizer::mermaid::utils::rtrim_copy(viewsVecNoLf);
+    auto viewsVec = umba::tokenizer::utils::makeTextStringViewsHelper(inputText);
+    auto viewsVecNoLf = umba::tokenizer::utils::stripLinefeedsFromStringViewsVector(viewsVec);
+    auto viewsVecTrimmed = umba::tokenizer::utils::rtrim_copy(viewsVecNoLf);
     std::vector<std::string> frontMatter;
-    umba::tokenizer::mermaid::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter);
+    umba::tokenizer::utils::extractYamlFrontMatter(viewsVecTrimmed, &frontMatter);
     std::vector<std::string> style;
-    umba::tokenizer::mermaid::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style);
+    umba::tokenizer::utils::extractMarkeredPart(viewsVecTrimmed, "<Style>", "</style>", true, &style);
 
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();

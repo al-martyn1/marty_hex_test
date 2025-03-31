@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тестим чтение диаграм
+    \brief Выносим подготовку к рисованию диаграммы в либу
  */
 
 
@@ -28,9 +28,6 @@
 // #include "umba/tokenizer/parser_base.h"
 // #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
-//
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
 
@@ -40,6 +37,14 @@
 //#+sort
 
 #include "umba/debug_helpers.h"
+
+//
+
+// 
+#include "umba/tokenizer/parsers/usketch_parser.h"
+#include "marty_svg/marty_svg.h"
+
+//
 
 #include <iostream>
 #include <iomanip>
@@ -53,6 +58,7 @@
 #include <utility>
 #include <exception>
 #include <stdexcept>
+#include <utility>
 
 #include "umba/debug_helpers.h"
 #include "umba/string_plus.h"
@@ -115,6 +121,7 @@ AppConfig appConfig;
 
 //struct
 
+#include "svg-style.h"
 
 
 
@@ -129,12 +136,12 @@ UMBA_APP_MAIN()
     }
     catch(const std::exception& e)
     {
-        std::cout << "Error: " << e.what() << "\n";
+        LOG_ERR << e.what() << "\n";
         return 1;
     }
     catch(...)
     {
-        std::cout << "Unknown error\n";
+        LOG_ERR << "unknown error\n";
         return 2;
     }
 
@@ -152,13 +159,13 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::usketch::makeTokenizerBuilderUSketch<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
     using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
-    using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
+    using ParserType                    = umba::tokenizer::usketch::USketchParser<TokenizerType>;
 
 
     auto pFilenameSet = std::make_shared<FilenameSetType>();
@@ -166,6 +173,7 @@ int unsafeMain(int argc, char* argv[])
 
 
     std::string inputFilename;
+    //std::string valuesFilename;
 
     auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
                                                         , CommandLineOptionCollector()
@@ -184,41 +192,46 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "App Root Path: " << rootPath << "\n";
         std::cout << "Working Dir  : " << cwd << "\n";
 
-        // inputFilename = rootPath + "tests/layouts/01.txt";
-        // inputFilename = rootPath + "tests/layouts/02.txt";
-        // inputFilename = rootPath + "tests/layouts/03.txt";
-        // inputFilename = rootPath + "tests/layouts/04.txt";
-        // inputFilename = rootPath + "tests/layouts/05.txt";
-        // inputFilename = rootPath + "tests/layouts/06.txt";
-        // inputFilename = rootPath + "tests/layouts/07.txt";
-        // inputFilename = rootPath + "tests/layouts/08.txt";
-        // inputFilename = rootPath + "tests/layouts/09.txt";
-        // inputFilename = rootPath + "tests/layouts/10.txt";
-        // inputFilename = rootPath + "tests/layouts/11.txt";
-        // inputFilename = rootPath + "tests/layouts/12.txt";
-        // inputFilename = rootPath + "tests/layouts/13.txt";
-        // inputFilename = rootPath + "tests/layouts/14.txt";
-        // inputFilename = rootPath + "tests/layouts/15.txt"; // !!!
-        // inputFilename = rootPath + "tests/layouts/16.txt";
-        // inputFilename = rootPath + "tests/layouts/17.txt";
-        // inputFilename = rootPath + "tests/layouts/18.txt";
-        // inputFilename = rootPath + "tests/layouts/19.txt";
-        // inputFilename = rootPath + "tests/layouts/20.txt";
-        // inputFilename = rootPath + "tests/layouts/21.txt";
-        inputFilename = rootPath + "tests/layouts/22.txt";
-        // inputFilename = rootPath + "tests/layouts/23.txt";
-        // inputFilename = rootPath + "tests/layouts/24.txt";
-        // inputFilename = rootPath + "tests/layouts/25.txt";
-        // inputFilename = rootPath + "tests/layouts/26.txt";
-        // inputFilename = rootPath + "tests/layouts/27.txt";
-        // inputFilename = rootPath + "tests/layouts/28.txt";
-        // inputFilename = rootPath + "tests/layouts/29.txt";
+
+        inputFilename = rootPath + "tests/usketch/01.txt";
+        // inputFilename = rootPath + "tests/usketch/02.txt";
+        // inputFilename = rootPath + "tests/usketch/03.txt";
+        // inputFilename = rootPath + "tests/usketch/04.txt";
+        // inputFilename = rootPath + "tests/usketch/05.txt";
+        // inputFilename = rootPath + "tests/usketch/06.txt";
+        // inputFilename = rootPath + "tests/usketch/07.txt";
+        // inputFilename = rootPath + "tests/usketch/08.txt";
+        // inputFilename = rootPath + "tests/usketch/09.txt";
+        // inputFilename = rootPath + "tests/usketch/10.txt";
+        // inputFilename = rootPath + "tests/usketch/11.txt";
+        // inputFilename = rootPath + "tests/usketch/12.txt";
+        // inputFilename = rootPath + "tests/usketch/13.txt";
+        // inputFilename = rootPath + "tests/usketch/14.txt";
+        // inputFilename = rootPath + "tests/usketch/15.txt"; // !!!
+        // inputFilename = rootPath + "tests/usketch/16.txt";
+        // inputFilename = rootPath + "tests/usketch/17.txt";
+        // inputFilename = rootPath + "tests/usketch/18.txt";
+        // inputFilename = rootPath + "tests/usketch/19.txt";
+        // inputFilename = rootPath + "tests/usketch/20.txt";
+        // inputFilename = rootPath + "tests/usketch/21.txt";
+        // inputFilename = rootPath + "tests/usketch/22.txt";
+        // inputFilename = rootPath + "tests/usketch/23.txt";
+        // inputFilename = rootPath + "tests/usketch/24.txt";
+        // inputFilename = rootPath + "tests/usketch/25.txt";
+        // inputFilename = rootPath + "tests/usketch/26.txt";
+        // inputFilename = rootPath + "tests/usketch/27.txt";
+        // inputFilename = rootPath + "tests/usketch/28.txt";
+        // inputFilename = rootPath + "tests/usketch/29.txt";
+
+        // valuesFilename = rootPath + "tests/usketch/22_values.txt";
 
     } // if (umba::isDebuggerPresent())
     else
     {
         if (argc>1)
             inputFilename = argv[1];
+        // if (argc>2)
+        //     valuesFilename = argv[2];
     }
 
     if (inputFilename.empty())
@@ -227,6 +240,20 @@ int unsafeMain(int argc, char* argv[])
         return 2;
     }
 
+    // if (valuesFilename.empty())
+    // {
+    //     LOG_ERR << "No input file taken\n";
+    //     return 2;
+    // }
+    
+
+    // std::string valuesText;
+    // if (!umba::filesys::readFile(valuesFilename, valuesText))
+    // {
+    //     LOG_ERR << "failed to read file: '" << valuesFilename << "'\n";
+    //     return 3;
+    // }
+
     std::string inputText;
     if (!umba::filesys::readFile(inputFilename, inputText))
     {
@@ -234,19 +261,22 @@ int unsafeMain(int argc, char* argv[])
         return 3;
     }
 
-    inputText = marty_cpp::normalizeCrLfToLf(inputText);
-    std::unordered_map<std::string, std::string> frontMatterTags;
-    umba::tokenizer::utils::prepareTextForParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
+    std::unordered_map<std::string, std::string> tags;
+    std::vector<std::string> styleStr;
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
+    inputText  = marty_cpp::normalizeCrLfToLf(inputText);
+    umba::tokenizer::utils::prepareTextForParsing(inputText, &styleStr, &tags);
+    // valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
+
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::usketch::makeTokenizerBuilderUSketch<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::mermaid::PacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::usketch::USketchTokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)
                                                                  );
     ParserType parser = ParserType(pTokenCollection, pParserLog);
-    parser.setDiagramTitle(frontMatterTags["title"]);
+    //parser.setDiagramTitle(tags["title"]);
 
     if (!parser.parse())
     {
@@ -256,45 +286,12 @@ int unsafeMain(int argc, char* argv[])
 
     LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
 
-    LOG_MSG << "C/C++ structs:\n\n";
+    //LOG_MSG << "C/C++ structs:\n\n";
 
 
-    //umba::tokenizer::mermaid::cpp::simplePrintCppPacketDiagram( std::cout, parser.getDiagram() );
-    auto diagram = parser.getDiagram();
-    umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
-
-    LOG_MSG << "\n\n";
- 
-    #if 0
-    LOG_MSG << "Diagram:\n\n";
-    
-    // Пока поэлементно выводим, а массивы на одной строке
-    for(auto item : diagram.data)
-    {
-        if (!item.isDataEntry())
-           continue;
-
-        if (item.isArray())
-        {
-            for(auto i=0u; i!=item.getArraySize(); ++i)
-            {
-                auto str = umba::tokenizer::mermaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
-                std::cout << str;
-            }
-            std::cout << "\n";
-        }
-        else
-        {
-            auto str = umba::tokenizer::mermaid::cpp::makeIntegralTypeTextDiagramRepresentation(item.getTypeSize(), true);
-            std::cout << str << "\n";
-        }
-        
-    }
-    #endif
+    //auto diagram = parser.getDiagram();
 
     return 0;
 }
-
-
 
 

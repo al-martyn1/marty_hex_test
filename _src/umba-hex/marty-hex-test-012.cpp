@@ -1,5 +1,5 @@
 /*! \file
-    \brief Рисуем SVG
+    \brief Рисуем SVG, drawWord и прочие тесты примитивов.
  */
 
 
@@ -297,7 +297,7 @@ int unsafeMain(int argc, char* argv[])
 
     inputText = marty_cpp::normalizeCrLfToLf(inputText);
     std::unordered_map<std::string, std::string> frontMatterTags;
-    umba::tokenizer::mermaid::utils::prepareTextForDiagramParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
+    umba::tokenizer::utils::prepareTextForParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
@@ -318,6 +318,7 @@ int unsafeMain(int argc, char* argv[])
 
     std::stringstream oss;
 
+    #if 0
     marty::svg::drawRect(oss, 50,  50, 200, 26, "mdppPacketDiaBlock", false, false, 8);
     marty::svg::drawRect(oss, 50, 100, 200, 26, "mdppPacketDiaBlock", false, true , 8);
     marty::svg::drawRect(oss, 50, 150, 200, 26, "mdppPacketDiaBlock", true , false, 8);
@@ -327,9 +328,9 @@ int unsafeMain(int argc, char* argv[])
     mermaid::svg::ByteDiagramViewEntryData  ebv8;
     ebv4.bytes = mermaid::svg::makeNumbersVector(0, 3);
     ebv8.bytes = mermaid::svg::makeNumbersVector(0, 7);
-    //mermaid::svg::byte_vector_t bv4 = mermaid::svg::makeNumbersVector(0, 3);
-    //mermaid::svg::byte_vector_t bv8 = mermaid::svg::makeNumbersVector(0, 7);
- 
+
+    #if 0
+    // Хз что это такое, не помню уже
     mermaid::svg::drawWord( oss, ebv4, ebv4.idxFirst, 50, 250
                           , "mdppPacketDiaBlock"
                           , "mdppPacketDiaBlock"
@@ -344,17 +345,141 @@ int unsafeMain(int argc, char* argv[])
                           );
 
     mermaid::svg::drawWord(oss, ebv8, ebv8.idxFirst, 50, 250
-        , "mdppPacketDiaBlock"
-        , "mdppPacketDiaBlock"
-        , "mdppArrayBoundsLine"
-        , "mdppPacketDiaByteNumberLabel"
-        , "mdppPacketDiaIndexLabel"
-        , 32, 26 // byte width, line height
-        , 8, 4   // r, indent
-        , false // entryData.bFlatByteArray
-        , false // bSmallFonts
-        , 0, 3   // range
-    );
+                         , "mdppPacketDiaBlock"
+                         , "mdppPacketDiaBlock"
+                         , "mdppArrayBoundsLine"
+                         , "mdppPacketDiaByteNumberLabel"
+                         , "mdppPacketDiaIndexLabel"
+                         , 32, 26 // byte width, line height
+                         , 8, 4   // r, indent
+                         , false // entryData.bFlatByteArray
+                         , false // bSmallFonts
+                         , 0, 3   // range
+                         );
+    #endif
+    #endif
+
+
+    //mermaid::svg::byte_vector_t bv4 = mermaid::svg::makeNumbersVector(0, 3);
+    //mermaid::svg::byte_vector_t bv8 = mermaid::svg::makeNumbersVector(0, 7);
+
+    std::string strBlack     = "black";
+    std::string strGreen     = "green";
+    std::string strBlue      = "blue" ;
+    std::string strRed       = "red"  ;
+    std::string strFireBrick = "#B22222"  ; // #B22222 fireBrick
+    std::string strAqua      = "aqua" ;
+    
+    std::string strEmpty;
+ 
+    #if 0
+    // хз чо
+    marty::svg::drawRectEx( oss,  50, 250, 200, 45
+                          , 10 // r
+                          , 3 // strokeWidth
+                          , strGreen // strokeColor
+                          , strAqua // strRed
+                          , marty::svg::RoundRectFlags::round
+                          );
+
+    // Полукруг
+    auto roundLeftRightTop = marty::svg::RoundRectFlags::roundLeftTop | marty::svg::RoundRectFlags::roundRightTop;
+    marty::svg::drawRectEx( oss, 50, 350, 90, 45
+                          , 45 // r
+                          , 3 // strokeWidth
+                          , strGreen // strokeColor
+                          , strEmpty // "red" //
+                          , roundLeftRightTop
+                          );
+
+    // Справа
+    marty::svg::drawRectEx( oss, 260, 250, 200, 45
+                          , 10 // r
+                          , 3 // strokeWidth
+                          , strGreen // strokeColor
+                          , strEmpty // "red" //
+                          , marty::svg::RoundRectFlags::none
+                          );
+
+    // Снизу
+    marty::svg::drawRectEx( oss, 50, 300, 200, 45
+                          , 10 // r
+                          , 3 // strokeWidth
+                          , strGreen // strokeColor
+                          , strEmpty // "red" //
+                          , marty::svg::RoundRectFlags::none
+                          );
+
+    // Снизу справа
+    marty::svg::drawRectEx( oss, 260, 300, 200, 45
+                          , 10 // r
+                          , 3 // strokeWidth
+                          , strGreen // strokeColor
+                          , strEmpty // "red" //
+                          , marty::svg::RoundRectFlags::roundLeftTop | marty::svg::RoundRectFlags::roundRightBottom
+                          );
+    #endif
+
+
+    // Пример корпуса с крышкой люка
+
+    // Корпус
+    int baseX = 100;
+    int baseY = 100;
+    int rackSizeX  = 400;
+    int rackSizeY  = 160;
+    int slotSizeX  = 100;
+    int slotSizeY  =  80;
+    int slotShiftY =  10;
+    int latchSize  =  10;
+    int latchShift =  25;
+    marty::svg::drawRectEx( oss
+                          , baseX, baseY
+                          , rackSizeX, rackSizeY
+                          , 10 // r
+                          , 2 // strokeWidth
+                          , strBlack // strokeColor
+                          , strFireBrick //
+                          , marty::svg::RoundRectFlags::noRound
+                          );
+
+    // Откидная крышка
+    marty::svg::drawRectEx( oss
+                          , baseX+rackSizeX/2-slotSizeX/2, baseY+rackSizeY/2-slotSizeY/2+slotShiftY
+                          , slotSizeX, slotSizeY
+                          , 20 // r
+                          , 2 // strokeWidth
+                          , strBlack // strokeColor
+                          , strEmpty // strRed //
+                          , marty::svg::RoundRectFlags::roundTop
+                          );
+
+    marty::svg::drawRectEx( oss
+                          , baseX+rackSizeX/2-latchSize, baseY+rackSizeY/2-latchSize/2-latchShift
+                          , latchSize*2, latchSize
+                          , latchSize // r
+                          , 2 // strokeWidth
+                          , strBlack // strokeColor
+                          , strEmpty // strRed //
+                          , marty::svg::RoundRectFlags::roundBottom
+                          );
+
+    // Снизу
+    #if 0
+    marty::svg::drawRectEx( oss, 310, 300, 200, 45
+                          , 100 // r
+                          , strGreen // strokeColor
+                          , 3 // strokeWidth
+                          , strEmpty // "red" //
+                          , marty::svg::RoundRectFlags::none
+                          );
+    #endif
+
+    // std::string strGreen = "green";
+    // std::string strBlue  = "blue" ;
+    // std::string strRed   = "red"  ;
+    // std::string strEmpty;
+
 
     mermaid::svg::writeSvg(std::cout, 1026, 423, style, oss.str());
 
