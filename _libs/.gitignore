@@ -2,6 +2,7 @@ encoding
 marty_cpp
 marty_crc
 marty_decimal
+marty_format
 marty_hex
 marty_mem
 marty_svg

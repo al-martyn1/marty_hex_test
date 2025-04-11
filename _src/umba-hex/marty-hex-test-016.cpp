@@ -268,7 +268,7 @@ int unsafeMain(int argc, char* argv[])
     std::vector<std::string> styleStr;
 
     inputText  = marty_cpp::normalizeCrLfToLf(inputText);
-    umba::tokenizer::utils::prepareTextForDiagramParsing(inputText, &styleStr, &tags);
+    umba::tokenizer::utils::prepareTextForParsing(inputText, &styleStr, &tags);
     // valuesText = marty_cpp::normalizeCrLfToLf(valuesText);
 
     TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();

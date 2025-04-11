@@ -25,13 +25,14 @@ git clone --recurse-submodules %PREFIX%/umba_mm_mod_encodings.git   %~dp0\encodi
 git clone --recurse-submodules %PREFIX%/marty_cpp.git               %~dp0\marty_cpp
 git clone --recurse-submodules %PREFIX%/marty_crc.git               %~dp0\marty_crc
 git clone --recurse-submodules %PREFIX%/marty_decimal.git           %~dp0\marty_decimal
+git clone --recurse-submodules %PREFIX%/marty_format.git            %~dp0\marty_format
 git clone --recurse-submodules %PREFIX%/marty_hex.git               %~dp0\marty_hex
 git clone --recurse-submodules %PREFIX%/marty_mem.git               %~dp0\marty_mem
 git clone --recurse-submodules %PREFIX%/marty_svg.git               %~dp0\marty_svg
 @rem git clone --recurse-submodules %PREFIX%/marty_pugixml.git           %~dp0\marty_pugixml
 @rem git clone --recurse-submodules %PREFIX%/extern_pugixml.git          %~dp0\pugixml
 @rem git clone --recurse-submodules %PREFIX%/marty_tr.git                %~dp0\marty_tr
-@rem git clone --recurse-submodules %PREFIX%/marty_utf.git               %~dp0\marty_utf
+git clone --recurse-submodules %PREFIX%/marty_utf.git               %~dp0\marty_utf
 @rem git clone --recurse-submodules %PREFIX%/marty_yaml_toml_json.git    %~dp0\marty_yaml_toml_json
 @rem git clone --recurse-submodules %PREFIX%/forks-nlohmann-json.git     %~dp0\nlohmann
 git clone --recurse-submodules %PREFIX%/umba_mm_mod_sfmt.git        %~dp0\sfmt

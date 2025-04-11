@@ -28,6 +28,8 @@ add_subdirectory(${LIB_ROOT}/marty_decimal)
 add_subdirectory(${LIB_ROOT}/marty_hex)
 add_subdirectory(${LIB_ROOT}/marty_mem)
 add_subdirectory(${LIB_ROOT}/marty_svg)
+add_subdirectory(${LIB_ROOT}/marty_utf)
+add_subdirectory(${LIB_ROOT}/marty_format)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
@@ -47,7 +49,7 @@ add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 
 
 # Configure libraries here
-set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::decimal marty::hex marty::mem marty::svg umba::tokenizer)
+set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::decimal marty::hex marty::mem marty::svg umba::tokenizer marty::utf marty::format)
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 
@@ -95,105 +97,144 @@ set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "
 
 
 set(TARGET marty-hex-test-001)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-001.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-002)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-002.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-003)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-003.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-004)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-004.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-005)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-005.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-006)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-006.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-007)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-007.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-008)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-008.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-009)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-009.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-010)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-010.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-011)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-011.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-012)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-012.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-013)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-013.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-014)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-014.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-015)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-015.cpp" "${headers}")
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-016)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-016.cpp" "${headers}" ${all_docs} ${all_docs_src})
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-017)
-add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty-hex-test-017.cpp" "${headers}" ${all_docs} ${all_docs_src})
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
+
+set(TARGET marty-hex-test-018)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-019)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-020)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-021)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+
+
+
+#------------------------------------------------------------------------------------------------
+set(TARGET mfmt_example_01)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET mfmt_example_02)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
