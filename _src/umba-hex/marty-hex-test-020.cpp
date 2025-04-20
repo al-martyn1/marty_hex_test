@@ -105,11 +105,18 @@ std::string testParseFormatString(int nTest, const std::string& str, bool ignore
     out << "Test #" << nTest << "\n" << umba::omanip::flush;
     out << "InputStr : \"" << str << "\"\n" << umba::omanip::flush;
 
-    auto resStr = marty::format::processFormatStringImpl( str
+    auto resStr = marty::format::processFormatStringImpl<std::string>( str.begin(), str.end()
                                                         , [&](const marty::format::FormattingOptions &formattingOptions) -> std::string
                                                           {
                                                               out << "\n" << formattingOptions << "\n" << umba::omanip::flush;
                                                               return "777";
+                                                          }
+                                                        , [&](const char* pb, const char* pe, marty::format::FormatIndexType indexType)
+                                                          {
+                                                              MARTY_ARG_USED(pb);
+                                                              MARTY_ARG_USED(pe);
+                                                              MARTY_ARG_USED(indexType);
+                                                              return std::size_t(0);
                                                           }
                                                         , ignoreErrors
                                                         );

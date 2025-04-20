@@ -141,6 +141,94 @@ int unsafeMain(int argc, char* argv[])
     UMBA_USED(argc);
     UMBA_USED(argv);
 
+
+    using namespace marty::format;
+
+    //----------------------------------------------------------------------------
+    // using MyVariant = std::variant<
+    //     int,
+    //     BasicFormatValueFilter<const int*, int*>,
+    //     double,
+    //     BasicFormatValueFilter<char*, std::string::iterator>,
+    //     std::vector<float>
+    // >;
+
+    using MyVariant = marty::format::FormatValueFilter;
+	
+    std::cout << std::boolalpha;
+
+    // Проверка наличия фильтров
+    #if 0
+    std::cout << "Variant contains filters: " 
+              << variant_has_filter_v<MyVariant> << "\n";
+    std::cout << "Number of filters: " 
+              << variant_filter_count_v<MyVariant> << "\n\n";
+
+    // Печать информации о фильтрах
+    variant_filter_traits<MyVariant>::print();
+
+    // Работа с параметрами
+    if constexpr (variant_has_filter_v<MyVariant>) {
+        using Params = variant_filter_params_t<MyVariant>;
+        
+        // Первый фильтр
+        using FirstIn = std::tuple_element_t<0, Params>;
+        using FirstOut = std::tuple_element_t<1, Params>;
+        
+        std::cout << "\nFirst filter:\n";
+        std::cout << "Input:  " << typeid(FirstIn).name() << "\n";
+        std::cout << "Output: " << typeid(FirstOut).name() << "\n";
+    }
+    #endif
+
+    // std::cout << "Variant contains filters: " 
+    //           << variant_filter_traits<FormatArgumentVariant>::has_filter << "\n";
+    // std::cout << "Number of filters: " 
+    //           << variant_filter_traits<FormatArgumentVariant>::count << "\n\n";
+
+    // Печать информации о фильтрах
+    // variant_filter_traits<FormatArgumentVariant>::print();
+
+    std::cout << "Variant contains filters: " 
+              << std::boolalpha 
+              << variant_filter_traits<FormatArgumentVariant>::has_filter 
+              << "\n\n";
+
+    // Получение информации о первом фильтре
+    using Traits = variant_filter_traits<FormatArgumentVariant>;
+    
+    if constexpr (Traits::has_filter) {
+        // Тип первого фильтра
+        using FirstFilter = Traits::first_filter;
+        std::cout << "First filter type: " << typeid(FirstFilter).name() << "\n";
+        
+        // Типы аргументов первого фильтра
+        using FirstFilterArgs = Traits::first_filter_args;
+        std::cout << "Input iterator type:  " 
+                  << typeid(typename FirstFilterArgs::input_type).name() << "\n";
+        std::cout << "Output iterator type: " 
+                  << typeid(typename FirstFilterArgs::output_type).name() << "\n";
+        
+        // Пример использования типов
+        typename FirstFilterArgs::input_type input_it;
+        typename FirstFilterArgs::output_type output_it;
+        
+        std::cout << "Successfully created iterator objects\n";
+
+        if constexpr (marty::format::utils::has_ctor_require_two_pointers<typename FirstFilterArgs::input_type>)
+           std::cout << "Iterator has require_pointers_pair\n";
+        else
+           std::cout << "Iterator has NO require_pointers_pair\n";
+
+    } else {
+        std::cout << "No filters found in variant\n";
+    }
+
+
+
+
+    //----------------------------------------------------------------------------
+
     out << "Test initializer_list\n";
     out << marty::format::formatMessage( std::string("{} {0} {} {}"), {0, 1, 2, 3} );
     out << "\n";

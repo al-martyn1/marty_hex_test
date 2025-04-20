@@ -256,7 +256,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
         // Если в качестве списка элементов - плоский вектор без имён, то тогда
         // именованные argId недопустимы
         {
-            auto argIdOutIt = marty::utf::UtfOutputIterator<char>(formattingOptions.argId);
+            std::string tmp;
+            auto argIdOutIt = marty::utf::UtfOutputIterator<char>(tmp /*formattingOptions.argId */ );
             while(b!=e)
             {
                 if (ch==utfch_t(':') || ch==utfch_t('}'))
@@ -265,8 +266,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
                 incB();
             }
 
-            if (!formattingOptions.argId.empty())
-                formattingOptions.optionsFlags |= FormattingOptionsFlags::argIdTaken;
+            //if (!formattingOptions.argId.empty())
+            //    formattingOptions.optionsFlags |= FormattingOptionsFlags::argIdTaken;
         }
 
         if (b==e) // Дошли до конца
@@ -366,13 +367,13 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
         if (utils::isFormatDigit(ch, 1, 9))
         {
             formattingOptions.optionsFlags |= FormattingOptionsFlags::fieldWidthTaken;
-            formattingOptions.fieldWidth   = utils::toDigit(ch);
+            formattingOptions.width   = marty::format::width_t(utils::toDigit(ch));
 
             incB();
             while(b!=e && utils::isFormatDigit(ch, 0, 9))
             {
-                formattingOptions.fieldWidth *= 10;
-                formattingOptions.fieldWidth += utils::toDigit(ch);
+                formattingOptions.width *= 10;
+                formattingOptions.width += marty::format::width_t(utils::toDigit(ch));
                 incB();
             }
 
@@ -386,7 +387,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
         else if (ch==utfch_t('{'))
         {
             formattingOptions.optionsFlags |= FormattingOptionsFlags::fieldWidthTaken | FormattingOptionsFlags::fieldWidthIndirect;
-            auto widthIdOutIt = marty::utf::UtfOutputIterator<char>(formattingOptions.fieldWidthRef);
+            std::string tmp;
+            auto widthIdOutIt = marty::utf::UtfOutputIterator<char>(tmp /*formattingOptions.fieldWidthRef*/);
 
             incB();
             if (b==e) // Дошли до конца
@@ -442,7 +444,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
             if (ch==utfch_t('{')) // ref
             {
                 formattingOptions.optionsFlags |= FormattingOptionsFlags::precisionIndirect;
-                auto precisionIdOutIt = marty::utf::UtfOutputIterator<char>(formattingOptions.precisionRef);
+                std::string tmp;
+                auto precisionIdOutIt = marty::utf::UtfOutputIterator<char>(tmp /*formattingOptions.precisionRef*/);
 
                 incB();
                 if (b==e) // Дошли до конца
@@ -469,13 +472,13 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
             }
             else if (utils::isFormatDigit(ch, 0, 9))
             {
-                formattingOptions.precision = utils::toDigit(ch);
+                formattingOptions.precision = marty::format::width_t(utils::toDigit(ch));
 
                 incB();
                 while(b!=e && utils::isFormatDigit(ch, 0, 9))
                 {
                     formattingOptions.precision *= 10;
-                    formattingOptions.precision += utils::toDigit(ch);
+                    formattingOptions.precision += marty::format::width_t(utils::toDigit(ch));
                     incB();
                 }
 

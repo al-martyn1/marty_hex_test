@@ -176,7 +176,7 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
 
     auto finalizeFirstWidthDigit_goToReadingWidthDirect = [&](utfch_t ch)
     {
-        formattingOptions.fieldWidth = marty::format::utils::toDigit(ch);
+        formattingOptions.width         = marty::format::width_t(marty::format::utils::toDigit(ch));
         formattingOptions.optionsFlags |= marty::format::FormattingOptionsFlags::fieldWidthTaken;
         st = State::readingWidthDirect;
     };
@@ -505,8 +505,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
             {
                 if (utils::isFormatDigit(ch))
                 {
-                    formattingOptions.fieldWidth   *= 10;
-                    formattingOptions.fieldWidth   += marty::format::utils::toDigit(ch);
+                    formattingOptions.width   *= 10;
+                    formattingOptions.width   += marty::format::width_t(marty::format::utils::toDigit(ch));
                 }
                 else if (utils::isFormatPeriodChar(ch)) // '.'
                     foundPeriodChar_goToReadingPrecision();
@@ -536,8 +536,8 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
             {
                 if (utils::isFormatDigit(ch)) // '1'-'9'
                 {
-                    formattingOptions.fieldWidth   *= 10;
-                    formattingOptions.fieldWidth   += marty::format::utils::toDigit(ch);
+                    formattingOptions.width   *= 10;
+                    formattingOptions.width   += marty::format::width_t(marty::format::utils::toDigit(ch));
                 }
                 else if (utils::isFormatCloseBrace(ch))
                 {
@@ -585,7 +585,7 @@ std::string parseFormatString(const std::string &str, bool ignoreErrors=true)
                 if (utils::isFormatDigit(ch))
                 {
                     formattingOptions.precision   *= 10;
-                    formattingOptions.precision   += marty::format::utils::toDigit(ch);
+                    formattingOptions.precision   += marty::format::width_t(marty::format::utils::toDigit(ch));
                 }
                 else if (utils::isFormatLocaleChar(ch)) // 'L'
                     foundLocaleChar_goToReadingTypeChar();
