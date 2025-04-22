@@ -530,7 +530,7 @@ int unsafeMain(int argc, char* argv[])
     int curLineBytePos = 0; // displayWidth
 
     const int displayWidth        = diagram.getDisplayWidth();
-    const int labelMaxWidth       = 96;
+    //const int labelMaxWidth       = 96;
     const int byteStartPosX       = 0; // 128;
     const int byteLineHeight      = 24;
     const int byteHeight          = 20;

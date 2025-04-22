@@ -557,7 +557,7 @@ int unsafeMain(int argc, char* argv[])
     int curLineBytePos = 0; // displayWidth
 
     const int displayWidth        = diagram.getDisplayWidth();
-    const int labelMaxWidth       = 96;
+    // const int labelMaxWidth       = 96;
     const int byteStartPosX       = 0; // 128;
     const int byteWidth           = 1024 / displayWidth;
     const int byteLineHeight      = 24;
@@ -787,7 +787,7 @@ int unsafeMain(int argc, char* argv[])
 //     std::vector<ByteDiagramViewSectionData>  sections;
 // };
 
-// .mdppPacketDiaLabel{fill:black;font-size:12px;}\n\
+// .mdppPacketDiaLabel{fill:black;font-size:12px;}\n
 
 // mermaid::svg::drawWord( oss, bv4, 50, 250
 //         , "mdppPacketDiaBlock"
