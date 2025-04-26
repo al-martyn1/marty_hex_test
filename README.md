@@ -1,17 +1,17 @@
 # Шаблон Umba-проекта
 
-  - [Настройка проекта на базе данного шаблона](#user-content-настройка-проекта-на-базе-данного-шаблона)
-    - [Настройка CMakeLists.txt](#user-content-настройка-cmakeliststxt)
-      - [Название проекта](#user-content-название-проекта)
-      - [Настройка библиотек](#user-content-настройка-библиотек)
-      - [Добавление целей](#user-content-добавление-целей)
-    - [Настройка запуска MSVC](#user-content-настройка-запуска-msvc)
-  - [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
-    - [Извлечение библиотек](#user-content-извлечение-библиотек)
-    - [Генерация сборочных скриптов и сборка](#user-content-генерация-сборочных-скриптов-и-сборка)
-    - [Открытие проекта в IDE](#user-content-открытие-проекта-в-ide)
-      - [Запуск VSCode](#user-content-запуск-vscode)
-      - [Запуск MSVC](#user-content-запуск-msvc)
+- [Настройка проекта на базе данного шаблона](#user-content-настройка-проекта-на-базе-данного-шаблона)
+  - [Настройка CMakeLists.txt](#user-content-настройка-cmakeliststxt)
+    - [Название проекта](#user-content-название-проекта)
+    - [Настройка библиотек](#user-content-настройка-библиотек)
+    - [Добавление целей](#user-content-добавление-целей)
+  - [Настройка запуска MSVC](#user-content-настройка-запуска-msvc)
+- [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
+  - [Извлечение библиотек](#user-content-извлечение-библиотек)
+  - [Генерация сборочных скриптов и сборка](#user-content-генерация-сборочных-скриптов-и-сборка)
+  - [Открытие проекта в IDE](#user-content-открытие-проекта-в-ide)
+    - [Запуск VSCode](#user-content-запуск-vscode)
+    - [Запуск MSVC](#user-content-запуск-msvc)
 
 
 Для подключения и использования необходимых библиотек их нужно раскомментировать в файлах:
@@ -28,9 +28,8 @@
 
 В начале файла находим строку описания проекта (с директивой `project`):
 
-CMakeLists.txt:2
+**CMakeLists.txt:0**
 ```cmake
-project(umba-template VERSION 0.1.0 LANGUAGES C CXX)
 ```
 
 Заменяем название `umba-template` на название проекта.
@@ -41,28 +40,36 @@ project(umba-template VERSION 0.1.0 LANGUAGES C CXX)
 
 Импортируем нужные библиотеки:
 
-CMakeLists.txt:30
+**CMakeLists.txt:23**
 ```cmake
 # Import libraries here
-# add_subdirectory(${LIB_ROOT}/encoding)
-# add_subdirectory(${LIB_ROOT}/marty_cpp)
+add_subdirectory(${LIB_ROOT}/encoding)
+add_subdirectory(${LIB_ROOT}/marty_cpp)
+add_subdirectory(${LIB_ROOT}/marty_crc)
+add_subdirectory(${LIB_ROOT}/marty_decimal)
+add_subdirectory(${LIB_ROOT}/marty_hex)
+add_subdirectory(${LIB_ROOT}/marty_mem)
+add_subdirectory(${LIB_ROOT}/marty_svg)
+add_subdirectory(${LIB_ROOT}/marty_utf)
+add_subdirectory(${LIB_ROOT}/marty_format)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
 # add_subdirectory(${LIB_ROOT}/nlohmann)    # https://json.nlohmann.me/integration/cmake/#external
 # add_subdirectory(${LIB_ROOT}/pugixml)
-# add_subdirectory(${LIB_ROOT}/sfmt)
-# add_subdirectory(${LIB_ROOT}/umba)
+add_subdirectory(${LIB_ROOT}/sfmt)
+add_subdirectory(${LIB_ROOT}/umba)
+add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 # add_subdirectory(${LIB_ROOT}/yaml-cpp)
 ```
 
 
 Настраиваем списки библиотек для последующего использования:
 
-CMakeLists.txt:97
+**CMakeLists.txt:51**
 ```cmake
 # Configure libraries here
-# set(COMMON_LIBS encoding::encoding marty_cpp::marty_cpp sfmt::sfmt umba::umba)
+set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::decimal marty::hex marty::mem marty::svg umba::tokenizer marty::utf marty::format)
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 ```
@@ -74,11 +81,8 @@ CMakeLists.txt:97
 
 Настраиваем цель (исполняемый файл) проекта:
 
-CMakeLists.txt:106
+**CMakeLists.txt:0**
 ```cmake
-add_executable(umba-template "${SRC_ROOT}/umba-template/umba-template.cpp" "${headers}")
-umba_add_target_options(umba-template "CONSOLE" "BIGOBJ" "UTF8" ) # "PEDANTIC" "WERR"
-target_link_libraries(umba-template PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 ```
 
 При необходимости дополнительные цели можно добавлять аналогично.
@@ -88,9 +92,9 @@ target_link_libraries(umba-template PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 Для открытия проекта в MSVC нужно настроить название "солюшена":
 
-set_sln.bat:2
+**set_sln.bat:2**
 ```
-@set SLN=umba-template
+@set SLN=umba-hex
 ```
 
 Это название должно совпадать с тем, что указано в директиве `project` файла `CMakeLists.txt`.

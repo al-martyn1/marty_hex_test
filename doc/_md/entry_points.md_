@@ -1,0 +1,38 @@
+---
+Title: Brief Description for Project Sources
+Generator: Umba Brief Scanner
+---
+
+- `01_normalization_and_tabs.cpp` - Тестируем cEscapeString, нормализацию CR LF, нормализацию trailing spaces, condenseSpacesToTabs, normalizeIndents
+- `02_enum_generator.cpp` - Тестирование генератора enum'ов marty_cpp::enum_generate_
+- `03_sort_includes.cpp` - Тестируем sort_includes.
+- `safe_main.h` - 
+- `marty_format_types.h` - Типы для marty::format
+- `CMakeCCompilerId.c` - 
+- `CMakeCXXCompilerId.cpp` - 
+- `app_main.h` - 
+- `compiler_id_cpp.h` - 
+- `winstrerrorname.cxx` - 
+- `marty-hex-test-001.cpp` - Тестим marty::hex::MemoryFillMap
+- `marty-hex-test-002.cpp` - Тестим чтение диаграм
+- `marty-hex-test-003.cpp` - Тестим сериализацию чисел в разные форматы и разные размеры
+- `marty-hex-test-004.cpp` - Выводим мин-максы для разных интегральных типов - https://en.cppreference.com/w/cpp/types/climits. Также тестим различные утилитные функции.
+- `marty-hex-test-005.cpp` - Тестим byteSwap и генерацию маски по количеству бит
+- `marty-hex-test-006.cpp` - Тестируем marty::mem::Memory
+- `marty-hex-test-007.cpp` - Тестируем marty::mem::VirtualAddressMemoryIterator
+- `marty-hex-test-008.cpp` - Тестим чтение HEX, первичную проверку, получение диапазонов блоков занятой памяти
+- `marty-hex-test-009.cpp` - Тестим чтение диаграм, и заполнение их данными
+- `marty-hex-test-010.cpp` - Тестим чтение диаграм, и заполнение их данными - код установки данных выделен в отдельную функцию memorySetVariable, добавлено вырезание YAML/style отдельной функцией prepareTextForDiagramParsing
+- `marty-hex-test-011.cpp` - Тестируем вырезание YAML, его простой парсинг и style
+- `marty-hex-test-012.cpp` - Рисуем SVG, drawWord и прочие тесты примитивов.
+- `marty-hex-test-013.cpp` - Чтение диаграм и подготовка к рисованию
+- `marty-hex-test-014.cpp` - Пытаемся рисовать диаграмму
+- `marty-hex-test-015.cpp` - Рисуем диаграмму и добавляем опции
+- `marty-hex-test-016.cpp` - Выносим подготовку к рисованию диаграммы в либу
+- `marty-hex-test-017.cpp` - Выносим подготовку к рисованию диаграммы в либу
+- `marty-hex-test-018.cpp` - Парсим форматную строку (старая версия, поломана)
+- `marty-hex-test-019.cpp` - Парсим форматную строку - без автомата
+- `marty-hex-test-020.cpp` - Парсим форматную строку - без автомата (функцию вынес в библиотеку)
+- `marty-hex-test-021.cpp` - Тестим функцию форматирования с аргументами в виде marty::format::Args
+- `marty-hex-test-tpl.cpp` - Тестим чтение HEX, первичную проверку, получение диапазонов блоков занятой памяти
+- `umba-hex.cpp` - 

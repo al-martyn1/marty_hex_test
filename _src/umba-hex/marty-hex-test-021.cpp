@@ -132,8 +132,12 @@ std::string testFormatString(int nTest, const std::string& fmt, const marty::for
     return resStr;
 }
 
-
-
+template<typename T>
+void printSignedUnsignedTypeInfo()
+{
+    std::cout << "Signed size  : " << sizeof(T) << "\n";
+    std::cout << "Unsigned size: " << sizeof(std::make_unsigned_t<T>) << "\n";
+}
 
 int unsafeMain(int argc, char* argv[])
 {
@@ -188,6 +192,26 @@ int unsafeMain(int argc, char* argv[])
 
     // Печать информации о фильтрах
     // variant_filter_traits<FormatArgumentVariant>::print();
+
+    std::cout << "signed char sizes:\n";
+    printSignedUnsignedTypeInfo<signed char>();
+    std::cout << "\n\n";
+
+    std::cout << "signed short sizes:\n";
+    printSignedUnsignedTypeInfo<signed short>();
+    std::cout << "\n\n";
+
+    std::cout << "signed int sizes:\n";
+    printSignedUnsignedTypeInfo<signed int>();
+    std::cout << "\n\n";
+
+    std::cout << "signed long sizes:\n";
+    printSignedUnsignedTypeInfo<signed long>();
+    std::cout << "\n\n";
+
+    std::cout << "signed long long sizes:\n";
+    printSignedUnsignedTypeInfo<signed long long>();
+    std::cout << "\n\n";
 
     std::cout << "Variant contains filters: " 
               << std::boolalpha 
