@@ -96,7 +96,7 @@ endif()
 set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "WERR"
 
 
-if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+# if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
 
 set(TARGET marty-hex-test-001)
@@ -271,13 +271,43 @@ umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE")
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
+set(TARGET mfmt_example_05)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET mfmt_example_06)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET mfmt_example_07)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET mfmt_example_08)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET mfmt_example_09)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
 set(TARGET std_to_chars_tests)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/std_format_tests/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-endif()
+# endif()
 
 
 

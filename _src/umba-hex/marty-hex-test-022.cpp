@@ -106,18 +106,20 @@ LocaleInfo::group_info_t grp_3_0_0   = LocaleInfo::parseGroupingString("3;0;0");
 inline
 std::string makeNumberGroupped(const std::string &str, const LocaleInfo::group_info_t &grpInfo)
 {
-    std::string res; res.reserve(str.size());
+    // std::string res; res.reserve(str.size());
+    //  
+    // for(std::size_t i=0; i!=str.size(); ++i)
+    // {
+    //     if (LocaleInfo::testAppendGroupSeparator(i, grpInfo))
+    //         res.append(1, ',');
+    //         //res.append(1, '\'');
+    //     res.append(1u, str[str.size()-i-1u]);
+    // }
+    //  
+    // std::reverse(res.begin(), res.end());
+    // return res;
 
-    for(std::size_t i=0; i!=str.size(); ++i)
-    {
-        if (LocaleInfo::testAppendGroupSeparator(i, grpInfo))
-            res.append(1, ',');
-            //res.append(1, '\'');
-        res.append(1u, str[str.size()-i-1u]);
-    }
-
-    std::reverse(res.begin(), res.end());
-    return res;
+    return LocaleInfo::insertGroupSeparators(str, std::string(1, ','), grpInfo, false /* bFractionalPart */ );
 }
 
 inline
@@ -128,8 +130,79 @@ void testMakeNumberGroupped(const std::string &str, LocaleInfo::group_info_t &gr
     std::cout << str << " + " << composedGroupingString << " -> " << grouppedNumber << ", expected: " << expectedGrp << " -> " << expectedRes << "\n";
 }
 
-// std::string composeGroupingString(const group_info_t &grpInfo)
-// marty::format::
+inline
+void printLocaleInfoGroupping(const LocaleInfo *pLocaleInfo, NumeralSystem ns)
+{
+    auto grpInt  = LocaleInfo::composeGroupingString(pLocaleInfo->getGroupInfo(ns, false));
+    auto grpFrac = LocaleInfo::composeGroupingString(pLocaleInfo->getGroupInfo(ns, true ));
+    std::cout << enum_serialize(ns) << ", int part grouping: " << grpInt << ", fractional part grouping: " << grpFrac << "\n";
+}
+
+#define EXPAND_TO_NUM_DIGITS
+
+inline
+void testPrintExpandWithGroupSeparator(std::string numStrBase)
+{
+    std::cout << "-------\n";
+    std::cout << "Base number string: " << numStrBase << "\n";
+
+    LocaleInfo::group_info_t grpInfo = LocaleInfo::parseGroupingString("2;0");
+    std::string sep = "'";
+
+    #ifndef EXPAND_TO_NUM_DIGITS
+    std::size_t sepLen       = sep.size();
+    #endif
+    std::size_t maxLen       = 13;
+
+    // std::string numStr       = numStrBase;
+
+    // auto firstTimeExpandedStr = LocaleInfo::insertGroupSeparators(numStrBase, sep, grpInfo, false /* bFractionalPart */ );
+    // std::cout << "First Time Expanded Str: " << firstTimeExpandedStr << "\n";
+
+    for(std::size_t i=3; i!=maxLen+2; ++i)
+    {
+        auto iStr = utils::expandBeforeUpTo(std::to_string(i), std::to_string(i).size(), 3, ' ');
+        std::cout << "  expand to " << iStr /* i */  << "  : ";
+
+        std::string numStr = LocaleInfo::insertGroupSeparators(numStrBase, sep, grpInfo, false /* bFractionalPart */ );
+
+        std::size_t digitsCount = numStrBase.size();
+
+        #ifndef EXPAND_TO_NUM_DIGITS
+        std::size_t strLen      = numStrBase.size();
+        numStr = LocaleInfo::expandWithGroupSeparator( numStr, sep, grpInfo
+                                                     , false  // !bFractionalPart
+                                                     , sepLen // sepCalculatedLen
+                                                     , strLen
+                                                     , digitsCount
+                                                     , i // maxLen
+                                                     );
+        #else
+        numStr = LocaleInfo::expandWithGroupSeparatorToNumDigits( numStr, sep, grpInfo
+                                                     , false  // !bFractionalPart
+                                                     , digitsCount
+                                                     , i // maxLen
+                                                     );
+        #endif
+
+        auto numStrPrint = utils::expandBeforeUpTo(numStr, numStr.size(), 20, ' ');
+        std::cout << numStrPrint;
+
+        std::cout << "\n";
+    }
+
+
+
+    // static std::string expandWithGroupSeparator( std::string numStr, std::string sep, const group_info_t &grpInfo
+    //                                            , bool bFractionalPart
+    //                                            , std::size_t sepCalculatedLen  // Посчитанная снаружи длина разделителя
+    //                                            , std::size_t &numStrLen // Посчитанная снаружи полная длина строки, которую дополняем, включая сепараторы
+    //                                            , std::size_t &digitsCount
+    //                                            , std::size_t maxLen
+    //                                            );
+
+ 
+}
 
 
 int unsafeMain(int argc, char* argv[])
@@ -146,6 +219,23 @@ int unsafeMain(int argc, char* argv[])
     testMakeNumberGroupped(str, grp_3_2  , "3;2"  , "30000000,00,000   ");
     testMakeNumberGroupped(str, grp_3_0_0, "3;0;0", "3,000,000,000,000");
     //testMakeNumberGroupped(str, , , "");
+
+
+    auto pLocaleInfoInvariant = getLocaleInfo(LocaleInfoType::invariant);
+    // auto pLocaleInfoUser      = getLocaleInfo(LocaleInfoType::user);
+
+    std::cout << "-----------------------\n";
+    std::cout << "Grouping\n";
+
+    printLocaleInfoGroupping(pLocaleInfoInvariant, NumeralSystem::currency);
+    printLocaleInfoGroupping(pLocaleInfoInvariant, NumeralSystem::bin     );
+    printLocaleInfoGroupping(pLocaleInfoInvariant, NumeralSystem::hex     );
+    printLocaleInfoGroupping(pLocaleInfoInvariant, NumeralSystem::oct     );
+    printLocaleInfoGroupping(pLocaleInfoInvariant, NumeralSystem::dec     );
+
+    std::cout << "-----------------------\n";
+    std::cout << "Expanding With Group Separator\n";
+    testPrintExpandWithGroupSeparator("3");
 
     return 0;
 }
