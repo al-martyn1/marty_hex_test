@@ -12,6 +12,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
+add_compile_definitions(MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE=std::uint8_t)
+
+
 set(UMBA_STATIC_RUNTIME ON)
 set(UMBA_USE_BOOST      ON)
 
@@ -22,6 +25,7 @@ include_directories(${LIB_ROOT})
 
 # Import libraries here
 add_subdirectory(${LIB_ROOT}/encoding)
+add_subdirectory(${LIB_ROOT}/marty_bigint)
 add_subdirectory(${LIB_ROOT}/marty_cpp)
 add_subdirectory(${LIB_ROOT}/marty_crc)
 add_subdirectory(${LIB_ROOT}/marty_decimal)
@@ -49,7 +53,18 @@ add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 
 
 # Configure libraries here
-set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::decimal marty::hex marty::mem marty::svg umba::tokenizer marty::utf marty::format)
+set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
+    marty::bigint
+    marty::cpp
+    marty::crc
+    marty::decimal
+    marty::hex
+    marty::mem
+    marty::svg
+    umba::tokenizer
+    marty::utf
+    marty::format
+   )
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 
@@ -232,6 +247,12 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-023)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-024)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")

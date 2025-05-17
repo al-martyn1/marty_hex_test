@@ -1,4 +1,5 @@
 call :DO_GIT_JOB %1 %~dp0\encoding
+call :DO_GIT_JOB %1 %~dp0\marty_bigint
 call :DO_GIT_JOB %1 %~dp0\marty_cpp
 call :DO_GIT_JOB %1 %~dp0\marty_crc
 call :DO_GIT_JOB %1 %~dp0\marty_decimal
