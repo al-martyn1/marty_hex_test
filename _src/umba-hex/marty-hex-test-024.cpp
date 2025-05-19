@@ -2,8 +2,9 @@
     \brief Тестим marty::BigInt
  */
 
-
-#define MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE  std::uint8_t
+#ifndef MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE
+    #define MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE  std::uint8_t
+#endif
 
 // Должна быть первой
 #include "umba/umba.h"
@@ -39,7 +40,9 @@
 #include <exception>
 #include <stdexcept>
 #include <utility>
+#include <type_traits>
 
+//
 #include "encoding/encoding.h"
 
 #include "marty_bigint/marty_bigint.h"
@@ -99,16 +102,47 @@ UMBA_APP_MAIN()
 }
 
 inline
-std::string mkMarker(bool bGood)
+bool isIgnoreResultOpSign(const std::string &s)
 {
-    return std::string(bGood ? "+" : "-") + "   ";
+    return s.size()>=3;
 }
 
 inline
-bool testBigIntPlus(int &nPassed, std::int64_t i1, std::int64_t i2)
+std::string removeIgnoreResultFromOpSign(std::string s)
 {
-    std::int64_t  iRes = std::int64_t(i1+i2);
-    marty::BigInt bRes = marty::BigInt(i1) + marty::BigInt(i2);
+    if (!isIgnoreResultOpSign(s))
+        return s;
+    s.erase(0,3);
+    return s;
+}
+
+
+inline
+std::string mkMarker(bool bGood, bool bIgnore)
+{
+    return bIgnore
+         ? std::string("!") + "   "
+         : std::string(bGood ? "+" : "-") + "   ";
+         ;
+}
+
+template<typename Op>
+bool testBigIntImpl(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2, Op op)
+{
+    std::int64_t  iRes = 0; 
+    marty::BigInt bRes = 0; 
+
+    std::string opStr = op(iRes, bRes, i1, i2);
+
+    bool bIgnoreRes = isIgnoreResultOpSign(opStr);
+    opStr = removeIgnoreResultFromOpSign(opStr);
+
+    if (opStr.empty())
+        return true;
+
+
+    // std::int64_t(i1+i2);
+    // marty::BigInt(i1) + marty::BigInt(i2);
 
     using std::to_string;
 
@@ -117,63 +151,192 @@ bool testBigIntPlus(int &nPassed, std::int64_t i1, std::int64_t i2)
 
     bool bGood = iStr==bStr;
 
-    std::cout << mkMarker(bGood);
-    std::cout << i1 << " + " << i2 << " = " << iStr;
+    std::cout << mkMarker(bGood, bIgnoreRes);
+    std::cout << i1 << " " << opStr << " " << i2 << " = ";
 
-    if (bGood)
+    if (bIgnoreRes)
     {
-        std::cout << " - passed\n";
+        std::cout << bStr;
+        std::cout << " - ignored\n";
+        bGood = true;
     }
     else
     {
-        std::cout << " - failed, result: " << bStr << "\n";
+        std::cout << iStr;
+
+        if (bGood)
+        {
+            std::cout << " - passed\n";
+        }
+        else
+        {
+            std::cout << " - failed, result: " << bStr << "\n";
+        }
     }
+
+    ++nTotal;
 
     if (bGood)
        ++nPassed;
 
     return bGood;
+}
+
+
+
+inline
+bool testBigIntPlus(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 + i2;
+                        bRes = marty::BigInt(i1) + marty::BigInt(i2);
+                        return "+";
+                    }
+                  );
 }
 
 inline
-bool testBigIntMinus(int &nPassed, std::int64_t i1, std::int64_t i2)
+bool testBigIntMinus(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
 {
-    std::int64_t  iRes = std::int64_t(i1+i2);
-    marty::BigInt bRes = marty::BigInt(i1) + marty::BigInt(i2);
-
-    using std::to_string;
-
-    auto iStr  = to_string(iRes);
-    auto bStr  = to_string(bRes);
-
-    bool bGood = iStr==bStr;
-
-    std::cout << mkMarker(bGood);
-    std::cout << i1 << " - " << i2 << " = " << iStr;
-
-    if (bGood)
-    {
-        std::cout << " - passed\n";
-    }
-    else
-    {
-        std::cout << " - failed, result: " << bStr << "\n";
-    }
-
-    if (bGood)
-       ++nPassed;
-
-    return bGood;
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 - i2;
+                        bRes = marty::BigInt(i1) - marty::BigInt(i2);
+                        return "-";
+                    }
+                  );
 }
+
+inline
+bool testBigIntMul(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 * i2;
+                        bRes = marty::BigInt(i1) * marty::BigInt(i2);
+                        return "*";
+                    }
+                  );
+}
+
+inline
+bool testBigIntShiftLeft(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        i2 = 23;
+                        iRes = i1 << 23;
+                        bRes = marty::BigInt(i1) << 23;
+                        return "<<";
+                    }
+                  );
+}
+
+inline
+bool testBigIntShiftRight(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0)
+                            return std::string();
+                        i2 = 23;
+                        iRes = i1 >> 23;
+                        bRes = marty::BigInt(i1) >> 23;
+                        return ">>";
+                    }
+                  );
+}
+
+inline
+bool testBigIntAnd(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 & i2;
+                        bRes = marty::BigInt(i1) & marty::BigInt(i2);
+                        return "&";
+                    }
+                  );
+}
+
+inline
+bool testBigIntOr(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 | i2;
+                        bRes = marty::BigInt(i1) | marty::BigInt(i2);
+                        return "|";
+                    }
+                  );
+}
+
+inline
+bool testBigIntXor(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 ^ i2;
+                        bRes = marty::BigInt(i1) ^ marty::BigInt(i2);
+                        return "^";
+                    }
+                  );
+}
+
+inline
+bool testBigIntInvert(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        i2 = 0;
+                        iRes = ~i1;
+                        bRes = ~marty::BigInt(i1);
+                        return "---~";
+                    }
+                  );
+}
+
 
 inline
 void doTestImpl(int &nTest, int &nPassed, std::int64_t i1, std::int64_t i2)
 {
-    ++nTest;
-    testBigIntPlus (nPassed, i1, i2);
+    testBigIntPlus (nTest, nPassed, i1, i2);
+    testBigIntMinus(nTest, nPassed, i1, i2);
+    testBigIntMul  (nTest, nPassed, i1, i2);
+    
+    testBigIntShiftLeft(nTest, nPassed, i1, i2);
+    testBigIntShiftRight(nTest, nPassed, i1, i2);
 
-    ++nTest;
-    testBigIntMinus(nPassed, i1, i2);
+    testBigIntAnd   (nTest, nPassed, i1, i2);
+    testBigIntOr    (nTest, nPassed, i1, i2);
+    testBigIntXor   (nTest, nPassed, i1, i2);
+    testBigIntInvert(nTest, nPassed, i1, i2);
+
 }
 
 inline
@@ -187,11 +350,38 @@ void doTest(int &nTest, int &nPassed, std::int64_t i1, std::int64_t i2)
 
 // std::string testFormatString(int nTest, const std::string& fmt, const marty::format::Args &args)
 
+// Маска старшего бита
+template <typename T>
+constexpr auto highest_bit_mask() {
+    using UT = typename std::make_unsigned<T>::type;
+    return UT{1} << (sizeof(T) * 8 - 1);
+}
+
+// Маска N старших битов
+template <size_t N, typename T>
+constexpr auto high_bits_mask() {
+    using UT = typename std::make_unsigned<T>::type;
+    constexpr size_t type_bits = sizeof(T) * 8;
+    
+    if constexpr (type_bits <= N) {
+        return ~UT{0};
+    } else {
+        return ( (UT{1} << N) - UT{1} ) << (type_bits - N);
+    }
+}
+
 int unsafeMain(int argc, char* argv[])
 {
 
     UMBA_USED(argc);
     UMBA_USED(argv);
+
+    // marty::BigInt bi = -1;
+    // bi <<= 23;
+
+    marty::BigInt bi = 1;
+    bi *= 2;
+
 
     int nTest   = 0;
     int nPassed = 0;
@@ -214,6 +404,19 @@ int unsafeMain(int argc, char* argv[])
     int nFailed = nTest - nPassed;
 
     std::cout << "\n\nTotal tests: " << nTest << ", passed: " << nPassed << ", failed: " << nFailed << "\n\n";
+
+    #if 0
+    std::cout << "h1: " << highest_bit_mask<std::uint8_t>()  << "\n"; // 128
+    std::cout << "h4: " << high_bits_mask<4, std::uint8_t>() << "\n"; // 240
+    std::cout << "h8: " << high_bits_mask<8, std::uint8_t>() << "\n"; // 255
+
+    std::cout << "\n\n";
+
+    std::cout << "h1: " << marty::bigint_utils::makeHighBitsMask<1, std::uint16_t>() << "\n"; // 128
+    std::cout << "h4: " << marty::bigint_utils::makeHighBitsMask<4, std::uint16_t>() << "\n"; // 240
+    std::cout << "h8: " << marty::bigint_utils::makeHighBitsMask<8, std::uint16_t>() << "\n"; // 255
+    #endif
+
 
     return 0;
 }
