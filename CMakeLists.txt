@@ -113,6 +113,10 @@ set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "
 
 # if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
+# set(TESTS "ALL")
+
+if (TESTS STREQUAL "ALL")
+
 
 set(TARGET marty-hex-test-001)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}")
@@ -251,8 +255,15 @@ add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
+endif()
 
 set(TARGET marty-hex-test-024)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-025)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
@@ -262,6 +273,8 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 #------------------------------------------------------------------------------------------------
+if (TESTS STREQUAL "ALL")
+
 set(TARGET mfmt_example_01)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/marty_format_examples/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
@@ -334,7 +347,7 @@ umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE")
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
-# endif()
+endif()
 
 
 

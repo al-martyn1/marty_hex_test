@@ -6,83 +6,66 @@
     #define MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE  std::uint8_t
 #endif
 
-// Должна быть первой
-#include "umba/umba.h"
-//---
-#include "umba/app_main.h"
-//
-#include "umba/debug_helpers.h"
-#include "umba/shellapi.h"
-#include "umba/program_location.h"
-#include "umba/cli_tool_helpers.h"
-#include "umba/cmd_line.h"
-//
-
-//#-sort
-#include "umba/simple_formatter.h"
-#include "umba/char_writers.h"
-//#+sort
-
-#include "marty_format/marty_format.h"
-#include "marty_format/locale_info.h"
-
-// 
 #include <iostream>
 #include <iomanip>
-#include <sstream>
 #include <string>
-#include <vector>
-#include <stack>
-#include <unordered_map>
-#include <unordered_set>
-#include <tuple>
-#include <utility>
-#include <exception>
-#include <stdexcept>
-#include <utility>
-#include <type_traits>
 
 //
-#include "encoding/encoding.h"
-
 #include "marty_bigint/marty_bigint.h"
 
-//
-// #include "utils.h"
-//
+#include <windows.h>
+
+#include "marty_bigint/undef_min_max.h"
 
 
-umba::StdStreamCharWriter coutWriter(std::cout);
-umba::StdStreamCharWriter cerrWriter(std::cerr);
-umba::NulCharWriter       nulWriter;
 
-umba::SimpleFormatter umbaLogStreamErr(&cerrWriter);
-umba::SimpleFormatter umbaLogStreamMsg(&coutWriter);
-umba::SimpleFormatter umbaLogStreamNul(&nulWriter);
+//----------------------------------------------------------------------------
+inline
+std::uint32_t getMillisecTick()
+{
+    #if defined(WIN32) || defined(_WIN32)
 
-umba::SimpleFormatter &out = umbaLogStreamMsg;
+        // https://devblogs.microsoft.com/cppblog/visual-c-compiler-version/
+        // https://learn.microsoft.com/en-us/cpp/overview/compiler-versions?view=msvc-170
 
-bool umbaLogGccFormat   = false; // true;
-bool umbaLogSourceInfo  = false;
+        #if defined(_MSC_VER) && _MSC_VER>1929
+            #pragma warning(push)
+            #pragma warning(disable:28159) // - warning C28159: Consider using 'GetTickCount64' instead of 'GetTickCount'
+        #endif
 
-bool bOverwrite         = false;
+        return (std::uint32_t)GetTickCount();
 
-#if 1
-//
-#include "log.h"
-//
-#include "AppConfig.h"
+        #if defined(_MSC_VER) && _MSC_VER>1929
+            #pragma warning(pop)
+        #endif
 
-AppConfig appConfig;
+    #else // Linups users can add native millisec counter getter or new std chrono fns
 
-#include "ArgParser.h"
-#endif
+        return 0;
+
+    #endif
+}
+
+struct TickElapsedPrinter
+{
+    std::uint32_t  startTick = 0;
+    std::string    msg;
+
+    TickElapsedPrinter(const std::string &m) : startTick(getMillisecTick()), msg(m) {}
+    ~TickElapsedPrinter()
+    {
+        std::cout << msg << ": " << (getMillisecTick()-startTick) << "\n";
+    }
+
+}; // struct TickElapsedPrinter
+
+
 
 
 int unsafeMain(int argc, char* argv[]);
 
 
-UMBA_APP_MAIN()
+int main(int argc, char* argv[])
 {
     try
     {
@@ -90,12 +73,12 @@ UMBA_APP_MAIN()
     }
     catch(const std::exception& e)
     {
-        LOG_ERR << e.what() << "\n";
+        std::cerr << e.what() << "\n";
         return 1;
     }
     catch(...)
     {
-        LOG_ERR << "unknown error\n";
+        std::cerr << "unknown error\n";
         return 2;
     }
 
@@ -373,8 +356,8 @@ constexpr auto high_bits_mask() {
 int unsafeMain(int argc, char* argv[])
 {
 
-    UMBA_USED(argc);
-    UMBA_USED(argv);
+    MARTY_ARG_USED(argc);
+    MARTY_ARG_USED(argv);
 
     // marty::BigInt bi = -1;
     // bi <<= 23;
