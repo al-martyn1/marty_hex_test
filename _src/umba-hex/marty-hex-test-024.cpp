@@ -1,11 +1,12 @@
 /*! \file
-    \brief Тестим marty::BigInt
+    \brief Тестим marty::BigInt с чанком std::uint8_t
  */
 
 #ifndef MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE
     #define MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE  std::uint8_t
 #endif
 
+#include <array>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -104,8 +105,8 @@ inline
 std::string mkMarker(bool bGood, bool bIgnore)
 {
     return bIgnore
-         ? std::string("!") + "   "
-         : std::string(bGood ? "+" : "-") + "   ";
+         ? std::string("[!]") + "   "
+         : std::string(bGood ? "[+]" : "[-]") + "   ";
          ;
 }
 
@@ -135,12 +136,12 @@ bool testBigIntImpl(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2,
     bool bGood = iStr==bStr;
 
     std::cout << mkMarker(bGood, bIgnoreRes);
-    std::cout << i1 << " " << opStr << " " << i2 << " = ";
+    std::cout << i1 << " " << opStr << " " << i2 << " = " << std::flush;
 
     if (bIgnoreRes)
     {
         std::cout << bStr;
-        std::cout << " - ignored\n";
+        std::cout << " - ignored\n" << std::flush;
         bGood = true;
     }
     else
@@ -149,11 +150,12 @@ bool testBigIntImpl(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2,
 
         if (bGood)
         {
-            std::cout << " - passed\n";
+            std::cout << " - passed\n" << std::flush;
         }
         else
         {
-            std::cout << " - failed, result: " << bStr << "\n";
+            std::cout << " - failed, result: " << bStr;
+            std::cout << " (" << marty::BigInt::getMultiplicationMethodName() << ")\n" << std::flush;
         }
     }
 
@@ -205,6 +207,38 @@ bool testBigIntMul(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
                         iRes = i1 * i2;
                         bRes = marty::BigInt(i1) * marty::BigInt(i2);
                         return "*";
+                    }
+                  );
+}
+
+inline
+bool testBigIntDiv(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i2==0)
+                            return "---";
+                        iRes = i1 / i2;
+                        bRes = marty::BigInt(i1) / marty::BigInt(i2);
+                        return "/";
+                    }
+                  );
+}
+
+inline
+bool testBigIntRem(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i2==0)
+                            return "---";
+                        iRes = i1 % i2;
+                        bRes = marty::BigInt(i1) % marty::BigInt(i2);
+                        return "%";
                     }
                   );
 }
@@ -311,6 +345,8 @@ void doTestImpl(int &nTest, int &nPassed, std::int64_t i1, std::int64_t i2)
     testBigIntPlus (nTest, nPassed, i1, i2);
     testBigIntMinus(nTest, nPassed, i1, i2);
     testBigIntMul  (nTest, nPassed, i1, i2);
+    testBigIntDiv  (nTest, nPassed, i1, i2);
+    testBigIntRem  (nTest, nPassed, i1, i2);
     
     testBigIntShiftLeft(nTest, nPassed, i1, i2);
     testBigIntShiftRight(nTest, nPassed, i1, i2);
@@ -359,30 +395,100 @@ int unsafeMain(int argc, char* argv[])
     MARTY_ARG_USED(argc);
     MARTY_ARG_USED(argv);
 
+    using std::to_string;
+
+
+    #if defined(WIN32) || defined(_WIN32)
+        #if defined(WIN64) || defined(_WIN64)
+            std::cout<<"Platform: x64" << std::endl << std::flush;
+        #else
+            std::cout<<"Platform: x86" << std::endl << std::flush;
+        #endif
+    #else
+            std::cout<<"Platform: unknown" << std::endl << std::flush;
+    #endif
+
+    std::cout << "BigInt chunk size: " << sizeof(marty::BigInt::chunk_type) << "\n" << std::flush;
+    std::cout << "-------------------------\n\n" << std::flush;
+
     // marty::BigInt bi = -1;
     // bi <<= 23;
 
-    marty::BigInt bi = 1;
-    bi *= 2;
+    // marty::BigInt bi = 1;
+    // bi *= 2;
+
+    using marty::BigInt;
+
+    BigInt bi = BigInt(0); 
+    std::string biStr;
+
+    BigInt::setMultiplicationMethod(BigInt::MultiplicationMethod::school);
+
+    // bi = BigInt(0x1234) * marty::BigInt(4);
+    // biStr = to_string(bi);
+    // std::cout << "0x1234 * 4 = " << biStr << "\n\n";
+
+/*
+    0x56789ABC  / 0x1234              0x56/0x12=4
+    0x1234        4
+    0x56789ABC-0x48D00000=0xDA89ABC
+    0x0DA89ABC                        0xDA/0x12=0x0C
+    0x1234
+
+*/
+    // bi = marty::BigInt(0x56789ABC) / marty::BigInt(0x1234); // 0x4C016, but got 0x4090A
+    // biStr = to_string(bi);
+    // std::cout << "0x56789ABC / 0x1234 = " << biStr << "\n\n";
+
+    // 0x0DA89ABC - 0x0DA70000 = 0x19ABC
+    // bi = marty::BigInt(0x56789ABC) % marty::BigInt(0x1234); // 0xA44, but got 0xD000A44
+    // biStr = to_string(bi);
+    // std::cout << "0x56789ABC / 0x1234 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) / marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 / 2 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) % marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 % 2 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) % marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 % 2 = " << biStr << "\n\n";
+
 
 
     int nTest   = 0;
     int nPassed = 0;
 
-    doTest(nTest, nPassed,     1,     2);
-    doTest(nTest, nPassed,     2,     1);
-    doTest(nTest, nPassed,     1,     3);
-    doTest(nTest, nPassed,     3,     1);
-    doTest(nTest, nPassed,     2,     3);
-    doTest(nTest, nPassed,     3,     2);
-    doTest(nTest, nPassed,     5,     3);
-    doTest(nTest, nPassed,     3,     5);
+    std::array<BigInt::MultiplicationMethod, 3> mMethods = { BigInt::MultiplicationMethod::school, BigInt::MultiplicationMethod::karatsuba, BigInt::MultiplicationMethod::furer };
+    // std::array<BigInt::MultiplicationMethod, 2> mMethods = { BigInt::MultiplicationMethod::school, BigInt::MultiplicationMethod::karatsuba };
 
-    doTest(nTest, nPassed,   125,   253);
-    doTest(nTest, nPassed,   253,   125);
+    for(auto mm: mMethods)
+    {
+        BigInt::setMultiplicationMethod(mm);
+        std::cout << "\n--- " << BigInt::getMultiplicationMethodName() << "\n";
 
-    doTest(nTest, nPassed, 41125, 62253);
-    doTest(nTest, nPassed, 62253, 41125);
+
+        doTest(nTest, nPassed,     1,     2);
+        doTest(nTest, nPassed,     2,     1);
+        doTest(nTest, nPassed,     1,     3);
+        doTest(nTest, nPassed,     3,     1);
+        doTest(nTest, nPassed,     2,     3);
+        doTest(nTest, nPassed,     3,     2);
+        doTest(nTest, nPassed,     5,     3);
+        doTest(nTest, nPassed,     3,     5);
+    
+        doTest(nTest, nPassed,   125,   253);
+        doTest(nTest, nPassed,   253,   125);
+    
+        doTest(nTest, nPassed, 41125, 62253);
+        doTest(nTest, nPassed, 62253, 41125);
+
+        doTest(nTest, nPassed, 0x56789ABC, 0x1234);
+
+    }
 
     int nFailed = nTest - nPassed;
 

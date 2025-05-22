@@ -1,25 +1,12 @@
 /*! \file
-    \brief Тестим умножение marty::BigInt на скорость
+    \brief Тестим marty::BigInt с дефолтным для текущей системы размером чанка (обычно std::uint32_t)
  */
 
-#ifdef MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE
-    #undef MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE
-#endif
-
-#ifndef MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE
-    // #define MARTY_BIGINT_FORCE_NUMBER_UNDERLYING_TYPE std::uint8_t
-#endif
 
 #include <array>
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <algorithm>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <vector>
-#include <utility>
 
 //
 #include "marty_bigint/marty_bigint.h"
@@ -65,34 +52,12 @@ struct TickElapsedPrinter
     TickElapsedPrinter(const std::string &m) : startTick(getMillisecTick()), msg(m) {}
     ~TickElapsedPrinter()
     {
-        #if defined(DEBUG) || defined(_DEBUG)
         std::cout << msg << ": " << (getMillisecTick()-startTick) << "\n";
-        #else
-        std::cout << "+";
-        #endif
     }
 
 }; // struct TickElapsedPrinter
 
 
-
-
-
-using marty::BigInt;
-
-#if defined(DEBUG) || defined(_DEBUG)
-std::size_t numInputs =      10000;
-#else
-std::size_t numInputs = 1000000000;
-#endif
-
-std::vector<BigInt>  baseVals1;
-std::vector<BigInt>  baseVals2;
-std::vector<BigInt>  baseVals3;
-// std::vector<BigInt>  baseVals4;
-
-
-std::vector< std::vector<BigInt> > vals;
 
 
 int unsafeMain(int argc, char* argv[]);
@@ -117,40 +82,318 @@ int main(int argc, char* argv[])
 
 }
 
-
-void findSizeMinMax(const std::vector<BigInt> &vec, std::size_t &minSize, std::size_t &maxSize)
+inline
+bool isIgnoreResultOpSign(const std::string &s)
 {
-    minSize = std::size_t(-1);
-    maxSize = std::size_t( 0);
+    return s.size()>=3;
+}
 
-    for(auto &&v : vec)
+inline
+std::string removeIgnoreResultFromOpSign(std::string s)
+{
+    if (!isIgnoreResultOpSign(s))
+        return s;
+    s.erase(0,3);
+    return s;
+}
+
+
+inline
+std::string mkMarker(bool bGood, bool bIgnore)
+{
+    return bIgnore
+         ? std::string("[!]") + "   "
+         : std::string(bGood ? "[+]" : "[-]") + "   ";
+         ;
+}
+
+template<typename Op>
+bool testBigIntImpl(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2, Op op)
+{
+    std::int64_t  iRes = 0; 
+    marty::BigInt bRes = 0; 
+
+    std::string opStr = op(iRes, bRes, i1, i2);
+
+    bool bIgnoreRes = isIgnoreResultOpSign(opStr);
+    opStr = removeIgnoreResultFromOpSign(opStr);
+
+    if (opStr.empty())
+        return true;
+
+
+    // std::int64_t(i1+i2);
+    // marty::BigInt(i1) + marty::BigInt(i2);
+
+    using std::to_string;
+
+    auto iStr  = to_string(iRes);
+    auto bStr  = to_string(bRes);
+
+    bool bGood = iStr==bStr;
+
+    std::cout << mkMarker(bGood, bIgnoreRes);
+    std::cout << i1 << " " << opStr << " " << i2 << " = " << std::flush;
+
+    if (bIgnoreRes)
     {
-        minSize = std::min(minSize, v.size());
-        maxSize = std::max(minSize, v.size());
+        std::cout << bStr;
+        std::cout << " - ignored\n" << std::flush;
+        bGood = true;
+    }
+    else
+    {
+        std::cout << iStr;
+
+        if (bGood)
+        {
+            std::cout << " - passed\n" << std::flush;
+        }
+        else
+        {
+            std::cout << " - failed, result: " << bStr;
+            std::cout << " (" << marty::BigInt::getMultiplicationMethodName() << ")\n" << std::flush;
+        }
     }
 
+    ++nTotal;
+
+    if (bGood)
+       ++nPassed;
+
+    return bGood;
 }
 
-inline void reduceNumInputs(std::size_t d)
+
+
+inline
+bool testBigIntPlus(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
 {
-    if (d==0)
-        return;
-#if defined(DEBUG) || defined(_DEBUG)
-    if (numInputs>100)
-#else
-    if (numInputs>10000)
-#endif
-        numInputs /= d;
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 + i2;
+                        bRes = marty::BigInt(i1) + marty::BigInt(i2);
+                        return "+";
+                    }
+                  );
+}
+
+inline
+bool testBigIntMinus(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 - i2;
+                        bRes = marty::BigInt(i1) - marty::BigInt(i2);
+                        return "-";
+                    }
+                  );
+}
+
+inline
+bool testBigIntMul(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        iRes = i1 * i2;
+                        bRes = marty::BigInt(i1) * marty::BigInt(i2);
+                        return "*";
+                    }
+                  );
+}
+
+inline
+bool testBigIntDiv(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i2==0)
+                            return "---";
+                        iRes = i1 / i2;
+                        bRes = marty::BigInt(i1) / marty::BigInt(i2);
+                        return "/";
+                    }
+                  );
+}
+
+inline
+bool testBigIntRem(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i2==0)
+                            return "---";
+                        iRes = i1 % i2;
+                        bRes = marty::BigInt(i1) % marty::BigInt(i2);
+                        return "%";
+                    }
+                  );
+}
+
+inline
+bool testBigIntShiftLeft(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        i2 = 23;
+                        iRes = i1 << 23;
+                        bRes = marty::BigInt(i1) << 23;
+                        return "<<";
+                    }
+                  );
+}
+
+inline
+bool testBigIntShiftRight(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0)
+                            return std::string();
+                        i2 = 23;
+                        iRes = i1 >> 23;
+                        bRes = marty::BigInt(i1) >> 23;
+                        return ">>";
+                    }
+                  );
+}
+
+inline
+bool testBigIntAnd(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 & i2;
+                        bRes = marty::BigInt(i1) & marty::BigInt(i2);
+                        return "&";
+                    }
+                  );
+}
+
+inline
+bool testBigIntOr(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 | i2;
+                        bRes = marty::BigInt(i1) | marty::BigInt(i2);
+                        return "|";
+                    }
+                  );
+}
+
+inline
+bool testBigIntXor(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        if (i1<0) i1 = -i1;
+                        if (i2<0) i2 = -i2;
+                        iRes = i1 ^ i2;
+                        bRes = marty::BigInt(i1) ^ marty::BigInt(i2);
+                        return "^";
+                    }
+                  );
+}
+
+inline
+bool testBigIntInvert(int &nTotal, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    return
+    testBigIntImpl( nTotal, nPassed, i1, i2
+                  , [](std::int64_t &iRes, marty::BigInt &bRes, std::int64_t &i1, std::int64_t &i2) -> std::string
+                    {
+                        i2 = 0;
+                        iRes = ~i1;
+                        bRes = ~marty::BigInt(i1);
+                        return "---~";
+                    }
+                  );
 }
 
 
+inline
+void doTestImpl(int &nTest, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    testBigIntPlus (nTest, nPassed, i1, i2);
+    testBigIntMinus(nTest, nPassed, i1, i2);
+    testBigIntMul  (nTest, nPassed, i1, i2);
+    testBigIntDiv  (nTest, nPassed, i1, i2);
+    testBigIntRem  (nTest, nPassed, i1, i2);
+    
+    testBigIntShiftLeft(nTest, nPassed, i1, i2);
+    testBigIntShiftRight(nTest, nPassed, i1, i2);
 
+    testBigIntAnd   (nTest, nPassed, i1, i2);
+    testBigIntOr    (nTest, nPassed, i1, i2);
+    testBigIntXor   (nTest, nPassed, i1, i2);
+    testBigIntInvert(nTest, nPassed, i1, i2);
+
+}
+
+inline
+void doTest(int &nTest, int &nPassed, std::int64_t i1, std::int64_t i2)
+{
+    doTestImpl(nTest, nPassed,  i1,  i2);
+    doTestImpl(nTest, nPassed,  i1, -i2);
+    doTestImpl(nTest, nPassed, -i1,  i2);
+    doTestImpl(nTest, nPassed, -i1, -i2);
+}
+
+// std::string testFormatString(int nTest, const std::string& fmt, const marty::format::Args &args)
+
+// Маска старшего бита
+template <typename T>
+constexpr auto highest_bit_mask() {
+    using UT = typename std::make_unsigned<T>::type;
+    return UT{1} << (sizeof(T) * 8 - 1);
+}
+
+// Маска N старших битов
+template <size_t N, typename T>
+constexpr auto high_bits_mask() {
+    using UT = typename std::make_unsigned<T>::type;
+    constexpr size_t type_bits = sizeof(T) * 8;
+    
+    if constexpr (type_bits <= N) {
+        return ~UT{0};
+    } else {
+        return ( (UT{1} << N) - UT{1} ) << (type_bits - N);
+    }
+}
 
 int unsafeMain(int argc, char* argv[])
 {
 
     MARTY_ARG_USED(argc);
     MARTY_ARG_USED(argv);
+
+    using std::to_string;
+
 
     #if defined(WIN32) || defined(_WIN32)
         #if defined(WIN64) || defined(_WIN64)
@@ -165,402 +408,100 @@ int unsafeMain(int argc, char* argv[])
     std::cout << "BigInt chunk size: " << sizeof(marty::BigInt::chunk_type) << "\n" << std::flush;
     std::cout << "-------------------------\n\n" << std::flush;
 
+    // marty::BigInt bi = -1;
+    // bi <<= 23;
 
-    for(std::size_t i=0u; i!=numInputs; ++i)
-        baseVals1.emplace_back(std::rand());
+    // marty::BigInt bi = 1;
+    // bi *= 2;
 
-    for(std::size_t i=0u; i!=numInputs; ++i)
-        baseVals2.emplace_back(std::rand());
+    using marty::BigInt;
 
-    for(std::size_t i=0u; i!=numInputs; ++i)
-        baseVals3.emplace_back(std::rand());
+    BigInt bi = BigInt(0); 
+    std::string biStr;
 
-    // for(std::size_t i=0u; i!=numInputs; ++i)
-    //     baseVals4.emplace_back(std::rand());
+    BigInt::setMultiplicationMethod(BigInt::MultiplicationMethod::school);
 
-    auto printLastSize = [&]()
+    // bi = BigInt(0x1234) * marty::BigInt(4);
+    // biStr = to_string(bi);
+    // std::cout << "0x1234 * 4 = " << biStr << "\n\n";
+
+/*
+    0x56789ABC  / 0x1234              0x56/0x12=4
+    0x1234        4
+    0x56789ABC-0x48D00000=0xDA89ABC
+    0x0DA89ABC                        0xDA/0x12=0x0C
+    0x1234
+
+*/
+    // bi = marty::BigInt(0x56789ABC) / marty::BigInt(0x1234); // 0x4C016, but got 0x4090A
+    // biStr = to_string(bi);
+    // std::cout << "0x56789ABC / 0x1234 = " << biStr << "\n\n";
+
+    // 0x0DA89ABC - 0x0DA70000 = 0x19ABC
+    // bi = marty::BigInt(0x56789ABC) % marty::BigInt(0x1234); // 0xA44, but got 0xD000A44
+    // biStr = to_string(bi);
+    // std::cout << "0x56789ABC / 0x1234 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) / marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 / 2 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) % marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 % 2 = " << biStr << "\n\n";
+
+    // bi = marty::BigInt(3) % marty::BigInt(2);
+    // biStr = to_string(bi);
+    // std::cout << "3 % 2 = " << biStr << "\n\n";
+
+
+
+    int nTest   = 0;
+    int nPassed = 0;
+
+    std::array<BigInt::MultiplicationMethod, 3> mMethods = { BigInt::MultiplicationMethod::school, BigInt::MultiplicationMethod::karatsuba, BigInt::MultiplicationMethod::furer };
+    // std::array<BigInt::MultiplicationMethod, 2> mMethods = { BigInt::MultiplicationMethod::school, BigInt::MultiplicationMethod::karatsuba };
+
+    for(auto mm: mMethods)
     {
-        #if defined(DEBUG) || defined(_DEBUG)
-        // std::cout << "Total vals: " << vals.size() << ", last size: " << vals.back().size() << "\n\n" << std::flush;
-        #endif
-    };
+        BigInt::setMultiplicationMethod(mm);
+        std::cout << "\n--- " << BigInt::getMultiplicationMethodName() << "\n";
 
 
-    // Первый вектор кладём как есть сгенерированное рандомом
-    vals.emplace_back(baseVals1); // #0
-    printLastSize();
-
-
-    {
-        auto tkprn = TickElapsedPrinter("#1");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back(((baseVals1[i]+baseVals2[i])<<16)+baseVals3[i]);
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#2");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back(((vals[1][i]+baseVals2[i]<<32)+(baseVals3[i]<<16)+baseVals1[i]));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#3");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[2][i]<<(std::rand()%0x3F+0x3F)) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#4");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[3][i]<<(std::rand()%0x3F+0x3F)) + (baseVals2[i])+(baseVals3[i]<<6)+(baseVals1[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-    numInputs *= 2;
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#5");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[4][i]<<(std::rand()%0x3F+0x3F)) + (baseVals3[i])+(baseVals1[i]<<6)+(baseVals2[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#6");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[5][i]<<512) + vals[4][i] + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#7");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[6][i]<<512) + vals[5][i] + (baseVals2[i])+(baseVals3[i]<<6)+(baseVals1[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(4);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#8");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[7][i]<<512) + vals[6][i] + (baseVals3[i])+(baseVals1[i]<<6)+(baseVals2[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#9");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[8][i]<<512) + vals[7][i] + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#10");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[9][i]<<512) + vals[8][i] + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#11");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[10][i]<<512) + vals[9][i] + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#12");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[11][i]<<1024) + (vals[10][i]<<512) + (vals[9][i]<<256) + (vals[8][i]<<64) + (vals[7][i]<<24) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#13");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[12][i]<<2048) + (vals[11][i]<<1024) + (vals[10][i]<<512) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#14");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[13][i]<<4096) + (vals[12][i]<<2048) + (vals[11][i]<<1024) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#15");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[14][i]<<8192) + (vals[13][i]<<4096) + (vals[12][i]<<2048) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(5);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#16");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[15][i]<<16384) + (vals[14][i]<<8192) + (vals[13][i]<<4096) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#17");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[16][i]<<32768) + (vals[15][i]<<16384) + (vals[14][i]<<8192) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#18");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[17][i]<<65536) + (vals[16][i]<<32768) + (vals[15][i]<<16384) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-    reduceNumInputs(2);
-
-    std::cout /*<< "\n"*/ << std::flush;
-    {
-        auto tkprn = TickElapsedPrinter("#19");
-        std::vector<BigInt> v;
-        for(std::size_t i=0u; i!=numInputs; ++i)
-            v.emplace_back((vals[18][i]<<131072) + (vals[17][i]<<65536) + (vals[16][i]<<32768) + (baseVals1[i])+(baseVals2[i]<<6)+(baseVals3[i]<<12));
-        vals.emplace_back(v);
-    }
-    printLastSize();
-
-
-    std::cout /*<< "\n"*/ << std::flush;
-
-    std::cout << "\n\n" << std::flush;
-
-
-    std::array<BigInt::MultiplicationMethod, 4> mMethods = { BigInt::MultiplicationMethod::auto_, BigInt::MultiplicationMethod::school, BigInt::MultiplicationMethod::karatsuba, BigInt::MultiplicationMethod::furer };
+        doTest(nTest, nPassed,     1,     2);
+        doTest(nTest, nPassed,     2,     1);
+        doTest(nTest, nPassed,     1,     3);
+        doTest(nTest, nPassed,     3,     1);
+        doTest(nTest, nPassed,     2,     3);
+        doTest(nTest, nPassed,     3,     2);
+        doTest(nTest, nPassed,     5,     3);
+        doTest(nTest, nPassed,     3,     5);
     
+        doTest(nTest, nPassed,   125,   253);
+        doTest(nTest, nPassed,   253,   125);
+    
+        doTest(nTest, nPassed, 41125, 62253);
+        doTest(nTest, nPassed, 62253, 41125);
 
-    std::size_t idx = 0;
-    for(const auto &v: vals)
-    {
-        std::size_t minSize = 0u;
-        std::size_t maxSize = 0u;
-        findSizeMinMax(v, minSize, maxSize);
-        minSize /= CHAR_BIT;
-        maxSize /= CHAR_BIT;
-
-        auto strIdx = std::to_string(idx++);
-        while(strIdx.size()<2) strIdx.append(1,' ');
-        std::cout << "#" << strIdx 
-                  << " min: " << minSize << " bytes (#chunks: " << minSize/sizeof(marty::BigInt::chunk_type) << "),"
-                  << " max: " << maxSize << " bytes (#chunks: " << maxSize/sizeof(marty::BigInt::chunk_type) << ")\n   "
-                  << " Size of data vector: " << v.size() << " - "; //  << "\n";
-
-        std::array<std::uint32_t, 4> ticksElapsed = { 0,0,0,0 };
-        std::array<BigInt::chunk_type, 4> calculatedChunks = { 0,0,0,0 };
-        std::array<unsigned, 4> calculatedPercents = { 0,0,0,0 };
-        
-
-        std::size_t methodIdx = 0;
-        for(; methodIdx!=mMethods.size(); ++methodIdx)
-        {
-            auto mm = mMethods[methodIdx];
-
-            BigInt::setMultiplicationMethod(mm);
-
-            // BigInt::chunk_type counter = 0;
-
-            
-            std::uint32_t startTick = getMillisecTick();
-            std::vector<BigInt>::const_iterator it1 = v.begin();
-            std::vector<BigInt>::const_iterator it2 = v.begin(); ++it2; // у нас вектора большие, проблем нет
-            for(; it2!=v.end(); ++it1, ++it2)
-            {
-                calculatedChunks[methodIdx] += (*it1 * *it2).getHighChunk();
-            }
-
-            auto elapsed = getMillisecTick() - startTick;
-            ticksElapsed[methodIdx] = elapsed;
-
-            // std::cout << "    ";
-            std::cout << "+" << std::flush;
-
-            if (methodIdx==0)
-            {
-                // std::cout << BigInt::getMultiplicationMethodName() << ": 100% (" << ticksElapsed[methodIdx] << ")  " << std::flush;
-                calculatedPercents[methodIdx] = 100;
-            }
-            else
-            {
-                if (!ticksElapsed[0])
-                {
-                    calculatedPercents[methodIdx] = unsigned(-1);
-                }
-                else
-                {
-                    std::uint64_t elapsed64 = elapsed;
-                    elapsed64 *= 100;
-                    calculatedPercents[methodIdx] = unsigned(elapsed64/ticksElapsed[0]);
-                }
-
-                // std::cout << BigInt::getMultiplicationMethodName() << ": ";
-                // std::uint64_t elapsed64 = elapsed;
-                // elapsed64 *= 100;
-                // if (!ticksElapsed[0])
-                //     std::cout << "INF% (" << ticksElapsed[methodIdx] << ")  " << std::flush;
-                // else
-                //     std::cout << (elapsed64/ticksElapsed[0]) << "% (" << ticksElapsed[methodIdx] << ")  " << std::flush;
-            }
-
-        }
-
-        std::cout << "\n" << std::flush;
-
-        auto minIt  = std::min_element( calculatedPercents.begin(), calculatedPercents.end() );
-        auto minIdx = std::size_t(std::distance(calculatedPercents.begin(), minIt));
-
-        //unsigned(-1)
-
-        // std::size_t 
-        methodIdx = 0;
-        for(; methodIdx!=mMethods.size(); ++methodIdx)
-        {
-            std::cout << "    ";
-            if (minIdx==methodIdx)
-                std::cout << "!";
-            std::cout << BigInt::getMultiplicationMethodName(mMethods[methodIdx]) << ": ";
-
-            if (calculatedPercents[methodIdx]==unsigned(-1))
-                std::cout << "INF";
-            else
-                std::cout << calculatedPercents[methodIdx];
-
-            std::cout << "%";
-            std::cout << " (" << ticksElapsed[methodIdx] << ")";
-            std::cout << "  " << std::flush;;
-        }
-
-        std::cout << "\n\n";
-        
-
-// class BigInt
-// {
-//  
-// public: // types
-//  
-//     enum MultiplicationMethod
-//     {
-//         auto_ = 0,
-//         school,
-//         karatsuba,
-//         furer
-//     };
-
-// const char* BigInt::getMultiplicationMethodName()
-// {
-//     switch(s_multiplicationMethod)
-//     {
-//         case MultiplicationMethod::school:
-//              return "school"
-//  
-//         case MultiplicationMethod::karatsuba:
-//              return "karatsuba";
-//  
-//         case MultiplicationMethod::furer:
-//              return "furer";
-//  
-
-
+        doTest(nTest, nPassed, 0x56789ABC, 0x1234);
 
     }
 
+    int nFailed = nTest - nPassed;
+
+    std::cout << "\n\nTotal tests: " << nTest << ", passed: " << nPassed << ", failed: " << nFailed << "\n\n";
+
+    #if 0
+    std::cout << "h1: " << highest_bit_mask<std::uint8_t>()  << "\n"; // 128
+    std::cout << "h4: " << high_bits_mask<4, std::uint8_t>() << "\n"; // 240
+    std::cout << "h8: " << high_bits_mask<8, std::uint8_t>() << "\n"; // 255
+
+    std::cout << "\n\n";
+
+    std::cout << "h1: " << marty::bigint_utils::makeHighBitsMask<1, std::uint16_t>() << "\n"; // 128
+    std::cout << "h4: " << marty::bigint_utils::makeHighBitsMask<4, std::uint16_t>() << "\n"; // 240
+    std::cout << "h8: " << marty::bigint_utils::makeHighBitsMask<8, std::uint16_t>() << "\n"; // 255
+    #endif
 
 
     return 0;
