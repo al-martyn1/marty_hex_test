@@ -2,6 +2,7 @@ encoding
 marty_bigint
 marty_cpp
 marty_crc
+marty_csv
 marty_decimal
 marty_expressions
 marty_format

@@ -25,6 +25,7 @@ git clone --recurse-submodules %PREFIX%/umba_mm_mod_encodings.git   %~dp0\encodi
 git clone --recurse-submodules %PREFIX%/marty_bigint.git            %~dp0\marty_bigint
 git clone --recurse-submodules %PREFIX%/marty_cpp.git               %~dp0\marty_cpp
 git clone --recurse-submodules %PREFIX%/marty_crc.git               %~dp0\marty_crc
+git clone --recurse-submodules %PREFIX%/marty_csv.git               %~dp0\marty_csv
 git clone --recurse-submodules %PREFIX%/marty_decimal.git           %~dp0\marty_decimal
 git clone --recurse-submodules %PREFIX%/marty_expressions.git       %~dp0\marty_expressions
 git clone --recurse-submodules %PREFIX%/marty_format.git            %~dp0\marty_format
