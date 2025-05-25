@@ -1,5 +1,5 @@
 @set CONFIG=Release
-@set TEST_NAME=marty-hex-test-026
+@set TEST_NAME=%~n0
 call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @echo FOUND_EXE: %FOUND_EXE%
 @set FOUND_EXE=%FOUND_EXE:"=%
