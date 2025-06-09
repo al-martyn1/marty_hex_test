@@ -4,6 +4,7 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @set FOUND_EXE=%FOUND_EXE:"=%
 @if "%FOUND_EXE%"=="" @goto NOT_FOUND
 @set TEST_EXE="%FOUND_EXE%"
+
 %TEST_EXE% < 01.csv   > %TEST_NAME%_01.txt   2>%TEST_NAME%_01.log
 %TEST_EXE% < 02.csv   > %TEST_NAME%_02.txt   2>%TEST_NAME%_02.log
 %TEST_EXE% < 03.csv   > %TEST_NAME%_03.txt   2>%TEST_NAME%_03.log
@@ -22,6 +23,11 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 %TEST_EXE% < 16.csv   > %TEST_NAME%_16.txt   2>%TEST_NAME%_16.log
 %TEST_EXE% < 17.csv   > %TEST_NAME%_17.txt   2>%TEST_NAME%_17.log
 %TEST_EXE% < 18.csv   > %TEST_NAME%_18.txt   2>%TEST_NAME%_18.log
+
+%TEST_EXE% < excel_test01_dos.csv        > %TEST_NAME%_excel_test01_dos.txt        2>%TEST_NAME%_excel_test01_dos.log
+%TEST_EXE% < excel_test01_mac.csv        > %TEST_NAME%_excel_test01_mac.txt        2>%TEST_NAME%_excel_test01_mac.log
+%TEST_EXE% < excel_test01_semicolon.csv  > %TEST_NAME%_excel_test01_semicolon.txt  2>%TEST_NAME%_excel_test01_semicolon.log
+%TEST_EXE% < excel_test01_tabs.csv       > %TEST_NAME%_excel_test01_tabs.txt       2>%TEST_NAME%_excel_test01_tabs.log
 
 @rem %TEST_NAME%.log
 

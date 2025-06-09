@@ -237,6 +237,8 @@ add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
+endif()
+
 
 set(TARGET marty-hex-test-021)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
@@ -255,7 +257,6 @@ add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
-endif()
 
 set(TARGET marty-hex-test-024)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})

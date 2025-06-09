@@ -157,23 +157,32 @@ int unsafeMain(int argc, char* argv[])
     //     std::vector<float>
     // >;
 
-    using MyVariant = marty::format::FormatValueFilter;
+    using MyFilter = marty::format::FormatValueFilter;
 	
     std::cout << std::boolalpha;
+
+    for(unsigned i=0; i<=100; ++i)
+    {
+        std::cout << i << ": " << marty::format::utils::formatRomanInteger(i, true, false) << "\n";
+        std::cout << i << ": " << marty::format::utils::formatRomanInteger(i, true, true ) << "\n";
+    }
+
+    std::cout << "-------\n";
+
 
     // Проверка наличия фильтров
     #if 0
     std::cout << "Variant contains filters: " 
-              << variant_has_filter_v<MyVariant> << "\n";
+              << variant_has_filter_v<MyFilter> << "\n";
     std::cout << "Number of filters: " 
-              << variant_filter_count_v<MyVariant> << "\n\n";
+              << variant_filter_count_v<MyFilter> << "\n\n";
 
     // Печать информации о фильтрах
-    variant_filter_traits<MyVariant>::print();
+    variant_filter_traits<MyFilter>::print();
 
     // Работа с параметрами
-    if constexpr (variant_has_filter_v<MyVariant>) {
-        using Params = variant_filter_params_t<MyVariant>;
+    if constexpr (variant_has_filter_v<MyFilter>) {
+        using Params = variant_filter_params_t<MyFilter>;
         
         // Первый фильтр
         using FirstIn = std::tuple_element_t<0, Params>;
@@ -264,48 +273,72 @@ int unsafeMain(int argc, char* argv[])
     int nTest = 0;
     // );
     // , ignoreErrors);
-    testFormatString(++nTest, "{:{}.{}f}", Args().arg(1.5f).arg(2).arg(3) );
-    testFormatString(++nTest, "{0:}", Args().arg(10));
+    testFormatString(++nTest, "{:{}.{}f}", Args().arg(1.5f).arg(2).arg(3) );            // #1
+    testFormatString(++nTest, "{0:}", Args().arg(10));                                  // #2
 #if 1
-    testFormatString(++nTest, "{:10.5f}", Args().arg(31.4159));
-    testFormatString(++nTest, "Текст и {:6}", Args().arg("строка"));
-    testFormatString(++nTest, "{:6}", Args().arg(L"L\"Широкая строка\""));
-    testFormatString(++nTest, "{:*<{}}", Args().arg(99));
-    testFormatString(++nTest, "{:*>6}", Args().arg(99));
-    testFormatString(++nTest, "{:*^6}", Args().arg(99));
-    testFormatString(++nTest, "{:6d}", Args().arg(99));
-    testFormatString(++nTest, "{:6}", Args().arg(99));
-    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));
-    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));
-    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));
-    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));
-    testFormatString(++nTest, "{:+06d}", Args().arg(99));
-    testFormatString(++nTest, "{:#06x}", Args().arg(99));
-    testFormatString(++nTest, "{:<06}", Args().arg(99));
-    testFormatString(++nTest, "{:10f}", Args().arg(99.9));
-    testFormatString(++nTest, "{:{}f}", Args().arg(3).arg(99.9));
-    testFormatString(++nTest, "{:.5f}", Args().arg(99.9));
-    testFormatString(++nTest, "{:.{}f}", Args().arg(3).arg(99.9));
-    testFormatString(++nTest, "{:{}f}", Args().arg(3).arg(99.9));
-    testFormatString(++nTest, "{:.^5s}", Args().arg("123"));
-    testFormatString(++nTest, "{:.5s}", Args().arg("123"));
-    testFormatString(++nTest, "{:.<5.5s}", Args().arg("1234567"));
+    testFormatString(++nTest, "{:10.5f}", Args().arg(31.4159));                         // #3
+    testFormatString(++nTest, "Текст и {:6}", Args().arg("строка"));                    // #4
+    testFormatString(++nTest, "{:6}", Args().arg(L"L\"Широкая строка\""));              // #5
+    testFormatString(++nTest, "{:*<{}}", Args().arg(99).arg(3)); // Ширину поля задаём аргументом  // #6
+    testFormatString(++nTest, "{:*>6}", Args().arg(99));                                // #7
+    testFormatString(++nTest, "{:*^6}", Args().arg(99));                                // #8
+    testFormatString(++nTest, "{:6d}", Args().arg(99));                                 // #9
+    testFormatString(++nTest, "{:6}", Args().arg(99));                                  // #10
+    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));                // #11
+    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));                // #12
+    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));                // #13
+    testFormatString(++nTest, "{0:},{0:+},{0:-},{0: }", Args().arg(99));                // #14
+    testFormatString(++nTest, "{:+06d}", Args().arg(99));                               // #15
+    testFormatString(++nTest, "{:#06x}", Args().arg(99));                               // #16
+    testFormatString(++nTest, "{:<06}", Args().arg(99));                                // #17
+    testFormatString(++nTest, "{:10f}", Args().arg(99.9));                              // #18
+    testFormatString(++nTest, "{:{}f}", Args().arg(99.9).arg(3));                       // #19
+    testFormatString(++nTest, "{:.5f}", Args().arg(99.9));                              // #20
+    testFormatString(++nTest, "{:.{}f}", Args().arg(99.9).arg(3));                      // #21
+    testFormatString(++nTest, "{:{}f}", Args().arg(99.9).arg(3));                       // #22
+    testFormatString(++nTest, "{:.^5s}", Args().arg("123"));                            // #23
+    testFormatString(++nTest, "{:.5s}", Args().arg("123"));                             // #24
+    testFormatString(++nTest, "{:.<5.5s}", Args().arg("1234567"));                      // #25
     testFormatString(++nTest, "{:?}", Args().arg("123456")); // !!! Тут надо потом вставить непечатные символы, чтобы проверить escape
     testFormatString(++nTest, "Coordinates: {latitude}, {longitude}", Args().arg("latitude", "59.958516").arg("longitude", "30.312167"));   // 59.958516, 30.312167
-    testFormatString(++nTest, "{:<30}", Args().arg(123)); // Ширина 30?
-    testFormatString(++nTest, "{:>30}", Args().arg("1234567"));
-    testFormatString(++nTest, "{:^30}", Args().arg(99.9));
-    testFormatString(++nTest, "{:*^30}", Args().arg(999));
-    testFormatString(++nTest, "{:+f}; {:+f}", Args().arg(1.1).arg(2.2));
-    testFormatString(++nTest, "{: f}; {: f}", Args().arg(1.1).arg(2.2));
-    testFormatString(++nTest, "{:-f}; {:-f}", Args().arg(1.1).arg(2.2));
+    testFormatString(++nTest, "{:<30}", Args().arg(123)); // Ширина 30?                 // #28
+    testFormatString(++nTest, "{:>30}", Args().arg("1234567"));                         // #29
+    testFormatString(++nTest, "{:^30}", Args().arg(99.9));                              // #30
+    testFormatString(++nTest, "{:*^30}", Args().arg(999));                              // #31
+    testFormatString(++nTest, "{:+f}; {:+f}", Args().arg(1.1).arg(2.2));                // #32
+    testFormatString(++nTest, "{: f}; {: f}", Args().arg(1.1).arg(2.2));                // #33
+    testFormatString(++nTest, "{:-f}; {:-f}", Args().arg(1.1).arg(2.2));                // #34
     testFormatString(++nTest, "int: {0:d};  hex: {0:x};  oct: {0:o};  bin: {0:b}", Args().arg(12345));
     testFormatString(++nTest, "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", Args().arg(12345));
-    testFormatString(++nTest, "{:,}", Args().arg(1234567));
-    testFormatString(++nTest, "{:_}", Args().arg(1234567));
-    testFormatString(++nTest, "{:'}", Args().arg(1234567));
-    testFormatString(++nTest, "Correct answers: {:.2%}", Args().arg(0.75));
-    testFormatString(++nTest, "{:02X}{:02X}{:02X}{:02X}", Args().arg(123).arg(456).arg(789).arg(912));
+    testFormatString(++nTest, "{:,}", Args().arg(1234567));                             // #37
+    testFormatString(++nTest, "{:_}", Args().arg(1234567));                             // #38
+    testFormatString(++nTest, "{:'}", Args().arg(1234567));                             // #39
+    testFormatString(++nTest, "{:'}", Args().arg(marty::BigInt("12142345234654765678768")));
+    testFormatString(++nTest, "{:'}", Args().arg(marty::Decimal("12142345234654765678768.12142345234654765678768")));
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 0));                     // #42
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 1));                     // #43
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 2));                     // #44
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 3));                     // #45
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 4));                     // #46
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 9));                     // #47
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 13));                    // #48
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 18));                    // #49
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 29));                    // #50
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 46));                    // #51
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 63));                    // #52
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 72));                    // #53
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 96));                    // #54
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 127));                   // #55
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 192));                   // #56
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 352));                   // #57
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 768));                   // #58
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 1024));                  // #59
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 2048));                  // #60
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 4096));                  // #61
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 9003));                  // #62
+    testFormatString(++nTest, "{n:d} - {n:R}", Args().arg("n", 10999));                 // #63
+    testFormatString(++nTest, "Correct answers: {:.2%}", Args().arg(0.75));             // #64
+    testFormatString(++nTest, "{:02X}{:02X}{:02X}{:02X}", Args().arg(123).arg(456).arg(789).arg(912));  // #65
 
     // testFormatString(++nTest, "", Args().arg());
     // testFormatString(++nTest, "", Args().arg());

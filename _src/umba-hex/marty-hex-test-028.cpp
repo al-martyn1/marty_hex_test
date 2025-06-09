@@ -13,6 +13,7 @@
 //
 
 #include "marty_utf/utf.h"
+#include "marty_csv/marty_csv.h"
 
 //
 #include <iostream>
@@ -346,7 +347,10 @@ int main(int argc, char* argv[])
         // data = "A,B,C\n1,,3\n,5,";
         // data = "Name#Age#City\nJohn#30#New York";
         // data = "\"Name\",\" Age \",\"Address\"\n\"John, Smith\",25,\"123 Main St, Apt 5\"";
-        data = "Name,\" Age \",Country\nJohn,25,USA";
+        // data = "Name,\" Age \",Country\nJohn,25,USA";
+        // data = "Product|Price|Quantity\nMonitor\\|27\"|$199.99|50";
+        data = "\"Name\",\"Age\",\"Address\"\r\n\"John, Smith\",25,\"123 Main St, Apt 5\"";
+        // data = "Name;Age;Country\nMaria;30;Germany";
 
     }
     else
@@ -365,7 +369,93 @@ int main(int argc, char* argv[])
     //  
     // }
 
-    auto parser = CsvParser(); // (char delim = ',', bool strict = true)
+    auto allQuotes = std::string("\"\'`");
+    auto allSeps   = std::string("\t;,:|#");
+
+    auto csvQuot = marty::csv::detectQuotes(data.begin(), data.end(), allSeps, allQuotes);
+    if (csvQuot==0)
+        std::cout << "No quote char found\n\n";
+    else
+        std::cout << "Found quote char: " << csvQuot << "\n\n";
+
+    char csvSep = 0;
+
+    {
+
+        std::vector<std::string> lines;
+        marty::csv::details::splitToLines(data.begin(), data.end(), lines, csvQuot);
+
+        // marty::csv::details::CLineCharCounts charsMathEV  ;
+        // marty::csv::details::CLineCharCounts charsVariance;
+        // marty::csv::details::calcVariance(lines, charsMathEV, charsVariance);
+        //  
+        // for(std::size_t idx=0; idx!=127; ++idx)
+        // {
+        //     if (idx>0x20u)
+        //         std::cout << idx << " (" << char(idx) << "): ";
+        //     else
+        //         std::cout << idx << "    : ";
+        //  
+        //     std::cout << charsMathEV.counts[idx] << "   " << charsVariance.counts[idx] << "\n";
+        // }
+        //  
+        // std::cout << "\n";
+
+
+        std::vector< marty::csv::details::CVarianceItem > variances;
+        marty::csv::details::getCsvSeparatorVariances( variances, lines, "\t;,:|#");
+         
+        std::cout<<"CSV stat:\n";
+        std::vector< marty::csv::details::CVarianceItem >::const_iterator vvIt = variances.begin();
+        for(; vvIt != variances.end(); ++vvIt)
+        {
+            if (vvIt->ch<=32) 
+            {
+                 switch(vvIt->ch)
+                    {
+                     case 9:   std::cout << "\\t : ";   break;
+                     default:  std::cout << vvIt->ch << " : ";
+                    }
+            }
+            else
+            {
+                std::cout << "'" << (char)vvIt->ch << "': ";
+            }
+            std::cout << "M: " << vvIt->M << ", ";
+            std::cout << "D: " << vvIt->D << ", ";
+            // std::cout<<"T: "<<vvIt->tag<<"\n";
+            std::cout << "\n";
+        }
+    
+        std::cout<<"\n";
+
+        if (!variances.empty())
+            csvSep = char(variances[0].ch);
+        
+    }
+
+    if (!csvSep)
+        csvSep = ';';
+
+    std::cout << "------------------\n";
+    std::cout << data << "\n\n";
+
+    std::cout << "------------------\n";
+
+// template<typename LinesVectorType>
+// void calcVariance( const LinesVectorType &lines
+//                  , CLineCharCounts       &charsMathEV
+//                  , CLineCharCounts       &charsVariance
+//                  )
+
+
+
+
+// template<typename InputIter, typename StringType>
+// char detectQuotes(InputIter b, InputIter e, const StringType &seps, const StringType &quotes)
+
+    // CsvParser(char delim=',', char quot='\"', bool strict=true)
+    auto parser = CsvParser(csvSep, csvQuot); // (char delim = ',', bool strict = true)
 
     auto res = parser.parse(data);
 
