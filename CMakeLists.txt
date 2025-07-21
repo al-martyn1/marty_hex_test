@@ -34,6 +34,7 @@ add_subdirectory(${LIB_ROOT}/marty_mem)
 add_subdirectory(${LIB_ROOT}/marty_svg)
 add_subdirectory(${LIB_ROOT}/marty_utf)
 add_subdirectory(${LIB_ROOT}/marty_format)
+add_subdirectory(${LIB_ROOT}/marty_expressions)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
@@ -58,6 +59,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
     marty::cpp
     marty::crc
     marty::decimal
+    marty::expressions
     marty::hex
     marty::mem
     marty::svg
@@ -113,7 +115,7 @@ set(COMMON_UMBA_OPTIONS "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC"/"WALL" "
 
 # if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
-# set(TESTS "ALL")
+set(TESTS "ALL")
 
 if (TESTS STREQUAL "ALL")
 
@@ -289,6 +291,12 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-029)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-030)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")

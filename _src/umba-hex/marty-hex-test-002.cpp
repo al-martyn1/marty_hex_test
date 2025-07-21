@@ -152,7 +152,7 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>());
+    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::packet_diagram::makeTokenizerBuilder<char>());
     using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
     using TokenizerPayloadType          = umba::tokenizer::payload_type;
     using TokenizerIteratorType         = typename TokenizerType::iterator_type;
@@ -238,9 +238,9 @@ int unsafeMain(int argc, char* argv[])
     std::unordered_map<std::string, std::string> frontMatterTags;
     umba::tokenizer::utils::prepareTextForParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
 
-    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::makeTokenizerBuilderPacketDiagram<char>();
+    TokenizerBuilderType tokenizerBuilder = umba::tokenizer::mermaid::packet_diagram::makeTokenizerBuilder<char>();
     auto pTokenCollection = std::make_shared<TokenCollectionType>( tokenizerBuilder.makeTokenizer()
-                                                                 , umba::tokenizer::mermaid::PacketDiagramTokenizerConfigurator()
+                                                                 , umba::tokenizer::mermaid::packet_diagram::TokenizerConfigurator()
                                                                  , pParserLog
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)

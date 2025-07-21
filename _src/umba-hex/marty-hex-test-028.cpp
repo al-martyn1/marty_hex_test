@@ -1,5 +1,5 @@
 /*! \file
-    \brief 
+    \brief Запилил парсер CSV
  */
 
 /*

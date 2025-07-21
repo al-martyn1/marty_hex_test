@@ -1,5 +1,5 @@
 /*! \file
-    \brief 
+    \brief Тестируем разбор CSV (marty::csv)
  */
 
 /*
