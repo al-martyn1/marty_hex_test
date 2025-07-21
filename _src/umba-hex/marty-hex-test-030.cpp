@@ -88,6 +88,7 @@ int main(int argc, char* argv[])
     //using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
 
     auto tokenizerBuilder = umba::tokenizer::cpp::makeTokenizerBuilder<char>();
+    tokenizerBuilder.addOperator(umba::string::make_string<typename TokenizerType::string_type>("**"), UMBA_TOKENIZER_TOKEN_OPERATOR_POWER);
 
     using PositionInfoType = std::size_t;
 
@@ -146,11 +147,23 @@ int main(int argc, char* argv[])
 
     };
 
+// template<typename TokenizerBuilder, typename TokenHandler>
+// //typename TokenizerBuilder::tokenizer_type makeTokenizerCpp(const TokenizerBuilder &builder, TokenHandler tokenHandler, bool suffixGluing=true, bool preprocessorFilter=true)
+// typename TokenizerBuilder::tokenizer_type makeTokenizer(TokenizerBuilder builder, TokenHandler tokenHandler, bool suffixGluing=true, bool preprocessorFilter=true )
+// {
+//     using TokenizerType = typename TokenizerBuilder::tokenizer_type;
+//     auto tokenizer = builder.makeTokenizer();
+//     tokenizer.tokenHandler = tokenHandler;
+//  
+//     return TokenizerConfigurator()(tokenizer, suffixGluing, preprocessorFilter);
+// }
 
 
     auto tokenizer = umba::tokenizer::cpp::makeTokenizer( tokenizerBuilder
-                                                      , tokenHandler
-                                                      );
+                                                        , tokenHandler
+                                                        );
+    tokenizer = umba::tokenizer::cpp::TokenizerConfigurator()(tokenizer, true /* suffixGluing */ , false /* preprocessorFilter */ );
+
 
     tokenizer.unexpectedHandler = [&](auto &tokenizer, InputIteratorType it, InputIteratorType itEnd, const char* srcFile, int srcLine) -> bool
                              {
