@@ -28,8 +28,8 @@
 // #include "umba/tokenizer/parser_base.h"
 // #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -112,7 +112,7 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_parser.h"
 
 
 

@@ -9,7 +9,7 @@
 
 
 //----------------------------------------------------------------------------
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser_types.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_parser_types.h"
 #include "marty_svg/marty_svg.h"
 
 //----------------------------------------------------------------------------

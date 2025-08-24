@@ -17,7 +17,7 @@
 #include "umba/tokenizer/tokenizer_log_console.h"
 #include "umba/tokenizer/token_collection.h"
 //
-#include "umba/tokenizer/lang/cpp.h"
+#include "umba/tokenizer/lexers/cpp.h"
 //
 
 #include "marty_cpp/marty_cpp.h"

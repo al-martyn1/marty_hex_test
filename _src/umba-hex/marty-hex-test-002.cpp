@@ -28,8 +28,8 @@
 // #include "umba/tokenizer/parser_base.h"
 // #include "umba/tokenizer/lang/mermaid_packet_diagram.h"
 //
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_cpp.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_cpp.h"
 //
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
@@ -107,7 +107,7 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
-#include "umba/tokenizer/parsers/mermaid_packet_diagram_parser.h"
+#include "umba/tokenizer/parsers/mermaid/packet_diagram_parser.h"
 
 
 
@@ -152,11 +152,12 @@ int unsafeMain(int argc, char* argv[])
     using SharedFilenameSetType         = std::shared_ptr<FilenameSetType>;
     using ParserConsoleErrorLog         = umba::tokenizer::log::ParserConsoleErrorLog<FilenameSetType>;
 
-    using TokenizerBuilderType          = decltype(umba::tokenizer::mermaid::packet_diagram::makeTokenizerBuilder<char>());
-    using TokenizerType                 = decltype(TokenizerBuilderType().makeTokenizer());
-    using TokenizerPayloadType          = umba::tokenizer::payload_type;
-    using TokenizerIteratorType         = typename TokenizerType::iterator_type;
-    using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
+    using TokenizerBuilderType          = std::decay_t<decltype(umba::tokenizer::mermaid::packet_diagram::makeTokenizerBuilder<char>())>;
+    using TokenizerType                 = std::decay_t<decltype(TokenizerBuilderType().makeTokenizer())>;
+    using TokenizerStringType           = typename TokenizerBuilderType::string_type;
+    // using TokenizerPayloadType          = umba::tokenizer::payload_type;
+    // using TokenizerIteratorType         = typename TokenizerType::iterator_type;
+    // using TokenizerTokenParsedDataType  = typename TokenizerType::token_parsed_data_type;
     using TokenCollectionType           = umba::tokenizer::TokenCollection<TokenizerType>;
     using ParserType                    = umba::tokenizer::mermaid::PacketDiagramParser<TokenizerType>;
 
@@ -234,6 +235,7 @@ int unsafeMain(int argc, char* argv[])
         return 3;
     }
 
+    #if 0
     inputText = marty_cpp::normalizeCrLfToLf(inputText);
     std::unordered_map<std::string, std::string> frontMatterTags;
     umba::tokenizer::utils::prepareTextForParsing(inputText, 0 /* pStyle */ , &frontMatterTags );
@@ -245,7 +247,7 @@ int unsafeMain(int argc, char* argv[])
                                                                  , inputText
                                                                  , pFilenameSet->addFile(inputFilename)
                                                                  );
-    ParserType parser = ParserType(pTokenCollection, pParserLog);
+    ParserType parser = ParserType(pTokenCollection, pFilenameSet, pParserLog);
     parser.setDiagramTitle(frontMatterTags["title"]);
 
     if (!parser.parse())
@@ -253,7 +255,12 @@ int unsafeMain(int argc, char* argv[])
         LOG_ERR << "there is some errors\n";
         return 4;
     }
+    #endif
 
+    
+
+
+    #if 0
     LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
 
     LOG_MSG << "C/C++ structs:\n\n";
@@ -264,7 +271,40 @@ int unsafeMain(int argc, char* argv[])
     umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
 
     LOG_MSG << "\n\n";
+    #endif
  
+    try
+    {
+        std::unordered_map<std::string, std::string> frontMatterTags;
+
+        auto textPreparator   = [&](std::string &t) { umba::tokenizer::utils::prepareTextForParsing(t, 0 /* pStyle */ , &frontMatterTags ); };
+        auto parserPreparator = [&](auto &p)        { p.setDiagramTitle(frontMatterTags["title"]); };
+
+        auto diagram = umba::tokenizer::parserParseData<ParserType>
+            ( TokenizerBuilderType()
+            , umba::tokenizer::mermaid::packet_diagram::TokenizerConfigurator()
+            , pFilenameSet
+            , pParserLog
+            , inputFilename
+            , inputText
+            , textPreparator
+            , parserPreparator
+            );
+
+        LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
+    
+        LOG_MSG << "C/C++ structs:\n\n";
+    
+        umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
+
+    }
+    catch(...)
+    {
+        LOG_ERR << "there is some errors\n";
+        return 4;
+    }
+
+
     #if 0
     LOG_MSG << "Diagram:\n\n";
     
