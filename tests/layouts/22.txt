@@ -4,40 +4,22 @@ Title: Test
 Options: a b c ascii-z, little-endian
 ---
 
-<style>
-#mermaid-22{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}
-#mermaid-22 .error-icon{fill:#552222;}
-#mermaid-22 .error-text{fill:#552222;stroke:#552222;}
-#mermaid-22 .edge-thickness-normal{stroke-width:1px;}
-#mermaid-22 .edge-thickness-thick{stroke-width:3.5px;}
-#mermaid-22 .edge-pattern-solid{stroke-dasharray:0;}
-#mermaid-22 .edge-thickness-invisible{stroke-width:0;fill:none;}
-#mermaid-22 .edge-pattern-dashed{stroke-dasharray:3;}
-#mermaid-22 .edge-pattern-dotted{stroke-dasharray:2;}
-#mermaid-22 .marker{fill:#333333;stroke:#333333;}
-#mermaid-22 .marker.cross{stroke:#333333;}
-#mermaid-22 svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}
-#mermaid-22 p{margin:0;}
-#mermaid-22 .packetByte{font-size:10px;}
-#mermaid-22 .packetByte.start{fill:black;}
-#mermaid-22 .packetByte.end{fill:black;}
-#mermaid-22 .packetLabel{fill:black;font-size:12px;}
-#mermaid-22 .packetTitle{fill:black;font-size:14px;}
-#mermaid-22 .packetBlock{stroke:black;stroke-width:1;fill:#efefef;}
-#mermaid-22 :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}
-</style>
-
-
 %% https://mermaid.js.org/syntax/packet.html#examples
 
 %% linear 16 bits? Linear address size?
+
 %%#! native le data 32 bits segment 16 bits segment-shift 4 bits offset 16 bits
-%%#! display-width 64
-%%#! display-options none byte-numbers no-single-byte-numbers single-byte-block-numbers split-words-to-bytes show-single-byte-field-index no-hex-field-index hex-prefix-field-index show-field-labels show-title no-title-on-top hex-prefix-section
+%%#! display-options none byte-numbers no-single-byte-numbers single-byte-block-numbers 
+%%#! display-options split-words-to-bytes show-single-byte-field-index no-hex-field-index hex-prefix-field-index 
+%%#! display-options show-field-labels show-title no-title-on-top hex-prefix-section
+
+%%#! display-width 16
+%% display-width 32
+%% display-width 64
+
+
 %% single-byte-numbers 
 %% single-byte-numbers no-single-byte-numbers single-byte-block-numbers no-single-byte-block-numbers byte-numbers no-byte-numbers split-words-to-bytes no-split-words-to-bytes
-
-
 
 
 packet-beta %%#! byte-diagram
@@ -49,12 +31,12 @@ packet-beta %%#! byte-diagram
 %% char[16]  : "Device Name"                  %% 0-15
 0-13      : "Device Name"                  %%#! ascii-z block %% 0-13
 uint64    : "uint64"
-uint8     : "HwHi"                         %% Hardware Revision Major
-uint8     : "HwLo"                         %% Hardware Revision Minor
-uint16    : "ManY"                         %% Manufactured Year
-uint8     : "ManM"                         %% Manufactured Month
-uint8     : "ManD"                         %% Manufactured Day
-uint16    : "Batch"                        %%
+uint8     : "Hardware Revision Major"
+uint8     : "Hardware Revision Minor"
+uint16    : "Manufactured Year"
+uint8     : "Manufactured Month"
+uint8     : "Manufactured Day"
+uint16    : "Batch"
 %% 24-31     : "Serial Number"                %%#! block
 30-37     : "Serial Number"                %%#! block
 %% 26-33     : "Serial Number"                %%#! block
@@ -65,15 +47,15 @@ uint16    : "SignatureBE"                  %%#! be
 %%#! org +48: "Software Info"
 %% #! org auto : "Software Info"
 
-uint16    : "Firmware Version Major"       %% 
-uint16    : "Firmware Version Minor"       %% 
-uint16    : "Firmware Version Build"       %% 
-uint16    : "Build Year"                   %%
-uint8     : "Build Month"                  %%
-uint8     : "Build Day"                    %%
-uint8     : "Build Hour"                   %%
-uint8     : "Build Minute"                 %%
-%% uint8     : "Build Second"              %%
+uint16    : "Firmware Version Major"
+uint16    : "Firmware Version Minor"
+uint16    : "Firmware Version Build"
+uint16    : "Build Year"
+uint8     : "Build Month"
+uint8     : "Build Day"
+uint8     : "Build Hour"
+uint8     : "Build Minute"
+%% uint8     : "Build Second"
 char[16]  : "Version Info String"    %%#! ascii-z block %% Must contain version (Major.Minor.Build) the same as in uint16 fields above
 char[16]  : "Built Date Time String" %%#! ascii-z block %% Must contain date and time the same as in integer fields above
 char      : "signleChar1"

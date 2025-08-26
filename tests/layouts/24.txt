@@ -1,0 +1,14 @@
+---
+Title: Header
+---
+
+%%#! native le data 32 bits
+%%#! display-width 16
+
+packet-beta %%#! byte-diagram
+
+%%#!
+
+uint8[2]: "Preamble"
+uint16  : "Remaining bytes count"
+uint16  : "CRC" %%#! CRC 0-3 poly 0x1234 be

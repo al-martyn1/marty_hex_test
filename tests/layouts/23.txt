@@ -1,0 +1,15 @@
+---
+Title: Frame
+---
+
+%%#! native le data 32 bits
+%%#! display-width 16
+
+packet-beta %%#! byte-diagram
+
+%%#!
+
+%%#! org 0
+0-5: "Header"
+uint8[1]: "Paylod"
+uint32: "CRC" %%#! CRC 0-6 poly 0x1234 be

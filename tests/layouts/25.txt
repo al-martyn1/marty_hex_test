@@ -1,0 +1,13 @@
+---
+Title: Payload
+---
+
+%%#! native le data 32 bits
+%%#! display-width 16
+
+packet-beta %%#! byte-diagram
+
+%%#!
+
+uint8   : "FunctionId"
+uint8[1]: "Data"

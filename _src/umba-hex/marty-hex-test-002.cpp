@@ -185,7 +185,7 @@ int unsafeMain(int argc, char* argv[])
         std::cout << "App Root Path: " << rootPath << "\n";
         std::cout << "Working Dir  : " << cwd << "\n";
 
-        // inputFilename = rootPath + "tests/layouts/01.txt";
+        inputFilename = rootPath + "tests/layouts/01.txt";
         // inputFilename = rootPath + "tests/layouts/02.txt";
         // inputFilename = rootPath + "tests/layouts/03.txt";
         // inputFilename = rootPath + "tests/layouts/04.txt";
@@ -206,7 +206,7 @@ int unsafeMain(int argc, char* argv[])
         // inputFilename = rootPath + "tests/layouts/19.txt";
         // inputFilename = rootPath + "tests/layouts/20.txt";
         // inputFilename = rootPath + "tests/layouts/21.txt";
-        inputFilename = rootPath + "tests/layouts/22.txt";
+        // inputFilename = rootPath + "tests/layouts/22.txt";
         // inputFilename = rootPath + "tests/layouts/23.txt";
         // inputFilename = rootPath + "tests/layouts/24.txt";
         // inputFilename = rootPath + "tests/layouts/25.txt";
@@ -281,7 +281,7 @@ int unsafeMain(int argc, char* argv[])
         auto parserPreparator = [&](auto &p)        { p.setDiagramTitle(frontMatterTags["title"]); };
 
         auto diagram = umba::tokenizer::parserParseData<ParserType>
-            ( TokenizerBuilderType()
+            ( umba::tokenizer::mermaid::packet_diagram::makeTokenizerBuilder<char>() // TokenizerBuilderType()
             , umba::tokenizer::mermaid::packet_diagram::TokenizerConfigurator()
             , pFilenameSet
             , pParserLog

@@ -210,7 +210,7 @@ int unsafeMain(int argc, char* argv[])
         auto parserPreparator = [&](auto& p) { UMBA_USED(p); /* p.setDiagramTitle(frontMatterTags["title"]); */  };
 
         auto diagram = umba::tokenizer::parserParseData<ParserType>
-            ( TokenizerBuilderType()
+            ( umba::tokenizer::ufsm::makeTokenizerBuilder<char>() // TokenizerBuilderType()
             , umba::tokenizer::ufsm::TokenizerConfigurator()
             , pFilenameSet
             , pParserLog
