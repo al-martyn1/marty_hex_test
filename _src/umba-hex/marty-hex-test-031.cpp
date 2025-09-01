@@ -52,6 +52,56 @@ using OperatorTraitsType = marty::expressions::SimpleBoolExpressionOperatorTrait
 // PositionInfoType
 
 
+enum Action
+{
+    doConstantAbsorption          ,
+    doMultiAry                    ,
+    doCollapseParentheses         ,
+    doPromoteNegations            ,
+    doRemoveUnnecessaryParentheses,
+    doCollapseSameVars            ,
+    doAddParentheses              ,
+    doConvertNegativeOperands     ,
+    doSimplify
+};
+
+// bool bShowLabels    = false;
+
+inline
+std::string getActionName(Action a)
+{
+    switch(a)
+    {
+        case doConstantAbsorption          : return "ConstantAbsorption ";
+        case doMultiAry                    : return "MultiAry           ";
+        case doCollapseParentheses         : return "CollapseParentheses";
+        case doPromoteNegations            : return "PromoteNegations   ";
+        case doRemoveUnnecessaryParentheses: return "RemoveUnnecessary()";
+        case doCollapseSameVars            : return "CollapseSameVars   ";
+        case doAddParentheses              : return "AddParentheses     ";
+        case doConvertNegativeOperands     : return "ConvertNegatives   ";
+        case doSimplify                    : return "Simplify           ";
+        default: return "<UNKNOWN>";
+    }
+}
+
+inline
+std::string getActionNameShort(Action a)
+{
+    switch(a)
+    {
+        case doConstantAbsorption          : return "CA";
+        case doMultiAry                    : return "MA";
+        case doCollapseParentheses         : return "CP";
+        case doPromoteNegations            : return "PN";
+        case doRemoveUnnecessaryParentheses: return "RU";
+        case doCollapseSameVars            : return "CS";
+        case doAddParentheses              : return "AP";
+        case doConvertNegativeOperands     : return "CN";
+        case doSimplify                    : return "SM";
+        default: return "UN";
+    }
+}
 
 
 using std::cout;
@@ -72,26 +122,50 @@ int main(int argc, char* argv[])
 
     // std::string data;
 
-    bool bOptimize    = false;
-    bool bFail        = false;
-    bool bUseNamedOps = false;
+    bool bShowLabels       = false;
+    bool bShowLabelsShort  = false;
+    bool bFail             = false;
+    bool bUseNamedOps      = false;
+    bool bPrintTruthTable  = false;
+    std::vector<Action> actions;
+
+
     std::vector<TestDataItem> data;
 
     if (umba::isDebuggerPresent())
     {
-        bOptimize    = true;
-        bUseNamedOps = true;
-
         data = std::vector<TestDataItem>
-        { { "(a1 or b1) & not (a2||b2) | c&!true", 1 }
-        , { "(a1 or b1) & not (a2||b2) | c&!d", 1 }
-        , { "a1 | b1 & (a2|b2) | c&!d", 1 }
-        , { "a1 | b1 & a2 | b2 | c & !d", 1 }
-        , { "a1 | b1 & (a2|b2 | c&!d", 0 }
+        { { "(a1 or !(!(b1&c))|a1) & not !((a2||b2|a2)) | c&!true | e&!(f&g|h&(q|w|e|(r|t|!(!y&u&i&!u))))", 1 }
+        //, { "(a1 or b1) & not (a2||b2) | c&!d", 1 }
+        //, { "a1 | b1 & (a2|b2) | c&!d", 1 }
+        //, { "a1 | b1 & a2 | b2 | c & !d", 1 }
+        //, { "a1 | b1 & (a2|b2 | c&!d", 0 }
+
         //, "+42u+12*37"
         //, "/42u+12*37"
         //, "42u+12*37+::::std::sqrt(64)"
         };
+
+        // -p -M -C -N
+
+        //bOptimize                     = true;
+        bUseNamedOps     = true;
+        bPrintTruthTable = true;
+
+        #if 1
+        // CA  MA  CP  PN  RU  CS  CA  CN
+        actions.push_back(doConstantAbsorption          );
+        actions.push_back(doMultiAry                    );
+        actions.push_back(doCollapseParentheses         );
+        actions.push_back(doPromoteNegations            );
+        actions.push_back(doRemoveUnnecessaryParentheses);
+        actions.push_back(doCollapseSameVars            );
+        actions.push_back(doConvertNegativeOperands     );
+        actions.push_back(doAddParentheses              );
+        #else
+        actions.push_back(doSimplify                    );
+        #endif
+
     }
     else
     {
@@ -102,21 +176,23 @@ int main(int argc, char* argv[])
             if (arg.empty() || arg[0]!='-')
                 break;
 
-            if (std::string(argv[argIdx])=="-p")
-            {
-                bOptimize = true;
-                ++argIdx;
-            }
-            else if (std::string(argv[argIdx])=="-f")
-            {
-                bFail = true;
-                ++argIdx;
-            }
-            else if (std::string(argv[argIdx])=="-n")
-            {
-                bUseNamedOps = true;
-                ++argIdx;
-            }
+            if (std::string(argv[argIdx])=="-f")       { bFail = true;  ++argIdx;  }
+            else if (std::string(argv[argIdx])=="-n")  { bUseNamedOps = true; ++argIdx; }
+            else if (std::string(argv[argIdx])=="-l")  { bShowLabels = true; ++argIdx; }
+            else if (std::string(argv[argIdx])=="-s")  { bShowLabelsShort = true; ++argIdx; }
+            else if (std::string(argv[argIdx])=="-t")  { bPrintTruthTable = true; ++argIdx; }
+
+            else if (std::string(argv[argIdx])=="-A")  { actions.push_back(doConstantAbsorption); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-M")  { actions.push_back(doMultiAry); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-C")  { actions.push_back(doCollapseParentheses); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-N")  { actions.push_back(doPromoteNegations); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-U")  { actions.push_back(doRemoveUnnecessaryParentheses); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-L")  { actions.push_back(doCollapseSameVars); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-P")  { actions.push_back(doAddParentheses); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-G")  { actions.push_back(doConvertNegativeOperands); ++argIdx; }
+
+            else if (std::string(argv[argIdx])=="-S")  { actions.push_back(doSimplify); ++argIdx; }
+
             else
             {
                 break;
@@ -207,17 +283,6 @@ int main(int argc, char* argv[])
 
     };
 
-// template<typename TokenizerBuilder, typename TokenHandler>
-// //typename TokenizerBuilder::tokenizer_type makeTokenizerCpp(const TokenizerBuilder &builder, TokenHandler tokenHandler, bool suffixGluing=true, bool preprocessorFilter=true)
-// typename TokenizerBuilder::tokenizer_type makeTokenizer(TokenizerBuilder builder, TokenHandler tokenHandler, bool suffixGluing=true, bool preprocessorFilter=true )
-// {
-//     using TokenizerType = typename TokenizerBuilder::tokenizer_type;
-//     auto tokenizer = builder.makeTokenizer();
-//     tokenizer.tokenHandler = tokenHandler;
-//  
-//     return TokenizerConfigurator()(tokenizer, suffixGluing, preprocessorFilter);
-// }
-
 
     auto tokenizer = umba::tokenizer::cpp::makeTokenizer( tokenizerBuilder
                                                         , tokenHandler
@@ -254,17 +319,6 @@ int main(int argc, char* argv[])
                                       // , UMBA_TOKENIZER_TOKEN_OPERATOR_BITWISE_XOR
                                       , UMBA_TOKENIZER_TOKEN_OPERATOR_LOGICAL_OR  // UMBA_TOKENIZER_TOKEN_OPERATOR_BITWISE_OR
                                       };
-
-
-// template<typename OperatorTokenTypeT>
-// struct SimpleBoolExpressionOperatorTraits
-// {
-//     OperatorTokenTypeT   openBracketOp;
-//     OperatorTokenTypeT   closeBracketOp;
-//     OperatorTokenTypeT   notOp;
-//     OperatorTokenTypeT   andOp;
-//     OperatorTokenTypeT   orOp;
-// };
 
 
     using ExpressionParserType = marty::expressions::SimpleBoolExpressionParser<OperatorTraitsType, PositionInfoType, umba::tokenizer::payload_type >; // (opTraits);
@@ -357,27 +411,92 @@ int main(int argc, char* argv[])
             return 0;
         }
 
-        // std::cerr << "\n";
-        // exprParser.dump(std::cerr);
-        // std::cerr << "\n";
-
         auto exprTree   = exprParser.getExpression();
-        auto exprTreeCa = evaluator.performConstantAbsorption(exprTree);
-
         auto strExprTree   = evaluator.toString(exprTree  , bUseNamedOps);
-        auto strExprTreeCa = evaluator.toString(exprTreeCa, bUseNamedOps);
-        
-        std::cerr << "From tree : " << strExprTree   << "\n";
-        std::cerr << "Absorption: " << strExprTreeCa << "\n";
 
 
-        auto exprVars = evaluator.getExpressionVars(exprTreeCa);
+        auto exprVars = evaluator.getExpressionVars(exprTree);
         //auto truthTable = TruthTable(exprVars.begin(), exprVars.end());
-        auto truthTable = evaluator.makeTruthTable(exprTreeCa);
-        auto maxVarLen  = truthTable.varGetMaxLen();
-        if (maxVarLen<3)
-            maxVarLen = 3;
 
+        std::cerr << "\n";
+        std::cerr << "\n";
+
+
+        std::string label;
+        if (bShowLabels)
+            label = "SRC: " + expr;
+
+        auto appendLabel = [&](auto a, auto e)
+        {
+            if (bShowLabels)
+            {
+                label += "\\n";
+                label += getActionName(a);
+                label += ": ";
+                label += evaluator.toString(e, bUseNamedOps);
+            }
+            else if (bShowLabelsShort)
+            {
+                if (!label.empty())
+                   label += "  ";
+                label += getActionNameShort(a);
+            }
+        };
+
+        std::vector<std::string> allVars;
+        evaluator.getExpressionVars(exprTree, allVars);
+
+        for(auto a: actions)
+        {
+            switch(a)
+            {
+                case doConstantAbsorption          : 
+                    exprTree = evaluator.performConstantAbsorption(exprTree);
+                    break;
+                case doMultiAry                    :
+                    exprTree = evaluator.makeMultiAry(exprTree);
+                    break;
+                case doCollapseParentheses         :
+                    exprTree = evaluator.collapseNestedParentheses(exprTree);
+                    break;
+                case doPromoteNegations            :
+                    exprTree = evaluator.promoteNegations(exprTree);
+                    break;
+                case doRemoveUnnecessaryParentheses:
+                    exprTree = evaluator.removeUnnecessaryParentheses(exprTree);
+                    break;
+                case doCollapseSameVars            :
+                    exprTree = evaluator.collapseSameVarsAndObvioslyConstants(exprTree);
+                    break;
+                case doAddParentheses              :
+                    exprTree = evaluator.addRequiredParentheses(exprTree);
+                    break;
+                case doConvertNegativeOperands     :
+                    exprTree = evaluator.convertNegativeOperands(exprTree);
+                    break;
+                case doSimplify                    :
+                    exprTree = evaluator.simplify(exprTree);
+                    break;
+                default: {}
+            }
+
+            appendLabel(a, exprTree); 
+        }
+
+        if (bPrintTruthTable)
+        {
+            auto truthTable = evaluator.makeTruthTable(exprTree);
+            truthTable.print(std::cerr, allVars) << "\n";
+        }
+
+//addRequiredParentheses
+        
+        // auto truthTable = evaluator.makeTruthTable(exprTree);
+        // auto maxVarLen  = truthTable.varGetMaxLen();
+        // if (maxVarLen<3)
+        //     maxVarLen = 3;
+
+        #if 0
         std::cerr << "Truth table:\n";
         for(std::size_t varIdx=0; varIdx!=truthTable.varGetNumber(); ++varIdx)
         {
@@ -423,20 +542,10 @@ int main(int argc, char* argv[])
             for(TruthTable::VarsStateType vs=0u; vs!=vsMax; ++vs)
                 std::cerr << std::string(1, ttMerged.resultGetChar(vs));
         }
-
-        std::cerr << "\n";
-        std::cerr << "\n";
-
-
-        auto label = expr;
-        if (bOptimize)
-        {
-            exprTree = exprTreeCa;
-            label += "\\n" + strExprTreeCa;
-        }
+        #endif
 
         std::cerr << "---\n";
-        exprParser.gvGraph(std::cout, exprTree, label);
+        evaluator.gvGraph(std::cout, exprTree, label);
         std::cerr << "---\n";
 
         return 1;
