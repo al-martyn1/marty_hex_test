@@ -4,21 +4,27 @@ Generator: Umba Brief Scanner
 
 # _libs/encoding
 
-- `[_libs/encoding/encoding.h:315]`
+- `[_libs/encoding/encoding.h:318]`
   Надо бы тут разобраться с файлами, которые UTF-16
 
 
 
 # _libs/marty_cpp
 
-- `[_libs/marty_cpp/marty_cpp.h:3226]`
+- `[_libs/marty_cpp/marty_cpp.h:3276]`
   название? UPD: чего я тут хотел, уже не помню, надо бы коменты более развёрнуто
   делать
 
-- `[_libs/marty_cpp/marty_cpp.h:4804]`
+- `[_libs/marty_cpp/marty_cpp.h:4232]`
+  Тут получить локализацию
+
+- `[_libs/marty_cpp/marty_cpp.h:4407]`
+  Тут получить локализацию
+
+- `[_libs/marty_cpp/marty_cpp.h:5364]`
   std::make_tuple - что тут сказать хотел, непонятно, забыл уже
 
-- `[_libs/marty_cpp/marty_cpp.h:4985]`
+- `[_libs/marty_cpp/marty_cpp.h:5549]`
   заменить std::stoll, чтоб умело парсить двоичные константы и разделители try
 
 
@@ -27,6 +33,32 @@ Generator: Umba Brief Scanner
 
 - `[_libs/marty_decimal/marty_bcd.h:377]`
   Оно не нужно - что не нужно? Надо будет глянуть сюда повнимательнее
+
+
+
+# _libs/marty_expressions
+
+- `[_libs/marty_expressions/base_types.h:106]`
+  сделать вектор
+
+- `[_libs/marty_expressions/base_types.h:134]`
+  Добавить тип скобки
+
+- `[_libs/marty_expressions/base_types.h:145]`
+  Надо как-то пометить окончание - пустое имя?
+
+- `[_libs/marty_expressions/base_types.h:156]`
+  Надо как-то пометить окончание - пустое имя?
+
+
+
+# _libs/marty_format/std_format_tests
+
+- `[_libs/marty_format/std_format_tests/ds01.cpp:36]`
+  Error explicit specialization in non-namespace scope 'struct
+  marty::format::variant_filter_traits<std::variant<_Types ...> >' template
+  parameters not deducible in partial specialization: struct find_first_filter<>
+  {
 
 
 
@@ -46,7 +78,7 @@ Generator: Umba Brief Scanner
     return false;
     }
 
-- `[_libs/umba/cmd_line.h:3002]`
+- `[_libs/umba/cmd_line.h:3026]`
   Надо ProgramLocation проверить на юникод
 
 - `[_libs/umba/macros.h:417]`
@@ -99,6 +131,6 @@ Generator: Umba Brief Scanner
 
 # _src/umba-hex
 
-- `[_src/umba-hex/marty-hex-test-021.cpp:269]`
+- `[_src/umba-hex/marty-hex-test-021.cpp:302]`
   Тут надо потом вставить непечатные символы, чтобы проверить escape
 

@@ -1,17 +1,17 @@
 # Шаблон Umba-проекта
 
-- [Настройка проекта на базе данного шаблона](#user-content-настройка-проекта-на-базе-данного-шаблона)
-  - [Настройка CMakeLists.txt](#user-content-настройка-cmakeliststxt)
-    - [Название проекта](#user-content-название-проекта)
-    - [Настройка библиотек](#user-content-настройка-библиотек)
-    - [Добавление целей](#user-content-добавление-целей)
-  - [Настройка запуска MSVC](#user-content-настройка-запуска-msvc)
-- [Сборка и отладка проекта](#user-content-сборка-и-отладка-проекта)
-  - [Извлечение библиотек](#user-content-извлечение-библиотек)
-  - [Генерация сборочных скриптов и сборка](#user-content-генерация-сборочных-скриптов-и-сборка)
-  - [Открытие проекта в IDE](#user-content-открытие-проекта-в-ide)
-    - [Запуск VSCode](#user-content-запуск-vscode)
-    - [Запуск MSVC](#user-content-запуск-msvc)
+- [Настройка проекта на базе данного шаблона](#настройка-проекта-на-базе-данного-шаблона)
+  - [Настройка CMakeLists.txt](#настройка-cmakeliststxt)
+    - [Название проекта](#название-проекта)
+    - [Настройка библиотек](#настройка-библиотек)
+    - [Добавление целей](#добавление-целей)
+  - [Настройка запуска MSVC](#настройка-запуска-msvc)
+- [Сборка и отладка проекта](#сборка-и-отладка-проекта)
+  - [Извлечение библиотек](#извлечение-библиотек)
+  - [Генерация сборочных скриптов и сборка](#генерация-сборочных-скриптов-и-сборка)
+  - [Открытие проекта в IDE](#открытие-проекта-в-ide)
+    - [Запуск VSCode](#запуск-vscode)
+    - [Запуск MSVC](#запуск-msvc)
 
 
 Для подключения и использования необходимых библиотек их нужно раскомментировать в файлах:
@@ -28,22 +28,20 @@
 
 В начале файла находим строку описания проекта (с директивой `project`):
 
-**CMakeLists.txt:0**
-```cmake
-```
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`project(umba-template`-(1)
 
 Заменяем название `umba-template` на название проекта.
-
 
 
 ### Настройка библиотек
 
 Импортируем нужные библиотеки:
 
-**CMakeLists.txt:23**
+**CMakeLists.txt:27**
 ```cmake
 # Import libraries here
 add_subdirectory(${LIB_ROOT}/encoding)
+add_subdirectory(${LIB_ROOT}/marty_bigint)
 add_subdirectory(${LIB_ROOT}/marty_cpp)
 add_subdirectory(${LIB_ROOT}/marty_crc)
 add_subdirectory(${LIB_ROOT}/marty_decimal)
@@ -52,6 +50,7 @@ add_subdirectory(${LIB_ROOT}/marty_mem)
 add_subdirectory(${LIB_ROOT}/marty_svg)
 add_subdirectory(${LIB_ROOT}/marty_utf)
 add_subdirectory(${LIB_ROOT}/marty_format)
+add_subdirectory(${LIB_ROOT}/marty_expressions)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
 # add_subdirectory(${LIB_ROOT}/marty_yaml_toml_json)
@@ -66,10 +65,22 @@ add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 
 Настраиваем списки библиотек для последующего использования:
 
-**CMakeLists.txt:51**
+**CMakeLists.txt:57**
 ```cmake
 # Configure libraries here
-set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::decimal marty::hex marty::mem marty::svg umba::tokenizer marty::utf marty::format)
+set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
+    marty::bigint
+    marty::cpp
+    marty::crc
+    marty::decimal
+    marty::expressions
+    marty::hex
+    marty::mem
+    marty::svg
+    umba::tokenizer
+    marty::utf
+    marty::format
+   )
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 ```
@@ -81,9 +92,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::
 
 Настраиваем цель (исполняемый файл) проекта:
 
-**CMakeLists.txt:0**
-```cmake
-```
+#!insert{noLineNo,noKeepCutTags,filename,no-path} CMakeLists.txt#`add_executable(umba-template`-(1)
 
 При необходимости дополнительные цели можно добавлять аналогично.
 
@@ -94,6 +103,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::
 
 **set_sln.bat:2**
 ```
+@rem Must be set to value exact as in CMakeLists.txt "project" command
 @set SLN=umba-hex
 ```
 
@@ -125,7 +135,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba marty::cpp marty::crc marty::
 
 ### Запуск VSCode
 
-Для запуска VSCode предназначен файл `_start_code.bat`. 
+Для запуска VSCode предназначен файл `_start_code.bat`.
 VSCode с плагином "CMake Tools" сам обнаружит `CMakeLists.txt`. Следует выбрать подходящий тулчейн
 и можно начинать работу.
 
@@ -136,8 +146,5 @@ VSCode с плагином "CMake Tools" сам обнаружит `CMakeLists.t
 По умолчанию будет сгенерированна и открыта в 2019ой студии конфигурация `x86`.
 Для того, чтобы открывалась другая студия с другой конфигурацией, следует
 переименовать файл `setup_msvc.bat.example` в `setup_msvc.bat` и настроить нужную конфигурацию там.
-
-
-
 
 

@@ -136,17 +136,17 @@ Generator: Umba Brief Scanner
 
 # _libs/marty_cpp
 
-- [ ] `[_libs/marty_cpp/marty_cpp.h:685]`
+- [ ] `[_libs/marty_cpp/marty_cpp.h:689]`
   пока range_error не кидаем, но надо доделать
 
-- [ ] `[_libs/marty_cpp/marty_cpp.h:2291]`
+- [ ] `[_libs/marty_cpp/marty_cpp.h:2295]`
   Надо подумать, править баг и как его править
 
-- [ ] `[_libs/marty_cpp/marty_cpp.h:3603]`
+- [ ] `[_libs/marty_cpp/marty_cpp.h:3658]`
   Нужен каст к underlaying типу, если он задан. Сюда надо будет передавать
   шаблоны и строку underlaying типа
 
-- [ ] `[_libs/marty_cpp/marty_cpp.h:4156]`
+- [ ] `[_libs/marty_cpp/marty_cpp.h:4698]`
   Нужен каст к underlaying типу, если он задан. Сюда надо будет передавать
   шаблоны и строку underlaying типа
 
@@ -158,6 +158,49 @@ Generator: Umba Brief Scanner
   Вынести в отдельный большой файл заголовки групп ! \addtogroup
   UMBA_LIBS_TUNING_MACROS Макросы настройки UMBA-библиотек ! \addtogroup
   MARTY_CRC Библиотека CRC
+
+
+
+# _libs/marty_decimal
+
+- [ ] `[_libs/marty_decimal/marty_bcd_decimal_impl.h:233]`
+  Тут я схалявил, и решил использовать реализацию для char буфера Надо
+  переделать, чтобы форматировалось прямо в строку и не имело ограничений на
+  длину числа
+
+
+
+# _libs/marty_expressions
+
+- [ ] `[_libs/marty_expressions/simple_bool_expressions.h:1478]`
+  Сделать раскрытие скобок
+
+
+
+# _libs/marty_expressions/impl
+
+- [ ] `[_libs/marty_expressions/impl/ep_waitUnaryPrefixOperatorOrValue.h:41]`
+  не очень понятно, как и где обрабатывать унарные префиксные операторы
+
+
+
+# _libs/marty_format/impl
+
+- [ ] `[_libs/marty_format/impl/internal_processFormatValuesImpl.h:437]`
+  Если есть BigInt, то форматируем через него, если у нас "целый" форматный
+  символ
+
+- [ ] `[_libs/marty_format/impl/internal_processFormatValuesImpl.h:442]`
+  Если BigInt'а нет, то форматируем через std::uint64_t getAsUint64() const, не
+  забывая про знак
+
+- [ ] `[_libs/marty_format/impl/internal_processFormatValuesImpl.h:1275]`
+  Если задано сделать escape для строки то надо сделать escape, но не длиннее,
+  чем макс ширина
+
+- [ ] `[_libs/marty_format/impl/internal_processFormatValuesImpl.h:1287]`
+  Тут используем UTF итераторы явно, если нам не нужен UTF, надо будет обрубить
+  эту возможность
 
 
 
@@ -209,7 +252,7 @@ Generator: Umba Brief Scanner
 
 # _libs/marty_utf
 
-- [ ] `[_libs/marty_utf/utf_impl.h:1224]`
+- [ ] `[_libs/marty_utf/utf_impl.h:1225]`
   Надо бы сделать: UTF-32 из string. UTF-32 из wstring. string  из UTF-32.
   wstring из UTF-32.
 

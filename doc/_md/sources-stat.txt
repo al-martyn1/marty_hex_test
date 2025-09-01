@@ -1,0 +1,104 @@
+github.com/AlDanial/cloc v 2.02  T=4.15 s (20.0 files/s, 3613.1 lines/s)
+---------------------------------------------------------------------------------------------------------------------
+File                                                                              blank        comment           code
+---------------------------------------------------------------------------------------------------------------------
+.\_src\umba-hex\marty-hex-test-016.cpp                                              169            105            593
+.\_src\umba-hex\marty-hex-test-014.cpp                                              169            171            537
+.\_src\umba-hex\marty-hex-test-018.cpp                                              144             83            534
+.\_src\umba-hex\marty-hex-test-013.cpp                                              137            141            449
+.\_src\umba-hex\marty-hex-test-015.cpp                                              146            106            442
+.\_src\umba-hex\marty-hex-test-019.cpp                                              127             68            426
+.\_src\umba-hex\marty-hex-test-031.cpp                                              117             80            397
+.\_src\umba-hex\ArgParser.h                                                          96             29            376
+.\_src\umba-hex\marty-hex-test-009.cpp                                              129             89            357
+.\_src\umba-hex\marty-hex-test-028.cpp                                               87             69            352
+.\_src\umba-hex\marty-hex-test-012.cpp                                              103            104            285
+.\_src\umba-hex\marty-hex-test-020.cpp                                               72             42            268
+.\_src\umba-hex\marty-hex-test-010.cpp                                               95             62            264
+.\CMakeLists.txt                                                                    139             21            260
+.\_src\umba-hex\marty-hex-test-008.cpp                                               89             41            227
+.\_src\umba-hex\marty-hex-test-021.cpp                                               74             51            226
+.\_src\umba-hex\marty-hex-test-002.cpp                                               77             56            207
+.\_src\umba-hex\marty-hex-test-007.cpp                                               54             38            206
+.\_src\umba-hex\marty-hex-test-030.cpp                                               72             39            205
+.\doc\_md\_found-todos.md                                                           111              0            200
+.\_src\umba-hex\marty-hex-test-011.cpp                                               61             53            192
+.\_src\umba-hex\mermaid_svg.h                                                        73             39            188
+.\_src\umba-hex\marty-hex-test-004.cpp                                               61             49            183
+.\_src\umba-hex\marty-hex-test-tpl.cpp                                               57             22            164
+.\_src\umba-hex\marty-hex-test-033.cpp                                               62             22            159
+.\_src\umba-hex\marty-hex-test-017.cpp                                               68             72            157
+.\_src\umba-hex\marty-hex-test-006.cpp                                               47             25            149
+.\_src\umba-hex\marty-hex-test-022.cpp                                               58             39            146
+.\_src\umba-hex\marty-hex-test-003.cpp                                               52             21            125
+.\_src\umba-hex\marty-hex-test-032.cpp                                               48             32            120
+.\_src\umba-hex\marty-hex-test-034.cpp                                               48             32            120
+.\_src\umba-hex\umba-hex.cpp                                                         54             66            116
+.\doc\_md\_found-notes.md                                                            63              0            115
+.\_src\umba-hex\marty-hex-test-005.cpp                                               47             18            114
+.\_src\umba-hex\marty-hex-test-001.cpp                                               44             20            110
+.\doc.drafts\example-diagram.svg                                                     12              0            110
+.\README.md                                                                          51              0             92
+.\_src\umba-hex\marty-hex-test-023.cpp                                               33             15             77
+.\_src\umba-hex\marty-hex-test-029.cpp                                               27             15             74
+.\doc\_md\_found-attentions.md                                                       40              0             64
+.\_src\umba-hex\svg-style.h                                                           3              1             32
+.\doc\_md\_found-see-also.md                                                         25              0             31
+.\doc.drafts\mermaid_test.md                                                          4              0             27
+.\doc\_md\_found-warnings.md                                                         16              0             25
+.\deploy_local.bat                                                                    1              0             20
+.\doc\_md\_found-undones.md                                                          27              0             17
+.\_precommit.bat                                                                      3              0             12
+.\_src\umba-hex\AppConfig.h                                                           7              2              9
+.\_src\umba-hex\log.h                                                                 5              3              9
+.\_src\umba-hex\AppVerConfig.h                                                        3              0              8
+.\.templates\.set_msvc.bat                                                            0              0              6
+.\_gen-doc.bat                                                                        2              0              6
+.\doc.3dp\links.txt                                                                   2              0              5
+.\doc\Index.md                                                                        0              0              5
+.\_update_debug_conf.bat                                                              0              0              4
+.\doc.drafts\links.txt                                                                0              0              4
+.\doc.notes\README.md                                                                 2              0              4
+.\.set_sln.bat                                                                        0              0              2
+.\.set_sln_exes.bat                                                                   0              0              2
+.\.templates\readme.txt                                                               0              0              2
+.\_start_msvc.bat                                                                     0              0              2
+.\set_sln.bat                                                                         0              0              2
+.\_gen-doc-wlog.bat                                                                   0              0              1
+.\_precommit_wlog.bat                                                                 0              0              1
+.\_src\umba-hex\marty-hex-test-024.cpp                                                1              3              1
+.\_src\umba-hex\marty-hex-test-025.cpp                                                1              3              1
+.\_src\umba-hex\marty-hex-test-026.cpp                                                1              3              1
+.\_src\umba-hex\marty-hex-test-027.cpp                                                1              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_01.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_02.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_03.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_03_generate.cpp                    3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_04.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_04_generate.cpp                    3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_05.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_06.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_07.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_08.cpp                             3              3              1
+.\_src\umba-hex\marty_format_examples\mfmt_example_09.cpp                             3              3              1
+.\_src\umba-hex\std_format_tests\gcvt_test.cpp                                        2              3              1
+.\_src\umba-hex\std_format_tests\std_to_chars_tests.cpp                               2              3              1
+.\_start_code.bat                                                                     0              0              1
+.\_update_all.bat                                                                     0              0              1
+---------------------------------------------------------------------------------------------------------------------
+SUM:                                                                               3354           1992           9641
+---------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+C++                             49           2669           1897           7998
+C/C++ Header                     6            187             74            622
+Markdown                        10            339              0            580
+CMake                            1            139             21            260
+SVG                              1             12              0            110
+DOS Batch                       13              6              0             60
+Text                             3              2              0             11
+-------------------------------------------------------------------------------
+SUM:                            83           3354           1992           9641
+-------------------------------------------------------------------------------

@@ -3,11 +3,18 @@ Title: Brief Description for Project Sources
 Generator: Umba Brief Scanner
 ---
 
+- `mul-speed-test-impl.cpp` - Сравниваем варианты умножения marty::BigInt на скорость
+- `op-tests-impl.cpp` - Тестим операторы marty::BigInt
 - `01_normalization_and_tabs.cpp` - Тестируем cEscapeString, нормализацию CR LF, нормализацию trailing spaces, condenseSpacesToTabs, normalizeIndents
 - `02_enum_generator.cpp` - Тестирование генератора enum'ов marty_cpp::enum_generate_
 - `03_sort_includes.cpp` - Тестируем sort_includes.
 - `safe_main.h` - 
+- `test01.cpp` - 
 - `marty_format_types.h` - Типы для marty::format
+- `gcvt_test.cpp` - 
+- `std_format_tests_hex.cpp` - 
+- `std_format_tests_hex_generate.cpp` - 
+- `std_to_chars_tests.cpp` - 
 - `CMakeCCompilerId.c` - 
 - `CMakeCXXCompilerId.cpp` - 
 - `app_main.h` - 
@@ -34,5 +41,14 @@ Generator: Umba Brief Scanner
 - `marty-hex-test-019.cpp` - Парсим форматную строку - без автомата
 - `marty-hex-test-020.cpp` - Парсим форматную строку - без автомата (функцию вынес в библиотеку)
 - `marty-hex-test-021.cpp` - Тестим функцию форматирования с аргументами в виде marty::format::Args
+- `marty-hex-test-022.cpp` - Тестим LocaleInfo
+- `marty-hex-test-023.cpp` - Тестим LocaleInfo
+- `marty-hex-test-028.cpp` - Запилил парсер CSV
+- `marty-hex-test-029.cpp` - Тестируем разбор CSV (marty::csv)
+- `marty-hex-test-030.cpp` - Тестируем marty_expressions
+- `marty-hex-test-031.cpp` - Тестируем marty_expressions - простой парсинг булевых выражений
+- `marty-hex-test-032.cpp` - Тестируем лексер UFSM
+- `marty-hex-test-033.cpp` - Тестим чтение диаграм
+- `marty-hex-test-034.cpp` - Тестируем чтение автомата UFSM
 - `marty-hex-test-tpl.cpp` - Тестим чтение HEX, первичную проверку, получение диапазонов блоков занятой памяти
 - `umba-hex.cpp` - 
