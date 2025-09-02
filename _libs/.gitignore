@@ -1,5 +1,6 @@
 encoding
 marty_bigint
+marty_containers
 marty_cpp
 marty_crc
 marty_csv
