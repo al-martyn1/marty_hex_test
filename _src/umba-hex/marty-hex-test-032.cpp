@@ -38,6 +38,8 @@
 //
 #include "marty_expressions/sample_op_traits.h"
 
+#include "marty_containers/insertion_ordered_map.h"
+
 
 
 // using TokenType = umba::tokenizer::payload_type; // OperatorTokenTypeT
@@ -54,6 +56,51 @@ int main(int argc, char* argv[])
 {
     MARTY_ARG_USED(argc);
     MARTY_ARG_USED(argv);
+
+    using insertion_ordered_map = marty::containers::insertion_ordered_map<std::string, std::size_t>;
+
+    insertion_ordered_map iom
+    // { { "First" , 1u }
+    // , { "Second", 2u }
+    // , { "Third" , 3u }
+    // , { "Fourth", 4u }
+    // , { "Fifth" , 5u }
+    // };
+    { { "1" , 1u }
+    , { "2" , 2u }
+    , { "3" , 3u }
+    , { "4" , 4u }
+    , { "5" , 5u }
+    };
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n";
+
+    std::cout << "Erase \"2\"\n";
+    iom.erase("2");
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n";
+
+    std::cout << "Set \"6\"\n";
+    iom["6"] = 6u;
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n";
+
+    std::cout << "Set \"0\"\n";
+    iom["0"] = 0u;
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n";
+
+    std::cout << "------------\n";
+
+
 
     std::string data;
 

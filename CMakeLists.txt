@@ -26,6 +26,7 @@ include_directories(${LIB_ROOT})
 # Import libraries here
 add_subdirectory(${LIB_ROOT}/encoding)
 add_subdirectory(${LIB_ROOT}/marty_bigint)
+add_subdirectory(${LIB_ROOT}/marty_containers)
 add_subdirectory(${LIB_ROOT}/marty_cpp)
 add_subdirectory(${LIB_ROOT}/marty_crc)
 add_subdirectory(${LIB_ROOT}/marty_decimal)
@@ -56,6 +57,7 @@ add_subdirectory(${LIB_ROOT}/umba_tokenizer)
 # Configure libraries here
 set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
     marty::bigint
+    marty::containers
     marty::cpp
     marty::crc
     marty::decimal
