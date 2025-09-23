@@ -1,5 +1,5 @@
 /*! \file
-    \brief Тестируем чтение автомата UFSM
+    \brief 
  */
 
 #include "umba/umba.h"

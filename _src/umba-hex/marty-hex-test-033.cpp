@@ -1,10 +1,6 @@
 /*! \file
-    \brief Тестим колхозый map
+    \brief Тестируем парсер UFSM
  */
-
-
-#include "marty_hex/marty_hex.h"
-#include "marty_hex/memory_fill_map.h"
 
 
 // Должна быть первой
@@ -207,7 +203,7 @@ int unsafeMain(int argc, char* argv[])
         std::unordered_map<std::string, std::string> frontMatterTags;
 
         auto textPreparator   = [&](std::string &t) { umba::tokenizer::utils::prepareTextForParsing(t, 0 /* pStyle */ , &frontMatterTags ); };
-        auto parserPreparator = [&](auto& p) { UMBA_USED(p); /* p.setDiagramTitle(frontMatterTags["title"]); */  };
+        auto parserPreparator = [&](auto& p)        { UMBA_USED(p); /* p.setDiagramTitle(frontMatterTags["title"]); */ };
 
         auto diagram = umba::tokenizer::parserParseData<ParserType>
             ( umba::tokenizer::ufsm::makeTokenizerBuilder<char>() // TokenizerBuilderType()

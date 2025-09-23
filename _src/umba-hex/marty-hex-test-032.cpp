@@ -57,6 +57,10 @@ int main(int argc, char* argv[])
     MARTY_ARG_USED(argc);
     MARTY_ARG_USED(argv);
 
+
+    //----------------------------------------------------------------------------
+    // Присунул по случаю тест insertion_ordered_map, чтобы отдельное не городить
+
     using insertion_ordered_map = marty::containers::insertion_ordered_map<std::string, std::size_t>;
 
     insertion_ordered_map iom
@@ -100,6 +104,7 @@ int main(int argc, char* argv[])
 
     std::cout << "------------\n";
 
+    //----------------------------------------------------------------------------
 
 
     std::string data;

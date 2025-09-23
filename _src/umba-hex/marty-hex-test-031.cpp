@@ -57,11 +57,13 @@ enum Action
     doConstantAbsorption          ,
     doMultiAry                    ,
     doCollapseParentheses         ,
+    doRemoveParentheses           ,
     doPromoteNegations            ,
     doRemoveUnnecessaryParentheses,
     doCollapseSameVars            ,
     doAddParentheses              ,
     doConvertNegativeOperands     ,
+    doSort                        ,
     doSimplify
 };
 
@@ -75,11 +77,13 @@ std::string getActionName(Action a)
         case doConstantAbsorption          : return "ConstantAbsorption ";
         case doMultiAry                    : return "MultiAry           ";
         case doCollapseParentheses         : return "CollapseParentheses";
+        case doRemoveParentheses           : return "RemoveParentheses  ";
         case doPromoteNegations            : return "PromoteNegations   ";
         case doRemoveUnnecessaryParentheses: return "RemoveUnnecessary()";
         case doCollapseSameVars            : return "CollapseSameVars   ";
         case doAddParentheses              : return "AddParentheses     ";
         case doConvertNegativeOperands     : return "ConvertNegatives   ";
+        case doSort                        : return "Sort               ";
         case doSimplify                    : return "Simplify           ";
         default: return "<UNKNOWN>";
     }
@@ -93,11 +97,13 @@ std::string getActionNameShort(Action a)
         case doConstantAbsorption          : return "CA";
         case doMultiAry                    : return "MA";
         case doCollapseParentheses         : return "CP";
+        case doRemoveParentheses           : return "RP";
         case doPromoteNegations            : return "PN";
         case doRemoveUnnecessaryParentheses: return "RU";
         case doCollapseSameVars            : return "CS";
         case doAddParentheses              : return "AP";
         case doConvertNegativeOperands     : return "CN";
+        case doSort                        : return "SR";
         case doSimplify                    : return "SM";
         default: return "UN";
     }
@@ -124,6 +130,7 @@ int main(int argc, char* argv[])
 
     bool bShowLabels       = false;
     bool bShowLabelsShort  = false;
+    bool bShowFinalLabel   = false;
     bool bFail             = false;
     bool bUseNamedOps      = false;
     bool bPrintTruthTable  = false;
@@ -135,7 +142,8 @@ int main(int argc, char* argv[])
     if (umba::isDebuggerPresent())
     {
         data = std::vector<TestDataItem>
-        { { "(a1 or !(!(b1&c))|a1) & not !((a2||b2|a2)) | c&!true | e&!(f&g|h&(q|w|e|(r|t|!(!y&u&i&!u))))", 1 }
+        { { "(h&g&f&e)|q|p|o|(a1 or !(!(b1&c))|a1) & not !((a2||b2|a2)) | c&!true | e&!(((r|t|!(!y&u&!u))|q|e)&h&g|f)", 1 }
+             
         //, { "(a1 or b1) & not (a2||b2) | c&!d", 1 }
         //, { "a1 | b1 & (a2|b2) | c&!d", 1 }
         //, { "a1 | b1 & a2 | b2 | c & !d", 1 }
@@ -151,6 +159,7 @@ int main(int argc, char* argv[])
         //bOptimize                     = true;
         bUseNamedOps     = true;
         bPrintTruthTable = true;
+        bShowFinalLabel  = true;
 
         #if 1
         // CA  MA  CP  PN  RU  CS  CA  CN
@@ -162,6 +171,7 @@ int main(int argc, char* argv[])
         actions.push_back(doCollapseSameVars            );
         actions.push_back(doConvertNegativeOperands     );
         actions.push_back(doAddParentheses              );
+        actions.push_back(doSort                        );
         #else
         actions.push_back(doSimplify                    );
         #endif
@@ -181,15 +191,18 @@ int main(int argc, char* argv[])
             else if (std::string(argv[argIdx])=="-l")  { bShowLabels = true; ++argIdx; }
             else if (std::string(argv[argIdx])=="-s")  { bShowLabelsShort = true; ++argIdx; }
             else if (std::string(argv[argIdx])=="-t")  { bPrintTruthTable = true; ++argIdx; }
+            else if (std::string(argv[argIdx])=="-a")  { bShowFinalLabel = true; ++argIdx; }
 
             else if (std::string(argv[argIdx])=="-A")  { actions.push_back(doConstantAbsorption); ++argIdx; }
             else if (std::string(argv[argIdx])=="-M")  { actions.push_back(doMultiAry); ++argIdx; }
             else if (std::string(argv[argIdx])=="-C")  { actions.push_back(doCollapseParentheses); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-R")  { actions.push_back(doRemoveParentheses); ++argIdx; }
             else if (std::string(argv[argIdx])=="-N")  { actions.push_back(doPromoteNegations); ++argIdx; }
             else if (std::string(argv[argIdx])=="-U")  { actions.push_back(doRemoveUnnecessaryParentheses); ++argIdx; }
             else if (std::string(argv[argIdx])=="-L")  { actions.push_back(doCollapseSameVars); ++argIdx; }
             else if (std::string(argv[argIdx])=="-P")  { actions.push_back(doAddParentheses); ++argIdx; }
             else if (std::string(argv[argIdx])=="-G")  { actions.push_back(doConvertNegativeOperands); ++argIdx; }
+            else if (std::string(argv[argIdx])=="-O")  { actions.push_back(doSort); ++argIdx; }
 
             else if (std::string(argv[argIdx])=="-S")  { actions.push_back(doSimplify); ++argIdx; }
 
@@ -459,6 +472,9 @@ int main(int argc, char* argv[])
                 case doCollapseParentheses         :
                     exprTree = evaluator.collapseNestedParentheses(exprTree);
                     break;
+                case doRemoveParentheses           :
+                    exprTree = evaluator.removeAllParentheses(exprTree);
+                    break;
                 case doPromoteNegations            :
                     exprTree = evaluator.promoteNegations(exprTree);
                     break;
@@ -474,6 +490,9 @@ int main(int argc, char* argv[])
                 case doConvertNegativeOperands     :
                     exprTree = evaluator.convertNegativeOperands(exprTree);
                     break;
+                case doSort                        :
+                    exprTree = evaluator.sortArguments(exprTree);
+                    break;
                 case doSimplify                    :
                     exprTree = evaluator.simplify(exprTree);
                     break;
@@ -481,6 +500,13 @@ int main(int argc, char* argv[])
             }
 
             appendLabel(a, exprTree); 
+        }
+
+        if (bShowFinalLabel)
+        {
+            if (!label.empty())
+                label += "\\n";
+            label += evaluator.toString(exprTree, bUseNamedOps);
         }
 
         if (bPrintTruthTable)
@@ -543,6 +569,8 @@ int main(int argc, char* argv[])
                 std::cerr << std::string(1, ttMerged.resultGetChar(vs));
         }
         #endif
+
+        
 
         std::cerr << "---\n";
         evaluator.gvGraph(std::cout, exprTree, label);
