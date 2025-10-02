@@ -170,13 +170,6 @@ Generator: Umba Brief Scanner
 
 
 
-# _libs/marty_expressions
-
-- [ ] `[_libs/marty_expressions/simple_bool_expressions.h:1478]`
-  Сделать раскрытие скобок
-
-
-
 # _libs/marty_expressions/impl
 
 - [ ] `[_libs/marty_expressions/impl/ep_waitUnaryPrefixOperatorOrValue.h:41]`

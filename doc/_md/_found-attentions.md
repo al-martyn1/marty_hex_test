@@ -50,6 +50,11 @@ Generator: Umba Brief Scanner
 - `[_libs/marty_expressions/base_types.h:156]`
   Надо как-то пометить окончание - пустое имя?
 
+- `[_libs/marty_expressions/tokenizer_helpers.h:611]`
+  Надо подумать, как получить текст, если у нас нет полезной нагрузки, и нет
+  итераторов else operatorText = umba::tokenizer::utils::makeTokenText(tokenType,
+  b, e);
+
 
 
 # _libs/marty_format/std_format_tests

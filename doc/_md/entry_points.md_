@@ -48,7 +48,7 @@ Generator: Umba Brief Scanner
 - `marty-hex-test-030.cpp` - Тестируем marty_expressions
 - `marty-hex-test-031.cpp` - Тестируем marty_expressions - простой парсинг булевых выражений
 - `marty-hex-test-032.cpp` - Тестируем лексер UFSM
-- `marty-hex-test-033.cpp` - Тестим чтение диаграм
-- `marty-hex-test-034.cpp` - Тестируем чтение автомата UFSM
+- `marty-hex-test-033.cpp` - Тестируем парсер UFSM
+- `marty-hex-test-034.cpp` - 
 - `marty-hex-test-tpl.cpp` - Тестим чтение HEX, первичную проверку, получение диапазонов блоков занятой памяти
 - `umba-hex.cpp` - 
