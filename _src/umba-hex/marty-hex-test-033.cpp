@@ -24,6 +24,9 @@
 //
 #include "umba/tokenizer/parsers/ufsm/parser.h"
 //
+#include "umba/tokenizer/parsers/ufsm/inserters.h"
+
+//
 #include "umba/filename_set.h"
 #include "umba/escape_string.h"
 
@@ -121,12 +124,14 @@ UMBA_APP_MAIN()
     }
     catch(const std::exception& e)
     {
-        std::cout << "Error: " << e.what() << "\n";
+        // std::cout 
+        LOG_ERR << "Error: " << e.what() << "\n";
         return 1;
     }
     catch(...)
     {
-        std::cout << "Unknown error\n";
+        //std::cout 
+        LOG_ERR << "Unknown error\n";
         return 2;
     }
 
@@ -173,8 +178,10 @@ int unsafeMain(int argc, char* argv[])
     {
         std::string cwd;
         std::string rootPath = umba::shellapi::getDebugAppRootFolder(&cwd);
-        std::cout << "App Root Path: " << rootPath << "\n";
-        std::cout << "Working Dir  : " << cwd << "\n";
+        // std::cout 
+        LOG_MSG << "App Root Path: " << rootPath << "\n";
+        // std::cout 
+        LOG_MSG << "Working Dir  : " << cwd << "\n";
 
         inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
 
@@ -218,9 +225,12 @@ int unsafeMain(int argc, char* argv[])
 
         UMBA_USED(diagram);
 
-        LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
+        //umba::tokenizer::ufsm::print(std::cout, diagram /* , std::size_t indendSize=0u */ );
+        diagram.print(std::cout);
+
+        // LOG_MSG << "File processed: '" << inputFilename << "'\n\n";
     
-        LOG_MSG << "C/C++ structs:\n\n";
+        // LOG_MSG << "C/C++ structs:\n\n";
     
         //umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
 
