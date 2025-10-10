@@ -183,7 +183,9 @@ int unsafeMain(int argc, char* argv[])
         // std::cout 
         LOG_MSG << "Working Dir  : " << cwd << "\n";
 
-        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
+        // inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
+        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/http.ufsm";
+        
 
     } // if (umba::isDebuggerPresent())
     else
