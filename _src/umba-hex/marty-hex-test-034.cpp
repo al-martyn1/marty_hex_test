@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 
     if (umba::isDebuggerPresent())
     {
+        inputStrings.emplace_back("!-~\\x80-\\xFF");
         inputStrings.emplace_back(" \\t");
         inputStrings.emplace_back("!-\\xFF-[\\c?]");
         inputStrings.emplace_back("`\\``");
