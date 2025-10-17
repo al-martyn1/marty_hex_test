@@ -38,6 +38,18 @@ int main(int argc, char* argv[])
 
     if (umba::isDebuggerPresent())
     {
+        inputStrings.emplace_back("\\h");
+        //inputStrings.emplace_back("\\xxd"); // удалено
+        inputStrings.emplace_back("\\s");
+        inputStrings.emplace_back("\\S");
+        inputStrings.emplace_back("\\d");
+        inputStrings.emplace_back("\\D");
+        inputStrings.emplace_back("\\w");
+        inputStrings.emplace_back("\\W");
+        inputStrings.emplace_back("\\l");
+        inputStrings.emplace_back("\\L");
+        inputStrings.emplace_back("a-fA-F0-9");
+
         inputStrings.emplace_back("!-~\\x80-\\xFF");
         inputStrings.emplace_back(" \\t");
         inputStrings.emplace_back("!-\\xFF-[\\c?]");
@@ -62,6 +74,7 @@ int main(int argc, char* argv[])
             inputStrings.emplace_back(argv[i]);
     }
     
+    #if 0
     std::set<std::uint8_t>  charsSet;
     charsSet.insert(std::uint8_t('0'));
     charsSet.insert(std::uint8_t('1'));
@@ -93,7 +106,7 @@ int main(int argc, char* argv[])
     cout << "Testing char string generation\n";
     cout << umba::tokenizer::char_class::utils::makePredicateCharClassString(charsSet);
     cout << "\n\n";
-
+    #endif
 
     for(auto s : inputStrings)
     {
