@@ -1,1 +1,1 @@
-start code .
+start code "%~dp0"
