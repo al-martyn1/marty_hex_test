@@ -183,8 +183,8 @@ int unsafeMain(int argc, char* argv[])
         // std::cout 
         LOG_MSG << "Working Dir  : " << cwd << "\n";
 
-        // inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
-        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/http.ufsm";
+        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
+        //inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/http.ufsm";
         
 
     } // if (umba::isDebuggerPresent())
@@ -235,6 +235,25 @@ int unsafeMain(int argc, char* argv[])
         // LOG_MSG << "C/C++ structs:\n\n";
     
         //umba::tokenizer::mermaid::cpp::printCppPacketDiagram( std::cout, diagram );
+
+        using umba::tokenizer::ufsm::FullQualifiedName;
+        using umba::tokenizer::ufsm::NamespaceEntry;
+        using umba::tokenizer::ufsm::NamespaceEntryKind;
+        using umba::tokenizer::ufsm::StateMachineDefinition;
+
+        NamespaceEntry *pe;
+        if (diagram.findEntry(FullQualifiedName(FullQualifiedName::PathType::relative, {"samples", "traffic_lights", "TrafficLightRoad"}), &pe))
+        {
+            LOG_MSG << "Found entry\n";
+
+            auto kind = getNamespaceEntryKind(*pe);
+            if (kind!=NamespaceEntryKind::nsDefinition)
+            {
+                LOG_MSG << "Found entry has invalid kind, not an nsDefinition\n";
+                return 1;
+            }
+
+        }
 
     }
     catch(...)
