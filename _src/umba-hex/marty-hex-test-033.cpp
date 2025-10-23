@@ -242,7 +242,7 @@ int unsafeMain(int argc, char* argv[])
         using umba::tokenizer::ufsm::StateMachineDefinition;
 
         NamespaceEntry *pe;
-        if (diagram.findEntry(FullQualifiedName(FullQualifiedName::PathType::relative, {"samples", "traffic_lights", "TrafficLightRoad"}), &pe))
+        if (diagram.findEntry(FullQualifiedName(FullQualifiedName::Scheme::relative, {"samples", "traffic_lights", "TrafficLightRoad"}), &pe))
         {
             LOG_MSG << "Found entry\n";
 

@@ -181,12 +181,13 @@ int main(int argc, char* argv[])
         std::size_t posInfoIdx = 0;
         using PositionInfoType = std::decay_t<decltype(posInfoIdx)>;
 
+#if 0        
         auto positionInfoGenerator = [&](InputIteratorType b, InputIteratorType e)
         {
             UMBA_USED(b); UMBA_USED(e);
             return std::size_t(0);
         };
-
+#endif
         using OperatorTokenType = umba::tokenizer::payload_type;
         using IntegerType       = typename TokenizerT::integer_type;
         using FloatingPointType = typename TokenizerT::floating_point_type;
@@ -228,7 +229,7 @@ int main(int argc, char* argv[])
                              };
 
 
-    auto opTraits = OperatorTraitsType();
+    // auto opTraits = OperatorTraitsType();
 
 
     auto itBegin = InputIteratorType(data.data(), data.size());

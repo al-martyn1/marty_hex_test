@@ -16,7 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 set(UMBA_STATIC_RUNTIME ON)
-set(UMBA_USE_BOOST      ON)
+set(UMBA_USE_BOOST      OFF)
 
 include(${CMAKE_CURRENT_LIST_DIR}/.cmake/umba.cmake)
 
@@ -318,7 +318,7 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 set(TARGET marty-hex-test-033)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
-umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE" "G0") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
