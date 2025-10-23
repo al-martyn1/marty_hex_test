@@ -247,12 +247,37 @@ int unsafeMain(int argc, char* argv[])
             LOG_MSG << "Found entry\n";
 
             auto kind = getNamespaceEntryKind(*pe);
-            if (kind!=NamespaceEntryKind::nsDefinition)
+            if (kind!=NamespaceEntryKind::fsmDefinition)
             {
-                LOG_MSG << "Found entry has invalid kind, not an nsDefinition\n";
+                LOG_MSG << "Found entry has invalid kind, not an fsmDefinition\n";
                 return 1;
             }
 
+            StateMachineDefinition *pFsm = std::get_if<StateMachineDefinition>(pe);
+            if (!pFsm)
+            {
+                LOG_MSG << "Something goes wrong while calling get\n";
+                return 1;
+            
+            }
+            try
+            {
+                auto trVec = pFsm->getPrioritySortedTransitions();
+                for(const auto &transition : trVec)
+                    std::cerr << transition.getCanonicalName() << "\n";
+
+                //pFsm->expandTransitions();
+            }
+            catch(const std::exception &e)
+            {
+                LOG_ERR << "Error: " << e.what() << "\n";
+                return 4;
+            }
+            catch(...)
+            {
+                LOG_ERR << "there is some errors\n";
+                return 4;
+            }
         }
 
     }
