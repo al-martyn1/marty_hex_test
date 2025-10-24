@@ -266,7 +266,9 @@ int unsafeMain(int argc, char* argv[])
                 for(const auto &transition : trVec)
                     std::cerr << transition.getCanonicalName() << "\n";
 
-                //pFsm->expandTransitions();
+                pFsm->expandTransitions();
+                diagram.print(std::cout);
+
             }
             catch(const std::exception &e)
             {
