@@ -262,12 +262,19 @@ int unsafeMain(int argc, char* argv[])
             }
             try
             {
+                std::cerr << "------------\n";
                 auto trVec = pFsm->getPrioritySortedTransitions();
+                std::cerr << "------------\n";
+                // for(const auto &transition : trVec)
+                //     std::cerr << transition.getCanonicalName() << "\n";
                 for(const auto &transition : trVec)
-                    std::cerr << transition.getCanonicalName() << "\n";
+                    std::cerr << transition << "\n";
 
+                std::cerr << "------------\n";
                 pFsm->expandTransitions();
-                diagram.print(std::cout);
+
+                std::cerr << "------------\n";
+                diagram.print(std::cerr);
 
             }
             catch(const std::exception &e)
