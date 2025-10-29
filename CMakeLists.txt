@@ -30,6 +30,7 @@ add_subdirectory(${LIB_ROOT}/marty_containers)
 add_subdirectory(${LIB_ROOT}/marty_cpp)
 add_subdirectory(${LIB_ROOT}/marty_crc)
 add_subdirectory(${LIB_ROOT}/marty_decimal)
+add_subdirectory(${LIB_ROOT}/marty_dot)
 add_subdirectory(${LIB_ROOT}/marty_hex)
 add_subdirectory(${LIB_ROOT}/marty_mem)
 add_subdirectory(${LIB_ROOT}/marty_svg)
@@ -61,6 +62,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
     marty::cpp
     marty::crc
     marty::decimal
+    marty::dot
     marty::expressions
     marty::hex
     marty::mem
