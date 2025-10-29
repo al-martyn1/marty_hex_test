@@ -28,6 +28,7 @@ git clone --recurse-submodules %PREFIX%/marty_cpp.git               %~dp0\marty_
 git clone --recurse-submodules %PREFIX%/marty_crc.git               %~dp0\marty_crc
 git clone --recurse-submodules %PREFIX%/marty_csv.git               %~dp0\marty_csv
 git clone --recurse-submodules %PREFIX%/marty_decimal.git           %~dp0\marty_decimal
+git clone --recurse-submodules %PREFIX%/marty_dot.git               %~dp0\marty_dot
 git clone --recurse-submodules %PREFIX%/marty_expressions.git       %~dp0\marty_expressions
 git clone --recurse-submodules %PREFIX%/marty_format.git            %~dp0\marty_format
 git clone --recurse-submodules %PREFIX%/marty_hex.git               %~dp0\marty_hex
