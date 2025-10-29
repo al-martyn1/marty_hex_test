@@ -6,6 +6,7 @@ call "%~dp0\.find_test_exe.bat" %TEST_NAME%
 @set TEST_EXE="%FOUND_EXE%"
 
 %TEST_EXE% "%~dp0\..\_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm"  > %~dp0\%TEST_NAME%_01.dot   2>%~dp0\%TEST_NAME%_01.log
+dot -Tpng -o%~dp0\%TEST_NAME%_01.png %~dp0\%TEST_NAME%_01.dot
 
 %TEST_EXE% "%~dp0\..\_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/http.ufsm"            > %~dp0\%TEST_NAME%_02.dot   2>%~dp0\%TEST_NAME%_02.log
 

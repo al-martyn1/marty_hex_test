@@ -14,6 +14,7 @@
 #include "umba/cli_tool_helpers.h"
 #include "umba/cmd_line.h"
 //
+#include "marty_dot/marty_dot.h"
 
 //
 #include "umba/tokenizer.h"
@@ -265,6 +266,12 @@ int unsafeMain(int argc, char* argv[])
                 // Shapes
                 // https://graphviz.org/doc/info/shapes.html#polygon
                 // FSM exqample https://graphviz.org/Gallery/directed/fsm.html
+                // label - https://graphviz.org/docs/attrs/label/
+                // html label - https://graphviz.org/doc/info/shapes.html#html
+                // xlabel - https://graphviz.org/docs/attrs/xlabel/
+
+                pFsm->assignStateIds();
+
                 std::cerr << "------------\n";
                 auto trVec = pFsm->makeExpandedTransitionsForGraph();
                 std::cerr << "------------\n";
@@ -272,6 +279,66 @@ int unsafeMain(int argc, char* argv[])
                     std::cerr << transition << "\n";
 
                 std::cerr << "------------\n";
+
+                std::cout << "digraph " << pFsm->name << "\n{\n";
+                std::cout << "  fontname=\"Helvetica,Arial,sans-serif\"\n"
+                          << "  node [fontname=\"Helvetica,Arial,sans-serif\"]\n"
+                          << "  edge [fontname=\"Helvetica,Arial,sans-serif\"]\n"
+                          << "  rankdir=LR;\n";
+
+                for(const auto &kv : pFsm->states)
+                {
+                    std::cout << "  " << kv.second.id << " [label=<" << marty::dot::ecapeHtmlLabelString(kv.second.name) << ">";
+                    if (kv.second.isError())
+                    {
+                        std::cout << " shape=Mcircle"; // doublecircle
+                    }
+                    else if (kv.second.isInitial() || kv.second.isFinal())
+                    {
+                        std::cout << " shape=doublecircle"; // doublecircle
+                    }
+                    else
+                    {
+                        std::cout << " shape=ellipse"; // oval circle point
+                    }
+
+                    std::cout << "]\n";
+
+                    if (kv.second.isInitial())
+                    {
+                        std::cout << "  e" << kv.second.id << " [shape=point]\n";
+                        std::cout << "  e" << kv.second.id << " -> " << kv.second.id << "\n";
+                    }
+
+                }
+
+                auto transitions = pFsm->makeExpandedTransitionsForGraph();
+                for(const auto &transition : transitions)
+                {
+                    auto sourceStateName = transition.getSourceState();
+                    auto targetStateName = transition.getTargetState();
+                    if (transition.isSelfTarget())
+                        targetStateName = sourceStateName;
+
+                    auto sourceStateIt = pFsm->states.find(sourceStateName);
+                    if (sourceStateIt==pFsm->states.end())
+                    {
+                        throw std::runtime_error("Unknown source state " + sourceStateName);
+                    }
+
+                    auto targetStateIt = pFsm->states.find(targetStateName);
+                    if (targetStateIt==pFsm->states.end())
+                    {
+                        throw std::runtime_error("Unknown target state " + targetStateName);
+                    }
+
+                    std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id << "\n";
+
+                }
+
+                std::cout << "}\n";
+
+
             }
             catch(const std::exception &e)
             {
