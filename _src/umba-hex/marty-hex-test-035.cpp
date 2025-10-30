@@ -164,6 +164,7 @@ int unsafeMain(int argc, char* argv[])
 
 
     std::string inputFilename;
+    std::string fsmNameStr;
 
     auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
                                                         , CommandLineOptionCollector()
@@ -184,20 +185,29 @@ int unsafeMain(int argc, char* argv[])
         // std::cout 
         LOG_MSG << "Working Dir  : " << cwd << "\n";
 
-        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
         //inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/http.ufsm";
-        
+        inputFilename = rootPath + "_libs/umba_tokenizer/inc/umba/tokenizer/parsers/ufsm/samples/traffic_lights.ufsm";
+        //fsmNameStr    = "samples//traffic_lights::TrafficLightRoad\\\\";
+        fsmNameStr    = "samples//traffic_lights::TrafficLightRoad";
 
     } // if (umba::isDebuggerPresent())
     else
     {
         if (argc>1)
             inputFilename = argv[1];
+        if (argc>2)
+            fsmNameStr    = argv[2];
     }
 
     if (inputFilename.empty())
     {
         LOG_ERR << "No input file taken\n";
+        return 2;
+    }
+
+    if (fsmNameStr.empty())
+    {
+        LOG_ERR << "No FSM name taken\n";
         return 2;
     }
 
@@ -242,8 +252,11 @@ int unsafeMain(int argc, char* argv[])
         using umba::tokenizer::ufsm::NamespaceEntryKind;
         using umba::tokenizer::ufsm::StateMachineDefinition;
 
+        //auto fsmName = FullQualifiedName("samples/traffic_lights/TrafficLightRoad", "/");
+        auto fsmName = FullQualifiedName(fsmNameStr, {"/", "\\", "::"});
+
         NamespaceEntry *pe;
-        if (diagram.findEntry(FullQualifiedName(FullQualifiedName::Scheme::relative, {"samples", "traffic_lights", "TrafficLightRoad"}), &pe))
+        if (diagram.findEntry(fsmName, &pe))
         {
             LOG_MSG << "Found entry\n";
 
