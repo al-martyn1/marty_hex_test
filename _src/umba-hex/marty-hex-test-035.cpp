@@ -312,9 +312,34 @@ int unsafeMain(int argc, char* argv[])
 
                 }
 
+    // Выносим петлю подальше
+    // A -> P [arrowhead=none, color=black, penwidth=1, minlen=2];
+    // P -> A [color=black, penwidth=1];
+    // P [shape=point, width=0, height=0, penwidth=0.7, color=black];
+
+    // // Создаём метки как отдельные невидимые узлы
+    // L1 [label="Петля 1", shape=plaintext, width=0, height=0];
+    // L2 [label="Петля 2", shape=plaintext, width=0, height=0];
+    //  
+    // // Привязываем метки к вершине без видимых рёбер
+    // A -> L1 [style=invis, constraint=false];
+    // A -> L2 [style=invis, constraint=false];
+    //  
+    // // Основная петля
+    // A -> A [style=dot, weight=100];
+    //  
+    // // Размещаем метки вокруг вершины
+    // {rank=same; A; L1; L2}
+    // L1 -> A [style=invis];
+    // A -> L2 [style=invis];
+
+
+
                 auto transitions = pFsm->makeExpandedTransitionsForGraph();
-                for(const auto &transition : transitions)
+                std::size_t id = 0;
+                for(auto &&transition : transitions)
                 {
+                    transition.id = ++id;
                     auto sourceStateName = transition.getSourceState();
                     auto targetStateName = transition.getTargetState();
                     if (transition.isSelfTarget())
@@ -332,17 +357,30 @@ int unsafeMain(int argc, char* argv[])
                         throw std::runtime_error("Unknown target state " + targetStateName);
                     }
 
-                    std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id; // << "\n";
-                    std::string labelStr;
-                    labelStr.append(transition.eventsAsString());
+                    std::string transitionLabelStr;
+                    transitionLabelStr.append(transition.eventsAsString());
                     if (transition.hasAdditionalCondition())
                     {
-                        labelStr.append("\n");
-                        labelStr.append("[");
-                        labelStr.append(transition.additionalConditionAsString());
-                        labelStr.append("]");
+                        transitionLabelStr.append("\n");
+                        transitionLabelStr.append("[");
+                        transitionLabelStr.append(transition.additionalConditionAsString());
+                        transitionLabelStr.append("]");
                     }
-                    std::cout << " [label=<" << marty::dot::ecapeHtmlLabelString(labelStr) << ">];\n";
+
+                    if (transition.isSelfTarget())
+                    {
+                        std::cout << "  " << sourceStateIt->second.id << " -> " << "t" << transition.id << " [arrowhead=none];\n";
+                        std::cout << "  " << "t" << transition.id << " -> " << targetStateIt->second.id << ";\n"; //  "[arrowhead=none];\n"
+                        std::cout << "  " << "t" << transition.id << " [shape=point, width=0, height=0, penwidth=0.7];\n";
+                        std::cout << "  " << "l" << transition.id << " [label=<" << marty::dot::ecapeHtmlLabelString(transitionLabelStr) << ">, shape=plaintext, width=0, height=0];\n";
+                        std::cout << "  " << "l" << transition.id << " -> " << "t" << transition.id << " [style=invis];\n";
+                        std::cout << "  " << "{rank=same; " << sourceStateIt->second.id << "; l" << transition.id << "; " << "t" << transition.id << "}\n";
+                    }
+                    else
+                    {
+                        std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id; // << "\n";
+                        std::cout << " [label=<" << marty::dot::ecapeHtmlLabelString(transitionLabelStr) << ">];\n";
+                    }
 
                 }
 
