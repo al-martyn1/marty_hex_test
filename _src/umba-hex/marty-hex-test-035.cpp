@@ -332,7 +332,17 @@ int unsafeMain(int argc, char* argv[])
                         throw std::runtime_error("Unknown target state " + targetStateName);
                     }
 
-                    std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id << "\n";
+                    std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id; // << "\n";
+                    std::string labelStr;
+                    labelStr.append(transition.eventsAsString());
+                    if (transition.hasAdditionalCondition())
+                    {
+                        labelStr.append("\n");
+                        labelStr.append("[");
+                        labelStr.append(transition.additionalConditionAsString());
+                        labelStr.append("]");
+                    }
+                    std::cout << " [label=<" << marty::dot::ecapeHtmlLabelString(labelStr) << ">];\n";
 
                 }
 
