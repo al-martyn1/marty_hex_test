@@ -165,6 +165,7 @@ int unsafeMain(int argc, char* argv[])
 
     std::string inputFilename;
     std::string fsmNameStr;
+    bool useTransitionPoint = false;
 
     auto argsParser = umba::command_line::makeArgsParser( ArgParser<std::string>()
                                                         , CommandLineOptionCollector()
@@ -197,6 +198,8 @@ int unsafeMain(int argc, char* argv[])
             inputFilename = argv[1];
         if (argc>2)
             fsmNameStr    = argv[2];
+        if (argc>3)
+            useTransitionPoint = true;
     }
 
     if (inputFilename.empty())
@@ -253,7 +256,7 @@ int unsafeMain(int argc, char* argv[])
         using umba::tokenizer::ufsm::StateMachineDefinition;
 
         //auto fsmName = FullQualifiedName("samples/traffic_lights/TrafficLightRoad", "/");
-        auto fsmName = FullQualifiedName(fsmNameStr, {"/", "\\", "::"});
+        auto fsmName = FullQualifiedName(fsmNameStr, {"/", "\\", "::", "."});
 
         NamespaceEntry *pe;
         if (diagram.findEntry(fsmName, &pe))
@@ -382,12 +385,20 @@ int unsafeMain(int argc, char* argv[])
 
                     if (transition.isSelfTarget())
                     {
-                        std::cout << "  " << sourceStateIt->second.id << " -> " << "t" << transition.id << " [arrowhead=none];\n";
-                        std::cout << "  " << "t" << transition.id << " -> " << targetStateIt->second.id << ";\n"; //  "[arrowhead=none];\n"
-                        std::cout << "  " << "t" << transition.id << " [shape=point, width=0, height=0, penwidth=0.7];\n";
-                        std::cout << "  " << "l" << transition.id << " [label=<" << marty::dot::ecapeHtmlLabelString(transitionLabelStr) << ">, shape=plaintext, width=0, height=0];\n";
-                        std::cout << "  " << "l" << transition.id << " -> " << "t" << transition.id << " [style=invis];\n";
-                        std::cout << "  " << "{rank=same; " << sourceStateIt->second.id << "; l" << transition.id << "; " << "t" << transition.id << "}\n";
+                        if (useTransitionPoint)
+                        {
+                            std::cout << "  " << sourceStateIt->second.id << " -> " << "t" << transition.id << " [arrowhead=none];\n";
+                            std::cout << "  " << "t" << transition.id << " -> " << targetStateIt->second.id << ";\n"; //  "[arrowhead=none];\n"
+                            std::cout << "  " << "t" << transition.id << " [shape=point, width=0, height=0, penwidth=0.7];\n";
+                            std::cout << "  " << "l" << transition.id << " [label=<" << marty::dot::ecapeHtmlLabelString(transitionLabelStr) << ">, shape=plaintext, width=0, height=0];\n";
+                            std::cout << "  " << "l" << transition.id << " -> " << "t" << transition.id << " [style=invis];\n";
+                            std::cout << "  " << "{rank=same; " << sourceStateIt->second.id << "; l" << transition.id << "; " << "t" << transition.id << "}\n";
+                        }
+                        else // Обычный алгоритм
+                        {
+                            std::cout << "  " << sourceStateIt->second.id << " -> " << targetStateIt->second.id; // << "\n";
+                            std::cout << " [label=<" << marty::dot::ecapeHtmlLabelString(transitionLabelStr) << ">];\n";
+                        }
                     }
                     else
                     {
