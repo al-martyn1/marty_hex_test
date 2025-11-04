@@ -1,5 +1,5 @@
 /*! \file
-    \brief Делаем граф UFSM
+    \brief Делаем граф UFSM через graphviz
  */
 
 

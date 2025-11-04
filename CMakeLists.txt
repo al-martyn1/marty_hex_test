@@ -36,6 +36,7 @@ add_subdirectory(${LIB_ROOT}/marty_mem)
 add_subdirectory(${LIB_ROOT}/marty_svg)
 add_subdirectory(${LIB_ROOT}/marty_utf)
 add_subdirectory(${LIB_ROOT}/marty_format)
+add_subdirectory(${LIB_ROOT}/marty_gdl)
 add_subdirectory(${LIB_ROOT}/marty_expressions)
 # add_subdirectory(${LIB_ROOT}/marty_pugixml)
 # add_subdirectory(${LIB_ROOT}/marty_tr)
@@ -70,6 +71,7 @@ set(COMMON_LIBS encoding::encoding sfmt::sfmt umba
     umba::tokenizer
     marty::utf
     marty::format
+    marty::gdl
    )
 # set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
@@ -331,6 +333,18 @@ target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 
 set(TARGET marty-hex-test-035)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-036)
+add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
+umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
+target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
+
+
+set(TARGET marty-hex-test-037)
 add_executable(${TARGET} "${SRC_ROOT}/umba-hex/${TARGET}.cpp" "${headers}" ${all_docs} ${all_docs_src})
 umba_add_target_options(${TARGET} ${COMMON_UMBA_OPTIONS} "CONSOLE") 
 target_link_libraries(${TARGET} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
