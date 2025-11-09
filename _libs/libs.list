@@ -11,9 +11,9 @@ marty_format
 marty_gdl
 marty_hex
 marty_mem
-marty_svg
 #marty_pugixml
 #pugixml         extern_pugixml
+marty_svg
 #marty_tr
 marty_utf
 #marty_yaml_toml_json

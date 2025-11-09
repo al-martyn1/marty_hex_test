@@ -44,13 +44,11 @@ for /f "tokens=1,2" %%A in (%INPUT_FILE%) do (
 @goto :eof
 
 :process_single
-@rem echo Обрабатываю одно значение: %1 с префиксом %MAIN_REPO%
 echo git clone %GIT_OPTS% %MAIN_REPO%/%~1.git %~1
 git clone %GIT_OPTS% %MAIN_REPO%/%~1.git %~1
 @exit /B 0
 
 :process_double
-@rem echo Обрабатываю два значения: %1 и %2
 @set "value=%~2"
 @if /i "!value:~0,8!"=="https://" (
   echo git clone %GIT_OPTS% %value%.git %~1
