@@ -1,0 +1,24 @@
+encoding         umba_mm_mod_encodings
+marty_bigint
+marty_containers
+marty_cpp
+marty_crc
+marty_csv
+marty_decimal
+marty_dot
+marty_expressions
+marty_format
+marty_gdl
+marty_hex
+marty_mem
+marty_svg
+#marty_pugixml
+#pugixml         extern_pugixml
+#marty_tr
+marty_utf
+#marty_yaml_toml_json
+#nlohmann         forks-nlohmann-json
+sfmt
+umba
+umba_tokenizer
+#yaml-cpp
