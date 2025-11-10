@@ -47,10 +47,63 @@ using OperatorTraitsType = marty::expressions::SampleOperatorTraits< umba::token
 // PositionInfoType
 
 
-
-
 using std::cout;
 using std::cerr;
+
+template<typename MapType>
+inline
+void doTestMap()
+{
+    MapType iom
+    { { "1" , 1u }
+    , { "2" , 2u }
+    , { "3" , 3u }
+    , { "4" , 4u }
+    , { "5" , 5u }
+    };
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n" << std::flush;
+
+
+    std::cout << "Erase \"2\"\n";
+    iom.erase("2");
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n" << std::flush;
+
+
+    std::cout << "Set \"0\"\n";
+    iom["0"] = 0u;
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n" << std::flush;
+
+
+    std::cout << "Set \"6\"\n";
+    iom["6"] = 6u;
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n" << std::flush;
+
+
+    std::cout << "Set \"5\" to 7\n";
+    iom["5"] = 7u;
+
+    for(const auto &kv : iom)
+        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
+    std::cout << "\n" << std::flush;
+
+
+    std::cout << "------------\n";
+
+}
+
+
 
 int main(int argc, char* argv[])
 {
@@ -61,52 +114,28 @@ int main(int argc, char* argv[])
     //----------------------------------------------------------------------------
     // Присунул по случаю тест insertion_ordered_map, чтобы отдельное не городить
 
-    using insertion_ordered_map = marty::containers::insertion_ordered_map<std::string, std::size_t>;
+    using insertion_ordered_map_update_inplace      = marty::containers::insertion_ordered_map<std::string, std::size_t, marty::containers::UpdateStrategy::updateInplace    >;
+    using insertion_ordered_map_update_change_order = marty::containers::insertion_ordered_map<std::string, std::size_t, marty::containers::UpdateStrategy::updateChangeOrder>;
+    using insertion_ordered_map_update_restrict     = marty::containers::insertion_ordered_map<std::string, std::size_t, marty::containers::UpdateStrategy::updateRestrict   >;
 
-    insertion_ordered_map iom
-    // { { "First" , 1u }
-    // , { "Second", 2u }
-    // , { "Third" , 3u }
-    // , { "Fourth", 4u }
-    // , { "Fifth" , 5u }
-    // };
-    { { "1" , 1u }
-    , { "2" , 2u }
-    , { "3" , 3u }
-    , { "4" , 4u }
-    , { "5" , 5u }
-    };
+    try
+    {
+        std::cout << "Try test inplace update\n";
+        doTestMap<insertion_ordered_map_update_inplace>();
 
-    for(const auto &kv : iom)
-        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
-    std::cout << "\n";
+        std::cout << "Try test update with change_order\n";
+        doTestMap<insertion_ordered_map_update_change_order>();
 
-    std::cout << "Erase \"2\"\n";
-    iom.erase("2");
+        std::cout << "Try test with restrict update\n";
+        doTestMap<insertion_ordered_map_update_restrict>();
+    }
+    catch(const std::exception &e)
+    {
+        std::cout << "Exception: " << e.what() << "\n" << std::flush;
+    }
 
-    for(const auto &kv : iom)
-        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
-    std::cout << "\n";
-
-    std::cout << "Set \"6\"\n";
-    iom["6"] = 6u;
-
-    for(const auto &kv : iom)
-        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
-    std::cout << "\n";
-
-    std::cout << "Set \"0\"\n";
-    iom["0"] = 0u;
-
-    for(const auto &kv : iom)
-        std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
-    std::cout << "\n";
-
-    std::cout << "------------\n";
 
     //----------------------------------------------------------------------------
-
-
     std::string data;
 
     if (umba::isDebuggerPresent())
