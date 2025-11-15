@@ -102,6 +102,12 @@ int main(int argc, char* argv[])
         std::cout << "\"" << kv.first << "\"" << " = " << kv.second << "\n";
     std::cout << "\n";
 
+    // auto  iom0 = iom["0"]; // error
+    // auto &iom1 = iom["1"]; // error
+
+    // std::size_t iom0  = iom["0"]; // Ok
+    // std::size_t &iom1 = iom["1"]; // error
+
     std::cout << "------------\n";
 
     //----------------------------------------------------------------------------
