@@ -1,3 +1,3 @@
 @if exist "%~dp0\set_sln.bat" @call "%~dp0\set_sln.bat"
-@rem echo Starting bat\_start_msvc_impl.bat
+@set MSVC=2017
 @call "%~dp0\.bat\_start_msvc_impl.bat" %SLN%
