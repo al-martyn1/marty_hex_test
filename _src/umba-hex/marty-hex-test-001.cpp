@@ -17,6 +17,7 @@
 #include "umba/program_location.h"
 #include "umba/cli_tool_helpers.h"
 #include "umba/cmd_line.h"
+#include "umba/rule_of_five.h"
 //
 
 //#-sort
@@ -92,6 +93,11 @@ AppConfig appConfig;
 
 #include "ArgParser.h"
 
+
+struct TestStruct
+{
+    UMBA_RULE_OF_FIVE(TestStruct, delete, delete, delete, delete, delete);
+};
 
 
 int unsafeMain(int argc, char* argv[]);

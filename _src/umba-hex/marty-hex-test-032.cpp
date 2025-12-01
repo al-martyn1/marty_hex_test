@@ -212,8 +212,9 @@ int main(int argc, char* argv[])
 
         using TokenizerT = std::decay_t<decltype(tokenizer)>;
 
-        std::size_t posInfoIdx = 0;
-        using PositionInfoType = std::decay_t<decltype(posInfoIdx)>;
+        // std::size_t posInfoIdx = 0;
+        // using PositionInfoType = std::decay_t<decltype(posInfoIdx)>;
+        using PositionInfoType = std::size_t;
 
 #if 0        
         auto positionInfoGenerator = [&](InputIteratorType b, InputIteratorType e)

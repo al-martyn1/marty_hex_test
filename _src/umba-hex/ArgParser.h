@@ -488,6 +488,9 @@ int operator()( const StringType                                &a           //!
 
 class CommandLineOptionCollector : public umba::command_line::CommandLineOptionCollectorImplBase
 {
+public:
+    UMBA_RULE_OF_FIVE(CommandLineOptionCollector, default, default, default, default, default);
+
 protected:
     virtual void onOptionDup( const std::string &opt ) override
     {
